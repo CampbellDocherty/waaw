@@ -1,0 +1,110 @@
+name: Actions
+
+on: [push]
+
+permissions:
+  contents: write
+
+jobs:
+  lint:
+    name: lint
+    if: github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v2
+        with:
+          path: "**/node_modules"
+          key: v1-yarn-deps-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: v1-yarn-deps-
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install --production=false --frozen-lockfile
+
+      - name: Run eslint
+        run: yarn lint
+
+      - name: Run prettier
+        run: yarn check-format
+
+  test:
+    name: test
+    if: github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    container:
+      image: node:16.12
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v2
+        with:
+          path: "**/node_modules"
+          key: v1-yarn-deps-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: v1-yarn-deps-
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install --production=false --frozen-lockfile
+
+      - name: test
+        run: yarn test
+
+  build:
+    name: build
+    if: github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: production
+    container:
+      image: node:16.12
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v2
+        with:
+          path: "**/node_modules"
+          key: v1-yarn-deps-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: v1-yarn-deps-
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install --production=false --frozen-lockfile
+
+      - name: Build
+        id: build
+        run: yarn build
+
+  build-and-deploy:
+    name: build and deploy
+    if: github.ref == 'refs/heads/main'
+    concurrency: ci-${{ github.ref }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install and Build
+        run: |
+          yarn install
+          yarn build
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4.2.5
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: dist # The folder the action should deploy.
