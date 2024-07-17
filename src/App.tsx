@@ -1,6 +1,7 @@
-import { ReactP5Wrapper, P5CanvasInstance } from '@p5-wrapper/react';
+import { ReactP5Wrapper } from '@p5-wrapper/react';
+import * as p from '@p5-wrapper/react';
 
-function sketch(p5: P5CanvasInstance) {
+function sketch(p5: p.P5CanvasInstance) {
   let font: any;
 
   p5.preload = () => {
