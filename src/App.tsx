@@ -1,11 +1,12 @@
 import { ReactP5Wrapper } from '@p5-wrapper/react';
 import * as p from '@p5-wrapper/react';
+import monoRegular from './fonts/Mono-Regular.ttf';
 
 function sketch(p5: p.P5CanvasInstance) {
   let font: any;
 
   p5.preload = () => {
-    font = p5.loadFont('src/fonts/Mono-Regular.ttf');
+    font = p5.loadFont(monoRegular);
   };
 
   p5.setup = () => {
