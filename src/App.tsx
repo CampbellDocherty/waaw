@@ -22,12 +22,11 @@ function sketch(p5: p.P5CanvasInstance) {
   p5.draw = () => {
     p5.background(102);
     p5.push();
-    p5.translate(20 * 0.8, 20 * 0.5);
     p5.rotate(p5.frameCount / -100.0);
-    star(0, 0, 30, 70, 5);
+    star(0, 0, 20, 40, 5);
     p5.pop();
 
-    p5.text('WAAW', -20, -90);
+    p5.text('WAAW', -40, -60);
   };
 
   function star(
