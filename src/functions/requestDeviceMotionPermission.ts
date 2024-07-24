@@ -1,24 +1,20 @@
 import { Vector } from './Vector';
 
-interface DeviceOrientationEventiOS extends DeviceOrientationEvent {
+interface DeviceMotionEventiOS extends DeviceMotionEvent {
   requestPermission?: () => Promise<'granted' | 'denied'>;
 }
 
-const requestPermission = (
-  DeviceOrientationEvent as unknown as DeviceOrientationEventiOS
-).requestPermission;
+const requestPermission = (DeviceMotionEvent as unknown as DeviceMotionEventiOS)
+  .requestPermission;
 
 const iOS = typeof requestPermission === 'function';
 
-const handleMotion = (
-  data: DeviceOrientationEventiOS
-): { x: number; y: number } => {
-  const leftToRightDegrees = data.beta;
-  const frontToBackDegrees = data.gamma;
+const handleMotion = (data: DeviceMotionEventiOS): { x: number; y: number } => {
+  const { accelerationIncludingGravity } = data;
 
   return {
-    x: leftToRightDegrees || 0,
-    y: frontToBackDegrees || 0,
+    x: accelerationIncludingGravity?.x || 0,
+    y: accelerationIncludingGravity?.y || 0,
   };
 };
 
@@ -26,13 +22,13 @@ export const requestDeviceMotionPermission = async (vector: Vector) => {
   if (iOS) {
     const response = await requestPermission();
     if (response === 'granted') {
-      window.addEventListener('deviceorientation', (event) => {
+      window.addEventListener('devicemotion', (event) => {
         const motion = handleMotion(event);
         vector.updateVelocity(motion.x, motion.y);
       });
     }
   }
-  window.addEventListener('deviceorientation', (event) => {
+  window.addEventListener('devicemotion', (event) => {
     const motion = handleMotion(event);
     vector.updateVelocity(motion.x, motion.y);
   });
