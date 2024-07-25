@@ -1,3 +1,5 @@
+import * as p from '@p5-wrapper/react';
+
 export class Vector {
   xVel: number;
   yVel: number;
@@ -23,5 +25,16 @@ export class Vector {
 
   get position() {
     return { x: this.xPos, y: this.yPos };
+  }
+
+  constrain(
+    minX: number,
+    maxX: number,
+    minY: number,
+    maxY: number,
+    p5: p.P5CanvasInstance
+  ): void {
+    this.xPos = p5.constrain(this.xPos, minX, maxX);
+    this.yPos = p5.constrain(this.yPos, minY, maxY);
   }
 }

@@ -18,7 +18,7 @@ const star = (x: number, y: number, p5: p.P5CanvasInstance): void => {
     sy = y + p5.sin(a + halfAngle) * radius1;
     p5.vertex(sx, sy);
   }
-  p5.endShape('close');
+  p5.endShape(p5.CLOSE);
 };
 
 export const sketch = (p5: p.P5CanvasInstance, vector: Vector): void => {
@@ -63,16 +63,19 @@ export const sketch = (p5: p.P5CanvasInstance, vector: Vector): void => {
       vector.updateVelocity(0, 10);
     }
 
-    if (Object.keys(pressedKeys).length === 0) {
-      vector.updateVelocity(0, 0);
-    }
-
     p5.push();
+    const starWidth = 40;
+    const leftBorder = -innerWidth / 2 + starWidth;
+    const rightBorder = innerWidth / 2 - starWidth;
+    const topBorder = -innerHeight / 2 + starWidth;
+    const bottomBorder = innerHeight / 2 - starWidth;
+    vector.constrain(leftBorder, rightBorder, topBorder, bottomBorder, p5);
     const { x, y } = vector.position;
     if (x === 0 && y === 0) {
       p5.rotate(p5.frameCount / -100.0);
     }
     star(x, y, p5);
+
     p5.pop();
 
     vector.updatePosition(x, y);
