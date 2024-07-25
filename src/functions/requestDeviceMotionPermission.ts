@@ -24,12 +24,12 @@ export const requestDeviceMotionPermission = async (vector: Vector) => {
     if (response === 'granted') {
       window.addEventListener('devicemotion', (event) => {
         const motion = handleMotion(event);
-        vector.updateVelocity(motion.x, -motion.y);
+        vector.updateVelocity(motion.x * 2, -motion.y * 4);
       });
     }
   }
   window.addEventListener('devicemotion', (event) => {
     const motion = handleMotion(event);
-    vector.updateVelocity(motion.x, -motion.y);
+    vector.updateVelocity(motion.x * 2, -motion.y * 4);
   });
 };

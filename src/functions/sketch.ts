@@ -23,6 +23,7 @@ const star = (x: number, y: number, p5: p.P5CanvasInstance): void => {
 
 export const sketch = (p5: p.P5CanvasInstance, vector: Vector): void => {
   let font: any;
+  const pressedKeys: { [key: string]: boolean } = {};
 
   p5.preload = () => {
     font = p5.loadFont(monoRegular);
@@ -34,12 +35,37 @@ export const sketch = (p5: p.P5CanvasInstance, vector: Vector): void => {
     p5.textFont(font);
   };
 
+  p5.keyPressed = (event: { key: string }) => {
+    pressedKeys[event.key] = true;
+  };
+
+  p5.keyReleased = (event: { key: string }) => {
+    delete pressedKeys[event.key];
+  };
+
   window.addEventListener('resize', () => {
     p5.resizeCanvas(innerWidth, innerHeight, p5.WEBGL);
   });
 
   p5.draw = () => {
     p5.background(102);
+
+    if (pressedKeys['ArrowLeft']) {
+      vector.updateVelocity(-10, 0);
+    }
+    if (pressedKeys['ArrowRight']) {
+      vector.updateVelocity(10, 0);
+    }
+    if (pressedKeys['ArrowUp']) {
+      vector.updateVelocity(0, -10);
+    }
+    if (pressedKeys['ArrowDown']) {
+      vector.updateVelocity(0, 10);
+    }
+
+    if (Object.keys(pressedKeys).length === 0) {
+      vector.updateVelocity(0, 0);
+    }
 
     p5.push();
     const { x, y } = vector.position;
