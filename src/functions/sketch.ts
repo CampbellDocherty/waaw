@@ -111,7 +111,7 @@ const _drawByKeyPress = (
     star.updateVelocity(0, 15);
   }
 
-  if (!Object.values(pressedKeys).some((value) => value)) {
-    star.updateVelocity(0, 0);
-  }
+  // if (!Object.values(pressedKeys).some((value) => value)) {
+  //   star.updateVelocity(0, 0);
+  // }
 };
