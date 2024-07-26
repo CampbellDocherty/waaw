@@ -65,11 +65,9 @@ export const sketch = (p5: p.P5CanvasInstance, vector: Vector): void => {
 
     p5.push();
     const starWidth = 40;
-    const leftBorder = -innerWidth / 2 + starWidth;
-    const rightBorder = innerWidth / 2 - starWidth;
-    const topBorder = -innerHeight / 2 + starWidth;
-    const bottomBorder = innerHeight / 2 - starWidth;
-    vector.constrain(leftBorder, rightBorder, topBorder, bottomBorder, p5);
+
+    vector.constrain(innerWidth, innerHeight, starWidth, p5);
+
     const { x, y } = vector.position;
     if (x === 0 && y === 0) {
       p5.rotate(p5.frameCount / -100.0);

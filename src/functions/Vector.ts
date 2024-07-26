@@ -28,12 +28,15 @@ export class Vector {
   }
 
   constrain(
-    minX: number,
-    maxX: number,
-    minY: number,
-    maxY: number,
+    containerWidth: number,
+    containerHeight: number,
+    shapeWidth: number,
     p5: p.P5CanvasInstance
   ): void {
+    const minX = -containerWidth / 2 + shapeWidth;
+    const maxX = containerWidth / 2 - shapeWidth;
+    const minY = -containerHeight / 2 + shapeWidth;
+    const maxY = containerHeight / 2 - shapeWidth;
     this.xPos = p5.constrain(this.xPos, minX, maxX);
     this.yPos = p5.constrain(this.yPos, minY, maxY);
   }
