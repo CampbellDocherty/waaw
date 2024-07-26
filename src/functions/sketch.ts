@@ -40,7 +40,7 @@ export const sketch = (p5: p.P5CanvasInstance, vector: Vector): void => {
   };
 
   p5.keyReleased = (event: { key: string }) => {
-    delete pressedKeys[event.key];
+    pressedKeys[event.key] = false;
   };
 
   window.addEventListener('resize', () => {
@@ -51,16 +51,20 @@ export const sketch = (p5: p.P5CanvasInstance, vector: Vector): void => {
     p5.background(102);
 
     if (pressedKeys['ArrowLeft']) {
-      vector.updateVelocity(-10, 0);
+      vector.updateVelocity(-15, 0);
     }
     if (pressedKeys['ArrowRight']) {
-      vector.updateVelocity(10, 0);
+      vector.updateVelocity(15, 0);
     }
     if (pressedKeys['ArrowUp']) {
-      vector.updateVelocity(0, -10);
+      vector.updateVelocity(0, -15);
     }
     if (pressedKeys['ArrowDown']) {
-      vector.updateVelocity(0, 10);
+      vector.updateVelocity(0, 15);
+    }
+
+    if (!Object.values(pressedKeys).some((value) => value)) {
+      vector.updateVelocity(0, 0);
     }
 
     p5.push();
