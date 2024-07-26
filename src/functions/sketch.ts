@@ -2,19 +2,22 @@ import * as p from '@p5-wrapper/react';
 import monoRegular from '../fonts/Mono-Regular.ttf';
 import { Star } from './Star';
 import { Text } from './Text';
+import { LoadingBar } from './LoadingBar';
 
 export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   let font: any;
   const pressedKeys: { [key: string]: boolean } = {};
+  const loadingBar = new LoadingBar();
 
   p5.preload = () => {
     font = p5.loadFont(monoRegular);
     star.bindToP5Instance(p5);
+    loadingBar.bindToP5Instance(p5);
   };
 
   p5.setup = () => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
-    p5.textSize(32);
+    p5.textSize(24);
     p5.textFont(font);
   };
 
@@ -30,7 +33,30 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     p5.resizeCanvas(innerWidth, innerHeight, p5.WEBGL);
   });
 
-  const waawText = new Text('WAAW', -40, -60, p5);
+  const waawText = new Text('WAAW', 0, -60, p5, '');
+  const instagramText = new Text(
+    'Instagram',
+    -innerWidth / 4,
+    -innerHeight / 4,
+    p5,
+    'https://www.instagram.com/waawdj/'
+  );
+  const mixcloudText = new Text(
+    'Mixcloud',
+    innerWidth / 4,
+    -innerHeight / 4,
+    p5,
+    'https://www.mixcloud.com/waawtwins/stream/'
+  );
+  const soundcloudText = new Text(
+    'Soundcloud',
+    -innerWidth / 4,
+    innerHeight / 4,
+    p5,
+    'https://soundcloud.com/waawdj'
+  );
+
+  const texts = [instagramText, mixcloudText, soundcloudText];
 
   p5.draw = () => {
     p5.background(102);
@@ -38,6 +64,9 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     _drawByKeyPress(pressedKeys, star);
 
     waawText.draw();
+    texts.forEach((text) => {
+      text.draw();
+    });
 
     p5.push();
     const { x, y } = star.position;
@@ -47,8 +76,6 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     const starVertices = star.draw(p5);
     p5.pop();
 
-    const texts = [waawText];
-
     for (const text of texts) {
       const isColliding = starVertices.some((vertex) => {
         const { x, y } = vertex;
@@ -57,6 +84,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
 
       if (isColliding) {
         text.updateColor('#f7b102');
+        loadingBar.draw(text.url);
       } else {
         text.updateColor('white');
       }

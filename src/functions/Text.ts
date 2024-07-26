@@ -6,17 +6,20 @@ export class Text {
   xPos: number;
   yPos: number;
   p5: p.P5CanvasInstance;
+  url: string;
 
   constructor(
     text: string,
     xPos: number,
     yPos: number,
-    p5: p.P5CanvasInstance
+    p5: p.P5CanvasInstance,
+    url: string
   ) {
     this.text = text;
     this.xPos = xPos;
     this.yPos = yPos;
     this.p5 = p5;
+    this.url = url;
   }
 
   updateColor = (newColor: string): void => {
@@ -31,7 +34,8 @@ export class Text {
   draw = (): void => {
     this.p5.push();
     this.p5.fill(this.color);
-    this.p5.text(this.text, this.xPos, this.yPos);
+    const textWidth = this.p5.textWidth(this.text);
+    this.p5.text(this.text, this.xPos - textWidth / 2, this.yPos);
     this.p5.pop();
   };
 
@@ -40,8 +44,8 @@ export class Text {
     const textAscent = this.p5.textAscent();
     const textDescent = this.p5.textDescent();
 
-    const farLeftOfText = this.xPos;
-    const farRightOfText = this.xPos + textWidth;
+    const farLeftOfText = this.xPos - textWidth / 2;
+    const farRightOfText = this.xPos + textWidth / 2;
     const topOfText = this.yPos - textAscent;
     const bottomOfText = this.yPos + textDescent;
 
