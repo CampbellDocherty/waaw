@@ -1,4 +1,4 @@
-import { Vector } from './Vector';
+import { Star } from './Star';
 
 interface DeviceMotionEventiOS extends DeviceMotionEvent {
   requestPermission?: () => Promise<'granted' | 'denied'>;
@@ -18,18 +18,18 @@ const handleMotion = (data: DeviceMotionEventiOS): { x: number; y: number } => {
   };
 };
 
-export const requestDeviceMotionPermission = async (vector: Vector) => {
+export const requestDeviceMotionPermission = async (star: Star) => {
   if (iOS) {
     const response = await requestPermission();
     if (response === 'granted') {
       window.addEventListener('devicemotion', (event) => {
         const motion = handleMotion(event);
-        vector.updateVelocity(motion.x * 2, -motion.y * 4);
+        star.updateVelocity(motion.x * 2, -motion.y * 4);
       });
     }
   }
   window.addEventListener('devicemotion', (event) => {
     const motion = handleMotion(event);
-    vector.updateVelocity(motion.x * 2, -motion.y * 4);
+    star.updateVelocity(motion.x * 2, -motion.y * 4);
   });
 };

@@ -23,6 +23,11 @@ export class Text {
     this.color = newColor;
   };
 
+  checkIfColliding = (x: number, y: number): boolean => {
+    const { left, right, top, bottom } = this.boundingBox;
+    return x > left && x < right && y > top && y < bottom;
+  };
+
   draw = (): void => {
     this.p5.push();
     this.p5.fill(this.color);
@@ -30,7 +35,7 @@ export class Text {
     this.p5.pop();
   };
 
-  get boundingBox() {
+  private get boundingBox() {
     const textWidth = this.p5.textWidth(this.text);
     const textAscent = this.p5.textAscent();
     const textDescent = this.p5.textDescent();
