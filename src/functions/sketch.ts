@@ -84,10 +84,17 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
 
       if (isColliding) {
         text.updateColor('#f7b102');
+        text.isSelected = true;
         loadingBar.draw(text.url);
       } else {
         text.updateColor('white');
+        text.isSelected = false;
       }
+    }
+
+    const selectedText = texts.find((text) => text.isSelected);
+    if (!selectedText) {
+      loadingBar.reset();
     }
 
     star.updatePosition(x, y);
