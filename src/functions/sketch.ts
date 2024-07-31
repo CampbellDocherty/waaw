@@ -3,11 +3,30 @@ import monoRegular from '../fonts/Mono-Regular.ttf';
 import { Star } from './Star';
 import { Text } from './Text';
 import { LoadingBar } from './LoadingBar';
+import { PowerUp } from './PowerUp';
 
 export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   let font: any;
   const pressedKeys: { [key: string]: boolean } = {};
   const loadingBar = new LoadingBar();
+
+  const redPowerUp = new PowerUp('red', 0, 0, p5);
+  redPowerUp.setPositionWithinBounds(
+    -innerWidth / 2,
+    innerWidth / 2,
+    -innerHeight / 2,
+    innerHeight / 2
+  );
+
+  const bluePowerUp = new PowerUp('blue', 0, 0, p5);
+  bluePowerUp.setPositionWithinBounds(
+    -innerWidth / 2,
+    innerWidth / 2,
+    -innerHeight / 2,
+    innerHeight / 2
+  );
+
+  const colourPowerUps = [redPowerUp, bluePowerUp];
 
   p5.preload = () => {
     font = p5.loadFont(monoRegular);
@@ -63,6 +82,10 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
 
     _drawByKeyPress(pressedKeys, star);
 
+    colourPowerUps.forEach((powerUp) => {
+      powerUp.draw();
+    });
+
     waawText.draw();
     texts.forEach((text) => {
       text.draw();
@@ -89,6 +112,18 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
       } else {
         text.updateColor('white');
         text.isSelected = false;
+      }
+    }
+
+    for (const powerUp of colourPowerUps) {
+      const isColliding = starVertices.some((vertex) => {
+        const { x, y } = vertex;
+        return powerUp.checkIfColliding(x, y);
+      });
+
+      if (isColliding) {
+        const powerUpColour = powerUp.color;
+        star.updateColour(powerUpColour);
       }
     }
 
@@ -126,7 +161,7 @@ const _drawByKeyPress = (
     star.updateVelocity(0, 15);
   }
 
-  // if (!Object.values(pressedKeys).some((value) => value)) {
-  //   star.updateVelocity(0, 0);
-  // }
+  if (!Object.values(pressedKeys).some((value) => value)) {
+    star.updateVelocity(0, 0);
+  }
 };

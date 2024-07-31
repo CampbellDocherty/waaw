@@ -8,6 +8,7 @@ export class Star {
   p5: p.P5CanvasInstance;
   closeRadius = 20;
   farRadius = 40;
+  colour = 'white';
 
   constructor(xPos: number, yPos: number, xVel: number, yVel: number) {
     this.xPos = xPos;
@@ -29,6 +30,10 @@ export class Star {
     this.xPos = newX + this.xVel * 0.5;
     this.yPos = newY + this.yVel * 0.5;
     this.constrain(innerWidth, innerHeight, this.farRadius, this.p5);
+  }
+
+  updateColour(newColour: string): void {
+    this.colour = newColour;
   }
 
   get position() {
@@ -55,6 +60,7 @@ export class Star {
     x: number;
     y: number;
   }[] => {
+    p5.fill(this.colour);
     const x = this.xPos;
     const y = this.yPos;
     const radius1 = this.closeRadius;
