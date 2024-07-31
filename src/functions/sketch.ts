@@ -3,11 +3,19 @@ import monoRegular from '../fonts/Mono-Regular.ttf';
 import { Star } from './Star';
 import { Text } from './Text';
 import { LoadingBar } from './LoadingBar';
+import { PowerUp } from './PowerUp';
 
 export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   let font: any;
   const pressedKeys: { [key: string]: boolean } = {};
   const loadingBar = new LoadingBar();
+
+  const colourPowerUps = createColourPowerUps(p5, [
+    'red',
+    'blue',
+    'green',
+    'yellow',
+  ]);
 
   p5.preload = () => {
     font = p5.loadFont(monoRegular);
@@ -92,6 +100,20 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
       }
     }
 
+    for (const powerUp of colourPowerUps) {
+      powerUp.draw();
+      const isColliding = starVertices.some((vertex) => {
+        const { x, y } = vertex;
+        return powerUp.checkIfColliding(x, y);
+      });
+
+      if (isColliding) {
+        const powerUpColour = powerUp.color;
+        star.updateColour(powerUpColour);
+        powerUp.remove();
+      }
+    }
+
     const selectedText = texts.find((text) => text.isSelected);
     if (!selectedText) {
       loadingBar.reset();
@@ -130,3 +152,25 @@ const _drawByKeyPress = (
   //   star.updateVelocity(0, 0);
   // }
 };
+
+function createColourPowerUps(
+  p5: p.P5CanvasInstance,
+  colours: string[]
+): PowerUp[] {
+  const timeBetweenPowerUps = 3000;
+  const colourPowerUps = colours.map((colour, index) => {
+    const powerUp = new PowerUp(colour, 0, 0, p5);
+    setTimeout(() => {
+      powerUp.setPositionWithinBounds(
+        -innerWidth / 2,
+        innerWidth / 2,
+        -innerHeight / 2,
+        innerHeight / 2
+      );
+      powerUp.shouldDraw = true;
+    }, timeBetweenPowerUps * (index + 1));
+    return powerUp;
+  });
+
+  return colourPowerUps;
+}
