@@ -6,10 +6,11 @@ import { LoadingBar } from './LoadingBar';
 import { PowerUp } from './PowerUp';
 import { Slider } from './Slider';
 import { Font } from './Font';
+import cdImage from '../images/cd.png';
 
 export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   let start = false;
-
+  let image: any;
   const pressedKeys: { [key: string]: boolean } = {};
 
   const font = new Font(p5);
@@ -35,6 +36,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   p5.preload = () => {
     font.loadFont(monoRegular);
     star.bindToP5Instance(p5);
+    image = p5.loadImage(cdImage);
     loadingBar.bindToP5Instance(p5);
   };
 
@@ -84,7 +86,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     'https://soundcloud.com/waawdj'
   );
 
-  const texts = [instagramText, mixcloudText, soundcloudText];
+  const texts = createTexts(p5);
 
   p5.draw = () => {
     p5.background(102);
@@ -146,6 +148,11 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     if (!selectedText) {
       loadingBar.reset();
     }
+    p5.push();
+    p5.rotateY(p5.frameCount * 0.03);
+    p5.imageMode(p5.CENTER);
+    p5.image(image, 0, 0, 30, 30);
+    p5.pop();
 
     // update star position
     star.updatePosition();
@@ -174,10 +181,36 @@ const _drawByKeyPress = (
   // }
 };
 
-function createColourPowerUps(
+const createTexts = (p5: p.P5CanvasInstance): Text[] => {
+  const instagramText = new Text(
+    'Instagram',
+    -innerWidth / 4,
+    -innerHeight / 4,
+    p5,
+    'https://www.instagram.com/waawdj/'
+  );
+  const mixcloudText = new Text(
+    'Mixcloud',
+    innerWidth / 4,
+    -innerHeight / 4,
+    p5,
+    'https://www.mixcloud.com/waawtwins/stream/'
+  );
+  const soundcloudText = new Text(
+    'Soundcloud',
+    -innerWidth / 4,
+    innerHeight / 4,
+    p5,
+    'https://soundcloud.com/waawdj'
+  );
+
+  return [instagramText, mixcloudText, soundcloudText];
+};
+
+const createColourPowerUps = (
   p5: p.P5CanvasInstance,
   amount: number
-): PowerUp[] {
+): PowerUp[] => {
   const timeBetweenPowerUps = 3000;
   const colours = Array.from({ length: amount }, () => {
     return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
@@ -197,4 +230,45 @@ function createColourPowerUps(
   });
 
   return colourPowerUps;
+};
+function checkifCollidingWithColourPowerUps(
+  colourPowerUps: PowerUp[],
+  starVertices: { x: number; y: number }[],
+  star: Star
+) {
+  for (const powerUp of colourPowerUps) {
+    powerUp.draw();
+    const isColliding = starVertices.some((vertex) => {
+      const { x, y } = vertex;
+      return powerUp.checkIfColliding(x, y);
+    });
+
+    if (isColliding) {
+      const powerUpColour = powerUp.color;
+      star.updateColour(powerUpColour);
+      powerUp.remove();
+    }
+  }
+}
+
+function checkIfCollidingWithTexts(
+  texts: Text[],
+  starVertices: { x: number; y: number }[],
+  loadingBar: LoadingBar
+) {
+  for (const text of texts) {
+    const isColliding = starVertices.some((vertex) => {
+      const { x, y } = vertex;
+      return text.checkIfColliding(x, y);
+    });
+
+    if (isColliding) {
+      text.updateColor('#f7b102');
+      text.isSelected = true;
+      loadingBar.draw(text.url);
+    } else {
+      text.updateColor('white');
+      text.isSelected = false;
+    }
+  }
 }
