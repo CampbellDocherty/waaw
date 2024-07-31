@@ -98,6 +98,14 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     }
 
     star.updatePosition(x, y);
+
+    // p5.push();
+    // // Rotate around the y-axis.
+    // p5.rotateY(p5.frameCount * 0.03);
+
+    // // Draw the square.
+    // p5.square(-20, 70, 30);
+    // p5.pop();
   };
 };
 
