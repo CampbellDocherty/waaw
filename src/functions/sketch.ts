@@ -10,23 +10,12 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   const pressedKeys: { [key: string]: boolean } = {};
   const loadingBar = new LoadingBar();
 
-  const redPowerUp = new PowerUp('red', 0, 0, p5);
-  redPowerUp.setPositionWithinBounds(
-    -innerWidth / 2,
-    innerWidth / 2,
-    -innerHeight / 2,
-    innerHeight / 2
-  );
-
-  const bluePowerUp = new PowerUp('blue', 0, 0, p5);
-  bluePowerUp.setPositionWithinBounds(
-    -innerWidth / 2,
-    innerWidth / 2,
-    -innerHeight / 2,
-    innerHeight / 2
-  );
-
-  const colourPowerUps = [redPowerUp, bluePowerUp];
+  const colourPowerUps = createColourPowerUps(p5, [
+    'red',
+    'blue',
+    'green',
+    'yellow',
+  ]);
 
   p5.preload = () => {
     font = p5.loadFont(monoRegular);
@@ -82,10 +71,6 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
 
     _drawByKeyPress(pressedKeys, star);
 
-    colourPowerUps.forEach((powerUp) => {
-      powerUp.draw();
-    });
-
     waawText.draw();
     texts.forEach((text) => {
       text.draw();
@@ -116,6 +101,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     }
 
     for (const powerUp of colourPowerUps) {
+      powerUp.draw();
       const isColliding = starVertices.some((vertex) => {
         const { x, y } = vertex;
         return powerUp.checkIfColliding(x, y);
@@ -124,6 +110,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
       if (isColliding) {
         const powerUpColour = powerUp.color;
         star.updateColour(powerUpColour);
+        powerUp.remove();
       }
     }
 
@@ -161,7 +148,29 @@ const _drawByKeyPress = (
     star.updateVelocity(0, 15);
   }
 
-  if (!Object.values(pressedKeys).some((value) => value)) {
-    star.updateVelocity(0, 0);
-  }
+  // if (!Object.values(pressedKeys).some((value) => value)) {
+  //   star.updateVelocity(0, 0);
+  // }
 };
+
+function createColourPowerUps(
+  p5: p.P5CanvasInstance,
+  colours: string[]
+): PowerUp[] {
+  const timeBetweenPowerUps = 3000;
+  const colourPowerUps = colours.map((colour, index) => {
+    const powerUp = new PowerUp(colour, 0, 0, p5);
+    setTimeout(() => {
+      powerUp.setPositionWithinBounds(
+        -innerWidth / 2,
+        innerWidth / 2,
+        -innerHeight / 2,
+        innerHeight / 2
+      );
+      powerUp.shouldDraw = true;
+    }, timeBetweenPowerUps * (index + 1));
+    return powerUp;
+  });
+
+  return colourPowerUps;
+}

@@ -5,6 +5,7 @@ export class PowerUp {
   xPosition: number;
   yPosition: number;
   p5: p.P5CanvasInstance;
+  shouldDraw = false;
 
   constructor(
     color: string,
@@ -29,11 +30,21 @@ export class PowerUp {
   };
 
   checkIfColliding = (x: number, y: number): boolean => {
+    if (!this.shouldDraw) {
+      return false;
+    }
     const { left, right, top, bottom } = this.boundingBox;
     return x > left && x < right && y > top && y < bottom;
   };
 
+  remove(): void {
+    this.shouldDraw = false;
+  }
+
   draw(): void {
+    if (!this.shouldDraw) {
+      return;
+    }
     this.p5.push();
     this.p5.fill(this.color);
 
