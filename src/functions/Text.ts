@@ -7,6 +7,7 @@ export class Text {
   yPos: number;
   p5: p.P5CanvasInstance;
   url: string;
+  isSelected = false;
 
   constructor(
     text: string,

@@ -84,13 +84,28 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
 
       if (isColliding) {
         text.updateColor('#f7b102');
+        text.isSelected = true;
         loadingBar.draw(text.url);
       } else {
         text.updateColor('white');
+        text.isSelected = false;
       }
     }
 
+    const selectedText = texts.find((text) => text.isSelected);
+    if (!selectedText) {
+      loadingBar.reset();
+    }
+
     star.updatePosition(x, y);
+
+    // p5.push();
+    // // Rotate around the y-axis.
+    // p5.rotateY(p5.frameCount * 0.03);
+
+    // // Draw the square.
+    // p5.square(-20, 70, 30);
+    // p5.pop();
   };
 };
 
