@@ -4,18 +4,15 @@ import { Star } from './Star';
 import { Text } from './Text';
 import { LoadingBar } from './LoadingBar';
 import { PowerUp } from './PowerUp';
+import { Slider } from './Slider';
 
 export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   let font: any;
   const pressedKeys: { [key: string]: boolean } = {};
   const loadingBar = new LoadingBar();
+  const slider = new Slider(300, 20, 100, 50, p5);
 
-  const colourPowerUps = createColourPowerUps(p5, [
-    'red',
-    'blue',
-    'green',
-    'yellow',
-  ]);
+  const colourPowerUps = createColourPowerUps(p5, 8);
 
   p5.preload = () => {
     font = p5.loadFont(monoRegular);
@@ -27,6 +24,8 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
     p5.textSize(24);
     p5.textFont(font);
+
+    slider.create();
   };
 
   p5.keyPressed = (event: { key: string }) => {
@@ -37,9 +36,11 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     pressedKeys[event.key] = false;
   };
 
-  window.addEventListener('resize', () => {
+  p5.windowResized = () => {
     p5.resizeCanvas(innerWidth, innerHeight, p5.WEBGL);
-  });
+    slider.remove();
+    slider.create();
+  };
 
   const waawText = new Text('WAAW', 0, -60, p5, '');
   const instagramText = new Text(
@@ -68,6 +69,9 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
 
   p5.draw = () => {
     p5.background(102);
+
+    const sliderValue = slider.value();
+    star.updateSpeed(sliderValue / 100);
 
     _drawByKeyPress(pressedKeys, star);
 
@@ -120,14 +124,6 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     }
 
     star.updatePosition(x, y);
-
-    // p5.push();
-    // // Rotate around the y-axis.
-    // p5.rotateY(p5.frameCount * 0.03);
-
-    // // Draw the square.
-    // p5.square(-20, 70, 30);
-    // p5.pop();
   };
 };
 
@@ -155,9 +151,12 @@ const _drawByKeyPress = (
 
 function createColourPowerUps(
   p5: p.P5CanvasInstance,
-  colours: string[]
+  amount: number
 ): PowerUp[] {
   const timeBetweenPowerUps = 3000;
+  const colours = Array.from({ length: amount }, () => {
+    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+  });
   const colourPowerUps = colours.map((colour, index) => {
     const powerUp = new PowerUp(colour, 0, 0, p5);
     setTimeout(() => {

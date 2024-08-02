@@ -9,6 +9,7 @@ export class Star {
   closeRadius = 20;
   farRadius = 40;
   colour = 'white';
+  speed = 0.5;
 
   constructor(xPos: number, yPos: number, xVel: number, yVel: number) {
     this.xPos = xPos;
@@ -27,9 +28,13 @@ export class Star {
   }
 
   updatePosition(newX: number, newY: number): void {
-    this.xPos = newX + this.xVel * 0.5;
-    this.yPos = newY + this.yVel * 0.5;
+    this.xPos = newX + this.xVel * this.speed;
+    this.yPos = newY + this.yVel * this.speed;
     this.constrain(innerWidth, innerHeight, this.farRadius, this.p5);
+  }
+
+  updateSpeed(newSpeed: number): void {
+    this.speed = newSpeed;
   }
 
   updateColour(newColour: string): void {
