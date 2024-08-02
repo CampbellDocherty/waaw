@@ -5,27 +5,42 @@ import { Text } from './Text';
 import { LoadingBar } from './LoadingBar';
 import { PowerUp } from './PowerUp';
 import { Slider } from './Slider';
+import { Font } from './Font';
 
 export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
-  let font: any;
+  let start = false;
+
   const pressedKeys: { [key: string]: boolean } = {};
+
+  const font = new Font(p5);
   const loadingBar = new LoadingBar();
   const slider = new Slider(300, 20, 100, 50, p5);
 
-  const colourPowerUps = createColourPowerUps(p5, 8);
+  const colourPowerUps = createColourPowerUps(p5, 5);
+
+  p5.mouseClicked = () => {
+    if (!start) {
+      slider.create();
+      start = true;
+    }
+  };
+
+  p5.touchStarted = () => {
+    if (!start) {
+      slider.create();
+      start = true;
+    }
+  };
 
   p5.preload = () => {
-    font = p5.loadFont(monoRegular);
+    font.loadFont(monoRegular);
     star.bindToP5Instance(p5);
     loadingBar.bindToP5Instance(p5);
   };
 
   p5.setup = () => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
-    p5.textSize(24);
-    p5.textFont(font);
-
-    slider.create();
+    p5.textFont(font.font);
   };
 
   p5.keyPressed = (event: { key: string }) => {
@@ -42,9 +57,11 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     slider.create();
   };
 
-  const waawText = new Text('WAAW', 0, -60, p5, '');
+  const waawText = new Text('WAAW', 24, 0, -60, p5, '');
+  const clickMeText = new Text('Click to start!', 12, 0, 70, p5, '');
   const instagramText = new Text(
     'Instagram',
+    20,
     -innerWidth / 4,
     -innerHeight / 4,
     p5,
@@ -52,6 +69,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   );
   const mixcloudText = new Text(
     'Mixcloud',
+    20,
     innerWidth / 4,
     -innerHeight / 4,
     p5,
@@ -59,6 +77,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   );
   const soundcloudText = new Text(
     'Soundcloud',
+    20,
     -innerWidth / 4,
     innerHeight / 4,
     p5,
@@ -70,24 +89,26 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   p5.draw = () => {
     p5.background(102);
 
+    // speed control
     const sliderValue = slider.value();
     star.updateSpeed(sliderValue / 100);
 
+    // key presses for web
     _drawByKeyPress(pressedKeys, star);
 
+    // draw texts
     waawText.draw();
+    if (!start) clickMeText.draw();
     texts.forEach((text) => {
-      text.draw();
+      if (start) {
+        text.draw();
+      }
     });
 
-    p5.push();
-    const { x, y } = star.position;
-    if (x === 0 && y === 0) {
-      p5.rotate(p5.frameCount / -100.0);
-    }
-    const starVertices = star.draw(p5);
-    p5.pop();
+    // draw star
+    const starVertices = star.draw(p5, !start);
 
+    // check for text collisions
     for (const text of texts) {
       const isColliding = starVertices.some((vertex) => {
         const { x, y } = vertex;
@@ -104,7 +125,9 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
       }
     }
 
+    // check for powerup collisions
     for (const powerUp of colourPowerUps) {
+      if (!start) return;
       powerUp.draw();
       const isColliding = starVertices.some((vertex) => {
         const { x, y } = vertex;
@@ -118,12 +141,14 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
       }
     }
 
+    // reset loading bar if no text is selected
     const selectedText = texts.find((text) => text.isSelected);
     if (!selectedText) {
       loadingBar.reset();
     }
 
-    star.updatePosition(x, y);
+    // update star position
+    star.updatePosition();
   };
 };
 

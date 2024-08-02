@@ -40,7 +40,7 @@ export class Slider {
 
   value(): number {
     if (!this.slider) {
-      throw new Error('Slider not created yet');
+      return this.initial;
     }
     return this.slider.value();
   }
