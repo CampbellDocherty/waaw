@@ -20,12 +20,14 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
 
   p5.mouseClicked = () => {
     if (!start) {
+      slider.create();
       start = true;
     }
   };
 
   p5.touchStarted = () => {
     if (!start) {
+      slider.create();
       start = true;
     }
   };
@@ -39,8 +41,6 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   p5.setup = () => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
     p5.textFont(font.font);
-
-    slider.create();
   };
 
   p5.keyPressed = (event: { key: string }) => {
@@ -127,6 +127,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
 
     // check for powerup collisions
     for (const powerUp of colourPowerUps) {
+      if (!start) return;
       powerUp.draw();
       const isColliding = starVertices.some((vertex) => {
         const { x, y } = vertex;
