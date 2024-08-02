@@ -7,15 +7,16 @@ import { PowerUp } from './PowerUp';
 import { Slider } from './Slider';
 import { Font } from './Font';
 import cdImage from '../images/cd.png';
+import { CompactDisk } from './CompactDisk';
 
 export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   let start = false;
-  let image: any;
   const pressedKeys: { [key: string]: boolean } = {};
 
   const font = new Font(p5);
   const loadingBar = new LoadingBar();
   const slider = new Slider(300, 20, 100, 50, p5);
+  const image = new CompactDisk(80, 80, p5, cdImage);
 
   const colourPowerUps = createColourPowerUps(p5, 5);
 
@@ -36,7 +37,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   p5.preload = () => {
     font.loadFont(monoRegular);
     star.bindToP5Instance(p5);
-    image = p5.loadImage(cdImage);
+    image.load();
     loadingBar.bindToP5Instance(p5);
   };
 
@@ -148,11 +149,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     if (!selectedText) {
       loadingBar.reset();
     }
-    p5.push();
-    p5.rotateY(p5.frameCount * 0.03);
-    p5.imageMode(p5.CENTER);
-    p5.image(image, 0, 0, 30, 30);
-    p5.pop();
+    image.draw();
 
     // update star position
     star.updatePosition();
@@ -176,9 +173,9 @@ const _drawByKeyPress = (
     star.updateVelocity(0, 15);
   }
 
-  // if (!Object.values(pressedKeys).some((value) => value)) {
-  //   star.updateVelocity(0, 0);
-  // }
+  if (!Object.values(pressedKeys).some((value) => value)) {
+    star.updateVelocity(0, 0);
+  }
 };
 
 const createTexts = (p5: p.P5CanvasInstance): Text[] => {
