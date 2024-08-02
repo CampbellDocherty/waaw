@@ -1,13 +1,14 @@
 import * as p from '@p5-wrapper/react';
+import song from '../audio/last-kiss.mp3';
 import monoRegular from '../fonts/Mono-Regular.ttf';
-import { Star } from './Star';
-import { Text } from './Text';
+import cdImage from '../images/cd.png';
+import { CompactDisk } from './CompactDisk';
+import { Font } from './Font';
 import { LoadingBar } from './LoadingBar';
 import { PowerUp } from './PowerUp';
 import { Slider } from './Slider';
-import { Font } from './Font';
-import cdImage from '../images/cd.png';
-import { CompactDisk } from './CompactDisk';
+import { Star } from './Star';
+import { Text } from './Text';
 
 export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   let start = false;
@@ -38,7 +39,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     font.loadFont(monoRegular);
     star.bindToP5Instance(p5);
     image.load();
-    image.loadAudio('to do');
+    image.loadAudio(song);
     loadingBar.bindToP5Instance(p5);
   };
 
