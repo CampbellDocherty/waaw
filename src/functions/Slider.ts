@@ -31,6 +31,13 @@ export class Slider {
     this.slider = slider;
   }
 
+  remove(): void {
+    if (!this.slider) {
+      throw new Error('Slider not created yet');
+    }
+    this.slider.remove();
+  }
+
   value(): number {
     if (!this.slider) {
       throw new Error('Slider not created yet');
