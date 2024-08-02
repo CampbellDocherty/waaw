@@ -1,7 +1,7 @@
 import * as p from '@p5-wrapper/react';
 import monoRegular from '../fonts/Mono-Regular.ttf';
 import { Star } from './Star';
-import { Text } from './Text';
+import { Link, Text } from './Text';
 import { LoadingBar } from './LoadingBar';
 import { PowerUp } from './PowerUp';
 import { Slider } from './Slider';
@@ -57,9 +57,10 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     slider.create();
   };
 
-  const waawText = new Text('WAAW', 24, 0, -60, p5, '');
-  const clickMeText = new Text('Click to start!', 12, 0, 70, p5, '');
-  const instagramText = new Text(
+  const waawText = new Text('WAAW', 24, 0, -60, p5);
+  const clickMeText = new Text('Click to start!', 12, 0, 70, p5);
+
+  const instagramText = new Link(
     'Instagram',
     20,
     -innerWidth / 4,
@@ -67,7 +68,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     p5,
     'https://www.instagram.com/waawdj/'
   );
-  const mixcloudText = new Text(
+  const mixcloudText = new Link(
     'Mixcloud',
     20,
     innerWidth / 4,
@@ -75,7 +76,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     p5,
     'https://www.mixcloud.com/waawtwins/stream/'
   );
-  const soundcloudText = new Text(
+  const soundcloudText = new Link(
     'Soundcloud',
     20,
     -innerWidth / 4,
@@ -84,7 +85,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     'https://soundcloud.com/waawdj'
   );
 
-  const texts = [instagramText, mixcloudText, soundcloudText];
+  const links = [instagramText, mixcloudText, soundcloudText];
 
   p5.draw = () => {
     p5.background(102);
@@ -99,9 +100,11 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     // draw texts
     waawText.draw();
     if (!start) clickMeText.draw();
-    texts.forEach((text) => {
+
+    // draw links
+    links.forEach((link) => {
       if (start) {
-        text.draw();
+        link.draw();
       }
     });
 
@@ -109,19 +112,14 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     const starVertices = star.draw(p5, !start);
 
     // check for text collisions
-    for (const text of texts) {
+    for (const text of links) {
       const isColliding = starVertices.some((vertex) => {
         const { x, y } = vertex;
         return text.checkIfColliding(x, y);
       });
 
       if (isColliding) {
-        text.updateColor('#f7b102');
-        text.isSelected = true;
         loadingBar.draw(text.url);
-      } else {
-        text.updateColor('white');
-        text.isSelected = false;
       }
     }
 
@@ -142,7 +140,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     }
 
     // reset loading bar if no text is selected
-    const selectedText = texts.find((text) => text.isSelected);
+    const selectedText = links.find((text) => text.isSelected);
     if (!selectedText) {
       loadingBar.reset();
     }

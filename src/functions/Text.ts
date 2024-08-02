@@ -7,8 +7,35 @@ export class Text {
   xPos: number;
   yPos: number;
   p5: p.P5CanvasInstance;
+
+  constructor(
+    text: string,
+    fontSize: number,
+    xPos: number,
+    yPos: number,
+    p5: p.P5CanvasInstance
+  ) {
+    this.text = text;
+    this.fontSize = fontSize;
+    this.xPos = xPos;
+    this.yPos = yPos;
+    this.p5 = p5;
+  }
+
+  draw = (): void => {
+    this.p5.push();
+    this.p5.textSize(this.fontSize);
+    this.p5.fill(this.color);
+    const textWidth = this.p5.textWidth(this.text);
+    this.p5.text(this.text, this.xPos - textWidth / 2, this.yPos);
+    this.p5.pop();
+  };
+}
+
+export class Link extends Text {
   url: string;
   isSelected = false;
+  selectedColor = '#f7b102';
 
   constructor(
     text: string,
@@ -18,30 +45,20 @@ export class Text {
     p5: p.P5CanvasInstance,
     url: string
   ) {
-    this.text = text;
-    this.fontSize = fontSize;
-    this.xPos = xPos;
-    this.yPos = yPos;
-    this.p5 = p5;
+    super(text, fontSize, xPos, yPos, p5, url);
     this.url = url;
   }
 
-  updateColor = (newColor: string): void => {
+  private updateColor = (newColor: string): void => {
     this.color = newColor;
   };
 
   checkIfColliding = (x: number, y: number): boolean => {
     const { left, right, top, bottom } = this.boundingBox;
-    return x > left && x < right && y > top && y < bottom;
-  };
-
-  draw = (): void => {
-    this.p5.push();
-    this.p5.textSize(this.fontSize);
-    this.p5.fill(this.color);
-    const textWidth = this.p5.textWidth(this.text);
-    this.p5.text(this.text, this.xPos - textWidth / 2, this.yPos);
-    this.p5.pop();
+    const isColliding = x > left && x < right && y > top && y < bottom;
+    this.isSelected = isColliding;
+    this.updateColor(isColliding ? this.selectedColor : 'white');
+    return isColliding;
   };
 
   private get boundingBox() {
