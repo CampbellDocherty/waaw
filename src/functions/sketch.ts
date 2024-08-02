@@ -42,6 +42,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   };
 
   const waawText = new Text('WAAW', 24, 0, -60, p5, '');
+  const clickMeText = new Text('Click to start!', 12, 0, 70, p5, '');
   const instagramText = new Text(
     'Instagram',
     20,
@@ -78,6 +79,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     _drawByKeyPress(pressedKeys, star);
 
     waawText.draw();
+    clickMeText.draw();
     texts.forEach((text) => {
       text.draw();
     });
