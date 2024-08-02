@@ -5,24 +5,26 @@ import { Text } from './Text';
 import { LoadingBar } from './LoadingBar';
 import { PowerUp } from './PowerUp';
 import { Slider } from './Slider';
+import { Font } from './Font';
 
 export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
-  let font: any;
   const pressedKeys: { [key: string]: boolean } = {};
+
+  const font = new Font(p5);
   const loadingBar = new LoadingBar();
   const slider = new Slider(300, 20, 100, 50, p5);
 
   const colourPowerUps = createColourPowerUps(p5, 8);
 
   p5.preload = () => {
-    font = p5.loadFont(monoRegular);
+    font.loadFont(monoRegular);
     star.bindToP5Instance(p5);
     loadingBar.bindToP5Instance(p5);
   };
 
   p5.setup = () => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
-    p5.textFont(font);
+    p5.textFont(font.font);
 
     slider.create();
   };
