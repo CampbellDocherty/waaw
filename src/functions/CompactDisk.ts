@@ -5,6 +5,7 @@ export class CompactDisk {
   y: number;
   src: string;
   p5: p.P5CanvasInstance;
+  audio: any | null = null;
   image = null;
 
   constructor(x: number, y: number, p5: p.P5CanvasInstance, src: string) {
@@ -16,6 +17,17 @@ export class CompactDisk {
 
   load() {
     this.image = this.p5.loadImage(this.src);
+  }
+
+  loadAudio(src: string) {
+    this.audio = this.p5.loadSound(src);
+  }
+
+  play() {
+    if (!this.audio) {
+      return;
+    }
+    this.audio.play();
   }
 
   checkIfColliding(x: number, y: number): boolean {

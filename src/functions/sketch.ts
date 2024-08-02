@@ -16,7 +16,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   const font = new Font(p5);
   const loadingBar = new LoadingBar();
   const slider = new Slider(300, 20, 100, 50, p5);
-  const image = new CompactDisk(80, 80, p5, cdImage);
+  const image = new CompactDisk(0, 0, p5, cdImage);
 
   const colourPowerUps = createColourPowerUps(p5, 5);
 
@@ -38,6 +38,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     font.loadFont(monoRegular);
     star.bindToP5Instance(p5);
     image.load();
+    image.loadAudio('to do');
     loadingBar.bindToP5Instance(p5);
   };
 
@@ -62,30 +63,6 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
 
   const waawText = new Text('WAAW', 24, 0, -60, p5, '');
   const clickMeText = new Text('Click to start!', 12, 0, 70, p5, '');
-  const instagramText = new Text(
-    'Instagram',
-    20,
-    -innerWidth / 4,
-    -innerHeight / 4,
-    p5,
-    'https://www.instagram.com/waawdj/'
-  );
-  const mixcloudText = new Text(
-    'Mixcloud',
-    20,
-    innerWidth / 4,
-    -innerHeight / 4,
-    p5,
-    'https://www.mixcloud.com/waawtwins/stream/'
-  );
-  const soundcloudText = new Text(
-    'Soundcloud',
-    20,
-    -innerWidth / 4,
-    innerHeight / 4,
-    p5,
-    'https://soundcloud.com/waawdj'
-  );
 
   const texts = createTexts(p5);
 
@@ -149,7 +126,23 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     if (!selectedText) {
       loadingBar.reset();
     }
-    image.draw();
+
+    // draw compact disk if all powerups have been collected
+    const collectedPowerUps = colourPowerUps.filter(
+      (powerUp) => powerUp.hasBeenCollected
+    );
+    if (collectedPowerUps.length === colourPowerUps.length) {
+      image.draw();
+    }
+
+    // if star collides with compact disk
+    const isColliding = starVertices.some((vertex) => {
+      const { x, y } = vertex;
+      return image.checkIfColliding(x, y);
+    });
+    if (isColliding) {
+      image.play();
+    }
 
     // update star position
     star.updatePosition();
@@ -173,14 +166,15 @@ const _drawByKeyPress = (
     star.updateVelocity(0, 15);
   }
 
-  if (!Object.values(pressedKeys).some((value) => value)) {
-    star.updateVelocity(0, 0);
-  }
+  // if (!Object.values(pressedKeys).some((value) => value)) {
+  //   star.updateVelocity(0, 0);
+  // }
 };
 
 const createTexts = (p5: p.P5CanvasInstance): Text[] => {
   const instagramText = new Text(
     'Instagram',
+    20,
     -innerWidth / 4,
     -innerHeight / 4,
     p5,
@@ -188,6 +182,7 @@ const createTexts = (p5: p.P5CanvasInstance): Text[] => {
   );
   const mixcloudText = new Text(
     'Mixcloud',
+    20,
     innerWidth / 4,
     -innerHeight / 4,
     p5,
@@ -195,6 +190,7 @@ const createTexts = (p5: p.P5CanvasInstance): Text[] => {
   );
   const soundcloudText = new Text(
     'Soundcloud',
+    20,
     -innerWidth / 4,
     innerHeight / 4,
     p5,
@@ -228,44 +224,3 @@ const createColourPowerUps = (
 
   return colourPowerUps;
 };
-function checkifCollidingWithColourPowerUps(
-  colourPowerUps: PowerUp[],
-  starVertices: { x: number; y: number }[],
-  star: Star
-) {
-  for (const powerUp of colourPowerUps) {
-    powerUp.draw();
-    const isColliding = starVertices.some((vertex) => {
-      const { x, y } = vertex;
-      return powerUp.checkIfColliding(x, y);
-    });
-
-    if (isColliding) {
-      const powerUpColour = powerUp.color;
-      star.updateColour(powerUpColour);
-      powerUp.remove();
-    }
-  }
-}
-
-function checkIfCollidingWithTexts(
-  texts: Text[],
-  starVertices: { x: number; y: number }[],
-  loadingBar: LoadingBar
-) {
-  for (const text of texts) {
-    const isColliding = starVertices.some((vertex) => {
-      const { x, y } = vertex;
-      return text.checkIfColliding(x, y);
-    });
-
-    if (isColliding) {
-      text.updateColor('#f7b102');
-      text.isSelected = true;
-      loadingBar.draw(text.url);
-    } else {
-      text.updateColor('white');
-      text.isSelected = false;
-    }
-  }
-}
