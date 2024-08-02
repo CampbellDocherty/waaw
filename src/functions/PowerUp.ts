@@ -6,6 +6,7 @@ export class PowerUp {
   yPosition: number;
   p5: p.P5CanvasInstance;
   shouldDraw = false;
+  hasBeenCollected = false;
 
   constructor(
     color: string,
@@ -39,9 +40,27 @@ export class PowerUp {
 
   remove(): void {
     this.shouldDraw = false;
+    this.hasBeenCollected = true;
   }
 
-  draw(): void {
+  private drawColourSelectorButton(offsetFromTop: number): void {
+    this.p5.rect(
+      window.innerWidth / 2 - 30,
+      -window.innerHeight / 2 + offsetFromTop,
+      30,
+      30
+    );
+  }
+
+  draw(index: number): void {
+    if (this.hasBeenCollected) {
+      this.p5.push();
+      this.p5.fill(this.color);
+
+      this.drawColourSelectorButton(index * 30);
+      this.p5.pop();
+      return;
+    }
     if (!this.shouldDraw) {
       return;
     }

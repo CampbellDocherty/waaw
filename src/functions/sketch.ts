@@ -97,9 +97,9 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     }
 
     // check for powerup collisions
-    for (const powerUp of colourPowerUps) {
+    for (const [index, powerUp] of colourPowerUps.entries()) {
       if (!start) return;
-      powerUp.draw();
+      powerUp.draw(index);
       const isColliding = starVertices.some((vertex) => {
         const { x, y } = vertex;
         return powerUp.checkIfColliding(x, y);
