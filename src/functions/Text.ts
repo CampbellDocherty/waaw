@@ -2,6 +2,7 @@ import * as p from '@p5-wrapper/react';
 
 export class Text {
   text: string;
+  fontSize: number;
   color = 'white';
   xPos: number;
   yPos: number;
@@ -11,12 +12,14 @@ export class Text {
 
   constructor(
     text: string,
+    fontSize: number,
     xPos: number,
     yPos: number,
     p5: p.P5CanvasInstance,
     url: string
   ) {
     this.text = text;
+    this.fontSize = fontSize;
     this.xPos = xPos;
     this.yPos = yPos;
     this.p5 = p5;
@@ -34,6 +37,7 @@ export class Text {
 
   draw = (): void => {
     this.p5.push();
+    this.p5.textSize(this.fontSize);
     this.p5.fill(this.color);
     const textWidth = this.p5.textWidth(this.text);
     this.p5.text(this.text, this.xPos - textWidth / 2, this.yPos);

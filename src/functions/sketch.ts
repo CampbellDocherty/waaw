@@ -22,7 +22,6 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
 
   p5.setup = () => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
-    p5.textSize(24);
     p5.textFont(font);
 
     slider.create();
@@ -42,9 +41,10 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     slider.create();
   };
 
-  const waawText = new Text('WAAW', 0, -60, p5, '');
+  const waawText = new Text('WAAW', 24, 0, -60, p5, '');
   const instagramText = new Text(
     'Instagram',
+    20,
     -innerWidth / 4,
     -innerHeight / 4,
     p5,
@@ -52,6 +52,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   );
   const mixcloudText = new Text(
     'Mixcloud',
+    20,
     innerWidth / 4,
     -innerHeight / 4,
     p5,
@@ -59,6 +60,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   );
   const soundcloudText = new Text(
     'Soundcloud',
+    20,
     -innerWidth / 4,
     innerHeight / 4,
     p5,
