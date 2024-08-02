@@ -4,11 +4,13 @@ import { Star } from './Star';
 import { Text } from './Text';
 import { LoadingBar } from './LoadingBar';
 import { PowerUp } from './PowerUp';
+import { Slider } from './Slider';
 
 export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   let font: any;
   const pressedKeys: { [key: string]: boolean } = {};
   const loadingBar = new LoadingBar();
+  const slider = new Slider(300, 20, 100, 50, p5);
 
   const colourPowerUps = createColourPowerUps(p5, [
     'red',
@@ -27,6 +29,8 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
     p5.textSize(24);
     p5.textFont(font);
+
+    slider.create();
   };
 
   p5.keyPressed = (event: { key: string }) => {
@@ -68,6 +72,9 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
 
   p5.draw = () => {
     p5.background(102);
+
+    const sliderValue = slider.value();
+    star.updateSpeed(sliderValue / 100);
 
     _drawByKeyPress(pressedKeys, star);
 
