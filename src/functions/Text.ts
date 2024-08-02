@@ -45,7 +45,7 @@ export class Link extends Text {
     p5: p.P5CanvasInstance,
     url: string
   ) {
-    super(text, fontSize, xPos, yPos, p5, url);
+    super(text, fontSize, xPos, yPos, p5);
     this.url = url;
   }
 

@@ -10,14 +10,6 @@ import { Font } from './Font';
 export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   let start = false;
 
-  const pressedKeys: { [key: string]: boolean } = {};
-
-  const font = new Font(p5);
-  const loadingBar = new LoadingBar();
-  const slider = new Slider(300, 20, 100, 50, p5);
-
-  const colourPowerUps = createColourPowerUps(p5, 5);
-
   p5.mouseClicked = () => {
     if (!start) {
       slider.create();
@@ -43,6 +35,13 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     p5.textFont(font.font);
   };
 
+  p5.windowResized = () => {
+    p5.resizeCanvas(innerWidth, innerHeight, p5.WEBGL);
+    slider.remove();
+    slider.create();
+  };
+
+  const pressedKeys: { [key: string]: boolean } = {};
   p5.keyPressed = (event: { key: string }) => {
     pressedKeys[event.key] = true;
   };
@@ -51,41 +50,15 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
     pressedKeys[event.key] = false;
   };
 
-  p5.windowResized = () => {
-    p5.resizeCanvas(innerWidth, innerHeight, p5.WEBGL);
-    slider.remove();
-    slider.create();
-  };
+  const font = new Font(p5);
+  const loadingBar = new LoadingBar();
+  const slider = new Slider(300, 20, 100, 50, p5);
 
   const waawText = new Text('WAAW', 24, 0, -60, p5);
   const clickMeText = new Text('Click to start!', 12, 0, 70, p5);
 
-  const instagramText = new Link(
-    'Instagram',
-    20,
-    -innerWidth / 4,
-    -innerHeight / 4,
-    p5,
-    'https://www.instagram.com/waawdj/'
-  );
-  const mixcloudText = new Link(
-    'Mixcloud',
-    20,
-    innerWidth / 4,
-    -innerHeight / 4,
-    p5,
-    'https://www.mixcloud.com/waawtwins/stream/'
-  );
-  const soundcloudText = new Link(
-    'Soundcloud',
-    20,
-    -innerWidth / 4,
-    innerHeight / 4,
-    p5,
-    'https://soundcloud.com/waawdj'
-  );
-
-  const links = [instagramText, mixcloudText, soundcloudText];
+  const colourPowerUps = createColourPowerUps(p5, 5);
+  const links = createLinks(p5);
 
   p5.draw = () => {
     p5.background(102);
@@ -171,6 +144,36 @@ const _drawByKeyPress = (
   //   star.updateVelocity(0, 0);
   // }
 };
+
+function createLinks(p5: p.P5CanvasInstance): Link[] {
+  const instagramText = new Link(
+    'Instagram',
+    20,
+    -innerWidth / 4,
+    -innerHeight / 4,
+    p5,
+    'https://www.instagram.com/waawdj/'
+  );
+  const mixcloudText = new Link(
+    'Mixcloud',
+    20,
+    innerWidth / 4,
+    -innerHeight / 4,
+    p5,
+    'https://www.mixcloud.com/waawtwins/stream/'
+  );
+  const soundcloudText = new Link(
+    'Soundcloud',
+    20,
+    -innerWidth / 4,
+    innerHeight / 4,
+    p5,
+    'https://soundcloud.com/waawdj'
+  );
+
+  const links = [instagramText, mixcloudText, soundcloudText];
+  return links;
+}
 
 function createColourPowerUps(
   p5: p.P5CanvasInstance,
