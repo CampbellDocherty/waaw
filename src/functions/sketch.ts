@@ -8,13 +8,27 @@ import { Slider } from './Slider';
 import { Font } from './Font';
 
 export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
+  let start = false;
+
   const pressedKeys: { [key: string]: boolean } = {};
 
   const font = new Font(p5);
   const loadingBar = new LoadingBar();
   const slider = new Slider(300, 20, 100, 50, p5);
 
-  const colourPowerUps = createColourPowerUps(p5, 8);
+  const colourPowerUps = createColourPowerUps(p5, 5);
+
+  p5.mouseClicked = () => {
+    if (!start) {
+      start = true;
+    }
+  };
+
+  p5.touchStarted = () => {
+    if (!start) {
+      start = true;
+    }
+  };
 
   p5.preload = () => {
     font.loadFont(monoRegular);
@@ -75,25 +89,26 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   p5.draw = () => {
     p5.background(102);
 
+    // speed control
     const sliderValue = slider.value();
     star.updateSpeed(sliderValue / 100);
 
+    // key presses for web
     _drawByKeyPress(pressedKeys, star);
 
+    // draw texts
     waawText.draw();
-    clickMeText.draw();
+    if (!start) clickMeText.draw();
     texts.forEach((text) => {
-      text.draw();
+      if (start) {
+        text.draw();
+      }
     });
 
-    p5.push();
-    const { x, y } = star.position;
-    if (x === 0 && y === 0) {
-      p5.rotate(p5.frameCount / -100.0);
-    }
-    const starVertices = star.draw(p5);
-    p5.pop();
+    // draw star
+    const starVertices = star.draw(p5, !start);
 
+    // check for text collisions
     for (const text of texts) {
       const isColliding = starVertices.some((vertex) => {
         const { x, y } = vertex;
@@ -110,6 +125,7 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
       }
     }
 
+    // check for powerup collisions
     for (const powerUp of colourPowerUps) {
       powerUp.draw();
       const isColliding = starVertices.some((vertex) => {
@@ -124,12 +140,14 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
       }
     }
 
+    // reset loading bar if no text is selected
     const selectedText = texts.find((text) => text.isSelected);
     if (!selectedText) {
       loadingBar.reset();
     }
 
-    star.updatePosition(x, y);
+    // update star position
+    star.updatePosition();
   };
 };
 

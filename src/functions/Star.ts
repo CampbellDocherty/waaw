@@ -27,9 +27,9 @@ export class Star {
     this.yVel = newY;
   }
 
-  updatePosition(newX: number, newY: number): void {
-    this.xPos = newX + this.xVel * this.speed;
-    this.yPos = newY + this.yVel * this.speed;
+  updatePosition(): void {
+    this.xPos = this.xPos + this.xVel * this.speed;
+    this.yPos = this.yPos + this.yVel * this.speed;
     this.constrain(innerWidth, innerHeight, this.farRadius, this.p5);
   }
 
@@ -60,11 +60,19 @@ export class Star {
   }
 
   draw = (
-    p5: p.P5CanvasInstance
+    p5: p.P5CanvasInstance,
+    shouldRotate: boolean
   ): {
     x: number;
     y: number;
   }[] => {
+    p5.push();
+    if (shouldRotate) {
+      p5.translate(this.xPos, this.yPos);
+      p5.rotate(p5.frameCount / 50.0);
+      p5.translate(-this.xPos, -this.yPos);
+    }
+
     p5.fill(this.colour);
     const x = this.xPos;
     const y = this.yPos;
@@ -88,6 +96,7 @@ export class Star {
       p5.vertex(sx, sy);
     }
     p5.endShape(p5.CLOSE);
+    p5.pop();
     return vertices;
   };
 }
