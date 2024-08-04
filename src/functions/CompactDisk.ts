@@ -32,6 +32,7 @@ export class CompactDisk {
   }
 
   play() {
+    console.log(this.hasCollected, this.audio);
     if (!this.hasCollected) {
       return;
     }
