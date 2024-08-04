@@ -10,7 +10,9 @@ const App = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
-    window.addEventListener('click', () => requestDeviceMotionPermission(star));
+    window.addEventListener('click', async () =>
+      requestDeviceMotionPermission(star)
+    );
 
     return () => {
       window.removeEventListener('click', () =>
