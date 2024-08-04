@@ -25,20 +25,6 @@ export const sketch = (
 
   const colourPowerUps = createColourPowerUps(p5, 5);
 
-  p5.mouseClicked = () => {
-    if (!start) {
-      slider.create();
-      start = true;
-    }
-  };
-
-  p5.touchStarted = () => {
-    if (!start) {
-      slider.create();
-      start = true;
-    }
-  };
-
   p5.preload = () => {
     font.loadFont(monoRegular);
     star.bindToP5Instance(p5);
@@ -60,6 +46,20 @@ export const sketch = (
       const link = p5.createA(text.url, text.text, '_blank');
       link.hide();
     }
+
+    const button = p5.createButton('Click to start!');
+    const buttonWidth = 120;
+    button.style('width', `${buttonWidth}px`);
+    button.addClass('start-button');
+    button.position(
+      innerWidth / 2 - buttonWidth / 2,
+      innerHeight / 2 + 70 - button.height / 2
+    );
+    button.mousePressed(() => {
+      start = true;
+      slider.create();
+      button.hide();
+    });
   };
 
   p5.keyPressed = (event: { key: string }) => {
@@ -77,7 +77,6 @@ export const sketch = (
   };
 
   const waawText = new Text('WAAW', 24, 0, -60, p5, '');
-  const clickMeText = new Text('Click to start!', 12, 0, 70, p5, '');
 
   p5.draw = () => {
     p5.background(102);
@@ -91,7 +90,6 @@ export const sketch = (
 
     // draw texts
     waawText.draw();
-    if (!start) clickMeText.draw();
     texts.forEach((text) => {
       if (start) {
         text.draw();

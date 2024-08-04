@@ -2,8 +2,30 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
+@font-face {
+  font-family: 'MonoRegular';
+  src: local('MonoRegular'), url(./fonts/Mono-Regular.ttf) format('truetype');
+}
+
 body {
   margin: 0;
   background-color: #666666;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.start-button {
+  font-family: 'MonoRegular';
+  color: white;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.start-button:focus {
+  outline: none;
 }
