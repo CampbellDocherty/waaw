@@ -23,7 +23,7 @@ export const sketch = (
   const slider = new Slider(300, 20, 100, 50, p5);
   const cd = new CompactDisk(0, 0, p5, cdImage);
 
-  const colourPowerUps = createColourPowerUps(p5, 5);
+  const colourPowerUps = createColourPowerUps(p5, 3);
 
   p5.mouseClicked = () => {
     if (!start) {
@@ -43,7 +43,11 @@ export const sketch = (
     font.loadFont(monoRegular);
     star.bindToP5Instance(p5);
     cd.load();
-    cd.loadAudio(audioRef);
+    cd.loadAudio({
+      audio: audioRef?.current,
+      title: 'Last Kiss',
+      artist: 'James Massiah',
+    });
     loadingBar.bindToP5Instance(p5);
   };
 
@@ -146,7 +150,8 @@ export const sketch = (
       const { x, y } = vertex;
       return cd.checkIfColliding(x, y);
     });
-    if (isColliding) {
+    if (isColliding && cd.shouldDraw) {
+      cd.hasCollected = true;
       cd.play();
     }
 

@@ -1,14 +1,21 @@
 import * as p from '@p5-wrapper/react';
 import { RefObject } from 'react';
 
+type AudioFile = {
+  audio: HTMLAudioElement | null;
+  title: string;
+  artist: string;
+};
+
 export class CompactDisk {
   x: number;
   y: number;
   src: string;
   p5: p.P5CanvasInstance;
-  audio: HTMLAudioElement | null = null;
+  audio: AudioFile | null = null;
   image = null;
   shouldDraw = false;
+  hasCollected = false;
 
   constructor(x: number, y: number, p5: p.P5CanvasInstance, src: string) {
     this.x = x;
@@ -21,15 +28,15 @@ export class CompactDisk {
     this.image = this.p5.loadImage(this.src);
   }
 
-  loadAudio(audio: RefObject<HTMLAudioElement>) {
-    this.audio = audio.current;
+  loadAudio(audioFile: AudioFile) {
+    this.audio = audioFile;
   }
 
   play() {
-    if (!this.shouldDraw) {
+    if (!this.hasCollected) {
       return;
     }
-    this.audio?.play();
+    this.audio?.audio?.play();
   }
 
   checkIfColliding(x: number, y: number): boolean {
@@ -39,6 +46,27 @@ export class CompactDisk {
 
   draw() {
     if (!this.shouldDraw) {
+      return;
+    }
+    if (this.hasCollected) {
+      this.p5.push();
+
+      // draw image
+      this.p5.imageMode(this.p5.CENTER);
+      const xCenterOfDisk = -this.p5.width / 2 + 30;
+      const yCenterOfDisk = -this.p5.height / 2 + 30;
+      this.p5.image(this.image, xCenterOfDisk, yCenterOfDisk, 30, 30);
+
+      // draw song title
+      this.p5.fill('white');
+      this.p5.textSize(12);
+      this.p5.text(this.audio?.title, xCenterOfDisk + 20, yCenterOfDisk - 4);
+
+      // draw song artist
+      this.p5.textSize(10);
+      this.p5.text(this.audio?.artist, xCenterOfDisk + 20, yCenterOfDisk + 10);
+
+      this.p5.pop();
       return;
     }
     this.p5.push();
