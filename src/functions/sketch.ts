@@ -13,7 +13,8 @@ import { Text } from './Text';
 export const sketch = (
   p5: p.P5CanvasInstance,
   star: Star,
-  audioRef: RefObject<HTMLAudioElement>
+  audioRef: RefObject<HTMLAudioElement>,
+  onStart: () => Promise<void>
 ): void => {
   let start = false;
   const pressedKeys: { [key: string]: boolean } = {};
@@ -48,14 +49,17 @@ export const sketch = (
     }
 
     const button = p5.createButton('Click to start!');
-    const buttonWidth = 120;
+    const buttonWidth = p5.width;
+    const buttonHeight = p5.height * 2;
     button.style('width', `${buttonWidth}px`);
+    button.style('height', `${buttonHeight}px`);
     button.addClass('start-button');
     button.position(
       innerWidth / 2 - buttonWidth / 2,
       innerHeight / 2 + 70 - button.height / 2
     );
-    button.mousePressed(() => {
+    button.mousePressed(async () => {
+      await onStart();
       start = true;
       slider.create();
       button.hide();
@@ -218,17 +222,24 @@ const createColourPowerUps = (
   amount: number
 ): PowerUp[] => {
   const timeBetweenPowerUps = 3000;
-  const colours = Array.from({ length: amount }, () => {
-    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-  });
+  const colours: string[] = [];
+
+  while (colours.length < amount) {
+    const randomColour = `#${Math.floor(Math.random() * 16777215).toString(
+      16
+    )}`;
+    if (colours.includes(randomColour)) continue;
+    if (randomColour === '#ffffff') continue;
+    colours.push(randomColour);
+  }
   const colourPowerUps = colours.map((colour, index) => {
     const powerUp = new PowerUp(colour, 0, 0, p5);
     setTimeout(() => {
       powerUp.setPositionWithinBounds(
-        -innerWidth / 2,
-        innerWidth / 2,
-        -innerHeight / 2,
-        innerHeight / 2
+        -innerWidth / 2 + 30,
+        innerWidth / 2 - 30,
+        -innerHeight / 2 + 30,
+        innerHeight / 2 - 30
       );
       powerUp.shouldDraw = true;
     }, timeBetweenPowerUps * (index + 1));
