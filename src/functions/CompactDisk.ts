@@ -1,5 +1,4 @@
 import * as p from '@p5-wrapper/react';
-import { RefObject } from 'react';
 
 type AudioFile = {
   audio: HTMLAudioElement | null;

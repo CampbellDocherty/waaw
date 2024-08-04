@@ -15,12 +15,12 @@ export class LoadingBar {
   }
 
   private onLoad = (url: string): void => {
-    const a = document.createElement('a');
-    document.body.appendChild(a);
-    a.href = url;
-    a.target = '_blank';
-    a.click();
-    document.body.removeChild(a);
+    const aTags = document.getElementsByTagName('a');
+    for (const a of aTags) {
+      if (a.href === url) {
+        a.click();
+      }
+    }
     this.width = 0;
   };
 
