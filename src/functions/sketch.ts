@@ -51,9 +51,15 @@ export const sketch = (
     loadingBar.bindToP5Instance(p5);
   };
 
+  const texts = createTexts(p5);
+
   p5.setup = () => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
     p5.textFont(font.font);
+    for (const text of texts) {
+      const link = p5.createA(text.url, text.text, '_blank');
+      link.hide();
+    }
   };
 
   p5.keyPressed = (event: { key: string }) => {
@@ -72,8 +78,6 @@ export const sketch = (
 
   const waawText = new Text('WAAW', 24, 0, -60, p5, '');
   const clickMeText = new Text('Click to start!', 12, 0, 70, p5, '');
-
-  const texts = createTexts(p5);
 
   p5.draw = () => {
     p5.background(102);
