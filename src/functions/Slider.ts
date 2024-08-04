@@ -24,6 +24,7 @@ export class Slider {
 
   create(): void {
     const slider = this.p5.createSlider(this.min, this.max, this.initial);
+    slider.addClass('speed-slider');
     slider.position(innerWidth / 2 - this.width / 2, innerHeight - 50);
     slider.style('width', `${this.width}px`);
     slider.style('max-width', `${this.width}px`);
