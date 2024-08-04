@@ -23,7 +23,7 @@ export const sketch = (
   const slider = new Slider(300, 20, 100, 50, p5);
   const cd = new CompactDisk(0, 0, p5, cdImage);
 
-  const colourPowerUps = createColourPowerUps(p5, 3);
+  const colourPowerUps = createColourPowerUps(p5, 5);
 
   p5.mouseClicked = () => {
     if (!start) {
