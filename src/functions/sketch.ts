@@ -236,10 +236,10 @@ const createColourPowerUps = (
     const powerUp = new PowerUp(colour, 0, 0, p5);
     setTimeout(() => {
       powerUp.setPositionWithinBounds(
-        -innerWidth / 2,
-        innerWidth / 2,
-        -innerHeight / 2,
-        innerHeight / 2
+        -innerWidth / 2 + 30,
+        innerWidth / 2 - 30,
+        -innerHeight / 2 + 30,
+        innerHeight / 2 - 30
       );
       powerUp.shouldDraw = true;
     }, timeBetweenPowerUps * (index + 1));
