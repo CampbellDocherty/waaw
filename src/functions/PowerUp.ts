@@ -6,6 +6,7 @@ export class PowerUp {
   yPosition: number;
   p5: p.P5CanvasInstance;
   shouldDraw = false;
+  hasBeenCollected = false;
 
   constructor(
     color: string,
@@ -38,6 +39,7 @@ export class PowerUp {
   };
 
   remove(): void {
+    this.hasBeenCollected = true;
     this.shouldDraw = false;
   }
 

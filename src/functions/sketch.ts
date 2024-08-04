@@ -1,20 +1,27 @@
 import * as p from '@p5-wrapper/react';
+import { RefObject } from 'react';
 import monoRegular from '../fonts/Mono-Regular.ttf';
-import { Star } from './Star';
-import { Text } from './Text';
+import cdImage from '../images/cd.png';
+import { CompactDisk } from './CompactDisk';
+import { Font } from './Font';
 import { LoadingBar } from './LoadingBar';
 import { PowerUp } from './PowerUp';
 import { Slider } from './Slider';
-import { Font } from './Font';
+import { Star } from './Star';
+import { Text } from './Text';
 
-export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
+export const sketch = (
+  p5: p.P5CanvasInstance,
+  star: Star,
+  audioRef: RefObject<HTMLAudioElement>
+): void => {
   let start = false;
-
   const pressedKeys: { [key: string]: boolean } = {};
 
   const font = new Font(p5);
   const loadingBar = new LoadingBar();
   const slider = new Slider(300, 20, 100, 50, p5);
+  const cd = new CompactDisk(0, 0, p5, cdImage);
 
   const colourPowerUps = createColourPowerUps(p5, 5);
 
@@ -35,6 +42,12 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   p5.preload = () => {
     font.loadFont(monoRegular);
     star.bindToP5Instance(p5);
+    cd.load();
+    cd.loadAudio({
+      audio: audioRef?.current,
+      title: 'Last Kiss',
+      artist: 'James Massiah',
+    });
     loadingBar.bindToP5Instance(p5);
   };
 
@@ -59,32 +72,8 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
 
   const waawText = new Text('WAAW', 24, 0, -60, p5, '');
   const clickMeText = new Text('Click to start!', 12, 0, 70, p5, '');
-  const instagramText = new Text(
-    'Instagram',
-    20,
-    -innerWidth / 4,
-    -innerHeight / 4,
-    p5,
-    'https://www.instagram.com/waawdj/'
-  );
-  const mixcloudText = new Text(
-    'Mixcloud',
-    20,
-    innerWidth / 4,
-    -innerHeight / 4,
-    p5,
-    'https://www.mixcloud.com/waawtwins/stream/'
-  );
-  const soundcloudText = new Text(
-    'Soundcloud',
-    20,
-    -innerWidth / 4,
-    innerHeight / 4,
-    p5,
-    'https://soundcloud.com/waawdj'
-  );
 
-  const texts = [instagramText, mixcloudText, soundcloudText];
+  const texts = createTexts(p5);
 
   p5.draw = () => {
     p5.background(102);
@@ -147,6 +136,25 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
       loadingBar.reset();
     }
 
+    // draw compact disk if all powerups have been collected
+    const collectedPowerUps = colourPowerUps.filter(
+      (powerUp) => powerUp.hasBeenCollected
+    );
+    if (collectedPowerUps.length === colourPowerUps.length) {
+      cd.shouldDraw = true;
+      cd.draw();
+    }
+
+    // if star collides with compact disk
+    const isColliding = starVertices.some((vertex) => {
+      const { x, y } = vertex;
+      return cd.checkIfColliding(x, y);
+    });
+    if (isColliding && cd.shouldDraw) {
+      cd.hasCollected = true;
+      cd.play();
+    }
+
     // update star position
     star.updatePosition();
   };
@@ -174,10 +182,39 @@ const _drawByKeyPress = (
   // }
 };
 
-function createColourPowerUps(
+const createTexts = (p5: p.P5CanvasInstance): Text[] => {
+  const instagramText = new Text(
+    'Instagram',
+    20,
+    -innerWidth / 4,
+    -innerHeight / 4,
+    p5,
+    'https://www.instagram.com/waawdj/'
+  );
+  const mixcloudText = new Text(
+    'Mixcloud',
+    20,
+    innerWidth / 4,
+    -innerHeight / 4,
+    p5,
+    'https://www.mixcloud.com/waawtwins/stream/'
+  );
+  const soundcloudText = new Text(
+    'Soundcloud',
+    20,
+    -innerWidth / 4,
+    innerHeight / 4,
+    p5,
+    'https://soundcloud.com/waawdj'
+  );
+
+  return [instagramText, mixcloudText, soundcloudText];
+};
+
+const createColourPowerUps = (
   p5: p.P5CanvasInstance,
   amount: number
-): PowerUp[] {
+): PowerUp[] => {
   const timeBetweenPowerUps = 3000;
   const colours = Array.from({ length: amount }, () => {
     return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
@@ -197,4 +234,4 @@ function createColourPowerUps(
   });
 
   return colourPowerUps;
-}
+};
