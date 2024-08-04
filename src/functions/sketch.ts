@@ -222,9 +222,16 @@ const createColourPowerUps = (
   amount: number
 ): PowerUp[] => {
   const timeBetweenPowerUps = 3000;
-  const colours = Array.from({ length: amount }, () => {
-    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-  });
+  const colours: string[] = [];
+
+  while (colours.length < amount) {
+    const randomColour = `#${Math.floor(Math.random() * 16777215).toString(
+      16
+    )}`;
+    if (colours.includes(randomColour)) continue;
+    if (randomColour === '#ffffff') continue;
+    colours.push(randomColour);
+  }
   const colourPowerUps = colours.map((colour, index) => {
     const powerUp = new PowerUp(colour, 0, 0, p5);
     setTimeout(() => {
