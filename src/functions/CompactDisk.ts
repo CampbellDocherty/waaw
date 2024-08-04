@@ -1,12 +1,14 @@
 import * as p from '@p5-wrapper/react';
+import { RefObject } from 'react';
 
 export class CompactDisk {
   x: number;
   y: number;
   src: string;
   p5: p.P5CanvasInstance;
-  audio: any | null = null;
+  audio: HTMLAudioElement | null = null;
   image = null;
+  shouldDraw = false;
 
   constructor(x: number, y: number, p5: p.P5CanvasInstance, src: string) {
     this.x = x;
@@ -19,15 +21,15 @@ export class CompactDisk {
     this.image = this.p5.loadImage(this.src);
   }
 
-  loadAudio(src: string) {
-    this.audio = this.p5.loadSound(src);
+  loadAudio(audio: RefObject<HTMLAudioElement>) {
+    this.audio = audio.current;
   }
 
   play() {
-    if (!this.audio) {
+    if (!this.shouldDraw) {
       return;
     }
-    this.audio.play();
+    this.audio?.play();
   }
 
   checkIfColliding(x: number, y: number): boolean {
@@ -36,6 +38,9 @@ export class CompactDisk {
   }
 
   draw() {
+    if (!this.shouldDraw) {
+      return;
+    }
     this.p5.push();
     this.p5.imageMode(this.p5.CENTER);
     this.p5.translate(this.x, this.y);

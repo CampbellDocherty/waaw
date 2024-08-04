@@ -1,5 +1,5 @@
 import * as p from '@p5-wrapper/react';
-import song from '../audio/last-kiss.mp3';
+import { RefObject } from 'react';
 import monoRegular from '../fonts/Mono-Regular.ttf';
 import cdImage from '../images/cd.png';
 import { CompactDisk } from './CompactDisk';
@@ -10,14 +10,18 @@ import { Slider } from './Slider';
 import { Star } from './Star';
 import { Text } from './Text';
 
-export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
+export const sketch = (
+  p5: p.P5CanvasInstance,
+  star: Star,
+  audioRef: RefObject<HTMLAudioElement>
+): void => {
   let start = false;
   const pressedKeys: { [key: string]: boolean } = {};
 
   const font = new Font(p5);
   const loadingBar = new LoadingBar();
   const slider = new Slider(300, 20, 100, 50, p5);
-  const image = new CompactDisk(0, 0, p5, cdImage);
+  const cd = new CompactDisk(0, 0, p5, cdImage);
 
   const colourPowerUps = createColourPowerUps(p5, 5);
 
@@ -38,8 +42,8 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
   p5.preload = () => {
     font.loadFont(monoRegular);
     star.bindToP5Instance(p5);
-    image.load();
-    image.loadAudio(song);
+    cd.load();
+    cd.loadAudio(audioRef);
     loadingBar.bindToP5Instance(p5);
   };
 
@@ -133,16 +137,17 @@ export const sketch = (p5: p.P5CanvasInstance, star: Star): void => {
       (powerUp) => powerUp.hasBeenCollected
     );
     if (collectedPowerUps.length === colourPowerUps.length) {
-      image.draw();
+      cd.shouldDraw = true;
+      cd.draw();
     }
 
     // if star collides with compact disk
     const isColliding = starVertices.some((vertex) => {
       const { x, y } = vertex;
-      return image.checkIfColliding(x, y);
+      return cd.checkIfColliding(x, y);
     });
     if (isColliding) {
-      image.play();
+      cd.play();
     }
 
     // update star position
