@@ -27,7 +27,14 @@ export const requestDeviceMotionPermission = async (star: Star) => {
         star.updateVelocity(motion.x * 2, -motion.y * 4);
       });
     }
+    return;
   }
+  const isProbablyWeb = requestPermission === undefined;
+
+  if (isProbablyWeb) {
+    return;
+  }
+
   window.addEventListener('devicemotion', (event) => {
     const motion = handleMotion(event);
     star.updateVelocity(motion.x * 2, -motion.y * 4);

@@ -5,8 +5,7 @@ import cdImage from '../images/cd.png';
 import { CompactDisk } from './CompactDisk';
 import { Font } from './Font';
 import { LoadingBar } from './LoadingBar';
-import { PowerUp } from './PowerUp';
-import { Slider } from './Slider';
+import { ColourPowerUp, SpeedPowerUp } from './PowerUp';
 import { Star } from './Star';
 import { Text } from './Text';
 
@@ -21,10 +20,10 @@ export const sketch = (
 
   const font = new Font(p5);
   const loadingBar = new LoadingBar();
-  const slider = new Slider(300, 20, 100, 50, p5);
   const cd = new CompactDisk(0, 0, p5, cdImage);
 
   const colourPowerUps = createColourPowerUps(p5, 5);
+  const speedPowerUps = createSpeedPowerUps(p5);
 
   p5.preload = () => {
     font.loadFont(monoRegular);
@@ -61,7 +60,6 @@ export const sketch = (
     button.mousePressed(async () => {
       await onStart();
       start = true;
-      slider.create();
       button.hide();
     });
   };
@@ -76,18 +74,12 @@ export const sketch = (
 
   p5.windowResized = () => {
     p5.resizeCanvas(innerWidth, innerHeight, p5.WEBGL);
-    slider.remove();
-    slider.create();
   };
 
   const waawText = new Text('WAAW', 24, 0, -60, p5, '');
 
   p5.draw = () => {
     p5.background(102);
-
-    // speed control
-    const sliderValue = slider.value();
-    star.updateSpeed(sliderValue / 100);
 
     // key presses for web
     _drawByKeyPress(pressedKeys, star);
@@ -120,19 +112,35 @@ export const sketch = (
       }
     }
 
-    // check for powerup collisions
-    for (const powerUp of colourPowerUps) {
+    // check for colour powerup collisions
+    for (const colourPowerUp of colourPowerUps) {
       if (!start) return;
-      powerUp.draw();
+      colourPowerUp.draw();
       const isColliding = starVertices.some((vertex) => {
         const { x, y } = vertex;
-        return powerUp.checkIfColliding(x, y);
+        return colourPowerUp.checkIfColliding(x, y);
       });
 
       if (isColliding) {
-        const powerUpColour = powerUp.color;
+        const powerUpColour = colourPowerUp.color;
         star.updateColour(powerUpColour);
-        powerUp.remove();
+        colourPowerUp.remove();
+      }
+    }
+
+    // check for speed powerup collisions
+    for (const speedPowerUp of speedPowerUps) {
+      if (!start) return;
+      speedPowerUp.draw();
+      const isColliding = starVertices.some((vertex) => {
+        const { x, y } = vertex;
+        return speedPowerUp.checkIfColliding(x, y);
+      });
+
+      if (isColliding) {
+        const powerUpSpeed = speedPowerUp.speed;
+        star.updateSpeed(powerUpSpeed);
+        speedPowerUp.remove();
       }
     }
 
@@ -220,7 +228,7 @@ const createTexts = (p5: p.P5CanvasInstance): Text[] => {
 const createColourPowerUps = (
   p5: p.P5CanvasInstance,
   amount: number
-): PowerUp[] => {
+): ColourPowerUp[] => {
   const timeBetweenPowerUps = 3000;
   const colours: string[] = [];
 
@@ -233,7 +241,7 @@ const createColourPowerUps = (
     colours.push(randomColour);
   }
   const colourPowerUps = colours.map((colour, index) => {
-    const powerUp = new PowerUp(colour, 0, 0, p5);
+    const powerUp = new ColourPowerUp(colour, 0, 0, p5);
     setTimeout(() => {
       powerUp.setPositionWithinBounds(
         -innerWidth / 2 + 30,
@@ -247,4 +255,25 @@ const createColourPowerUps = (
   });
 
   return colourPowerUps;
+};
+
+const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
+  const timeBetweenPowerUps = 4500;
+  const speeds: number[] = [1, 0.25];
+
+  const speedPowerUps = speeds.map((speed, index) => {
+    const powerUp = new SpeedPowerUp('#f7b102', speed, 0, 0, p5);
+    setTimeout(() => {
+      powerUp.setPositionWithinBounds(
+        -innerWidth / 2 + 30,
+        innerWidth / 2 - 30,
+        -innerHeight / 2 + 30,
+        innerHeight / 2 - 30
+      );
+      powerUp.shouldDraw = true;
+    }, timeBetweenPowerUps * (index + 1));
+    return powerUp;
+  });
+
+  return speedPowerUps;
 };

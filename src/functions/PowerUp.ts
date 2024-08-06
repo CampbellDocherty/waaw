@@ -43,17 +43,6 @@ export class PowerUp {
     this.shouldDraw = false;
   }
 
-  draw(): void {
-    if (!this.shouldDraw) {
-      return;
-    }
-    this.p5.push();
-    this.p5.fill(this.color);
-
-    this.p5.circle(this.xPosition, this.yPosition, 20);
-    this.p5.pop();
-  }
-
   private get boundingBox() {
     const farLeftOfCircle = this.xPosition - 10;
     const farRightOfCircle = this.xPosition + 10;
@@ -66,5 +55,53 @@ export class PowerUp {
       top: topOfCircle,
       bottom: bottomOfCircle,
     };
+  }
+}
+
+export class ColourPowerUp extends PowerUp {
+  constructor(
+    color: string,
+    xPosition: number,
+    yPosition: number,
+    p5: p.P5CanvasInstance
+  ) {
+    super(color, xPosition, yPosition, p5);
+  }
+
+  draw(): void {
+    if (!this.shouldDraw) {
+      return;
+    }
+    this.p5.push();
+    this.p5.fill(this.color);
+
+    this.p5.circle(this.xPosition, this.yPosition, 20);
+    this.p5.pop();
+  }
+}
+
+export class SpeedPowerUp extends PowerUp {
+  speed: number;
+
+  constructor(
+    color: string,
+    speed: number,
+    xPosition: number,
+    yPosition: number,
+    p5: p.P5CanvasInstance
+  ) {
+    super(color, xPosition, yPosition, p5);
+    this.speed = speed;
+  }
+
+  draw(): void {
+    if (!this.shouldDraw) {
+      return;
+    }
+    this.p5.push();
+    this.p5.fill(this.color);
+    this.p5.textSize(18);
+    this.p5.text(`x${this.speed * 2}`, this.xPosition, this.yPosition);
+    this.p5.pop();
   }
 }
