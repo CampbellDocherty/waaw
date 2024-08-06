@@ -79,3 +79,29 @@ export class ColourPowerUp extends PowerUp {
     this.p5.pop();
   }
 }
+
+export class SpeedPowerUp extends PowerUp {
+  speed: number;
+
+  constructor(
+    color: string,
+    speed: number,
+    xPosition: number,
+    yPosition: number,
+    p5: p.P5CanvasInstance
+  ) {
+    super(color, xPosition, yPosition, p5);
+    this.speed = speed;
+  }
+
+  draw(): void {
+    if (!this.shouldDraw) {
+      return;
+    }
+    this.p5.push();
+    this.p5.fill(this.color);
+    this.p5.textSize(18);
+    this.p5.text(`x${this.speed * 2}`, this.xPosition, this.yPosition);
+    this.p5.pop();
+  }
+}

@@ -35,6 +35,11 @@ export class Star {
 
   updateSpeed(newSpeed: number): void {
     this.speed = newSpeed;
+    setTimeout(() => {
+      if (this.speed !== 0.5) {
+        this.speed = 0.5;
+      }
+    }, 4000);
   }
 
   updateColour(newColour: string): void {

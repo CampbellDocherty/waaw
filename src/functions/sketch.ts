@@ -5,7 +5,7 @@ import cdImage from '../images/cd.png';
 import { CompactDisk } from './CompactDisk';
 import { Font } from './Font';
 import { LoadingBar } from './LoadingBar';
-import { ColourPowerUp } from './PowerUp';
+import { ColourPowerUp, SpeedPowerUp } from './PowerUp';
 import { Star } from './Star';
 import { Text } from './Text';
 
@@ -23,6 +23,7 @@ export const sketch = (
   const cd = new CompactDisk(0, 0, p5, cdImage);
 
   const colourPowerUps = createColourPowerUps(p5, 5);
+  const speedPowerUps = createSpeedPowerUps(p5);
 
   p5.preload = () => {
     font.loadFont(monoRegular);
@@ -111,19 +112,35 @@ export const sketch = (
       }
     }
 
-    // check for powerup collisions
-    for (const powerUp of colourPowerUps) {
+    // check for colour powerup collisions
+    for (const colourPowerUp of colourPowerUps) {
       if (!start) return;
-      powerUp.draw();
+      colourPowerUp.draw();
       const isColliding = starVertices.some((vertex) => {
         const { x, y } = vertex;
-        return powerUp.checkIfColliding(x, y);
+        return colourPowerUp.checkIfColliding(x, y);
       });
 
       if (isColliding) {
-        const powerUpColour = powerUp.color;
+        const powerUpColour = colourPowerUp.color;
         star.updateColour(powerUpColour);
-        powerUp.remove();
+        colourPowerUp.remove();
+      }
+    }
+
+    // check for speed powerup collisions
+    for (const speedPowerUp of speedPowerUps) {
+      if (!start) return;
+      speedPowerUp.draw();
+      const isColliding = starVertices.some((vertex) => {
+        const { x, y } = vertex;
+        return speedPowerUp.checkIfColliding(x, y);
+      });
+
+      if (isColliding) {
+        const powerUpSpeed = speedPowerUp.speed;
+        star.updateSpeed(powerUpSpeed);
+        speedPowerUp.remove();
       }
     }
 
@@ -238,4 +255,25 @@ const createColourPowerUps = (
   });
 
   return colourPowerUps;
+};
+
+const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
+  const timeBetweenPowerUps = 4500;
+  const speeds: number[] = [1, 0.25];
+
+  const speedPowerUps = speeds.map((speed, index) => {
+    const powerUp = new SpeedPowerUp('#f7b102', speed, 0, 0, p5);
+    setTimeout(() => {
+      powerUp.setPositionWithinBounds(
+        -innerWidth / 2 + 30,
+        innerWidth / 2 - 30,
+        -innerHeight / 2 + 30,
+        innerHeight / 2 - 30
+      );
+      powerUp.shouldDraw = true;
+    }, timeBetweenPowerUps * (index + 1));
+    return powerUp;
+  });
+
+  return speedPowerUps;
 };
