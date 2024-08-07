@@ -37,6 +37,6 @@ export const requestDeviceMotionPermission = async (star: Star) => {
 
   window.addEventListener('devicemotion', (event) => {
     const motion = handleMotion(event);
-    star.updateVelocity(motion.x * 2, -motion.y * 4);
+    star.updateVelocity(motion.x * 2, motion.y * 4);
   });
 };
