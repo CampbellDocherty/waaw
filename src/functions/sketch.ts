@@ -60,6 +60,11 @@ export const sketch = (
     button.mousePressed(async () => {
       await onStart();
       start = true;
+      if (audioRef.current) {
+        await audioRef.current.play();
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
       button.hide();
     });
   };
