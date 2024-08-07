@@ -43,8 +43,7 @@ export const sketch = (
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
     p5.textFont(font.font);
     for (const text of texts) {
-      const link = p5.createA(text.url, text.text, '_blank');
-      link.hide();
+      p5.createA(text.url, text.text, '_blank');
     }
 
     const button = p5.createButton('Click to start!');
@@ -61,7 +60,7 @@ export const sketch = (
       await onStart();
       start = true;
       if (audioRef.current) {
-        await audioRef.current.play();
+        audioRef.current.play();
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
       }
@@ -170,6 +169,7 @@ export const sketch = (
       return cd.checkIfColliding(x, y);
     });
     if (isColliding && cd.shouldDraw) {
+      console.log('collected');
       cd.hasCollected = true;
       cd.play();
     }
