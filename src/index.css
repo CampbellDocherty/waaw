@@ -28,6 +28,7 @@ button {
   outline: none;
   cursor: pointer;
   padding: 0;
+  font-size: 15px;
 }
 
 .start-button:focus {
