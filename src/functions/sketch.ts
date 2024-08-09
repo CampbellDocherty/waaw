@@ -23,7 +23,7 @@ export const sketch = (
 
   const font = new Font(p5);
   const loadingBar = new LoadingBar();
-  const cd = new CompactDisk(0, -120, p5, cdImage);
+  const cd = new CompactDisk(0, -240, p5, cdImage);
 
   const colourPowerUps = createColourPowerUps(p5, 5);
   const speedPowerUps = createSpeedPowerUps(p5);
@@ -58,7 +58,7 @@ export const sketch = (
     button.addClass('start-button');
     button.position(
       innerWidth / 2 - buttonWidth / 2,
-      innerHeight / 2 + 120 - button.height / 2
+      innerHeight / 2 - button.height / 2
     );
     button.mousePressed(async () => {
       await onStart();
@@ -94,7 +94,7 @@ export const sketch = (
 
     p5.push();
     p5.imageMode(p5.CENTER);
-    p5.image(mainImage, 0, 0, 140, 170);
+    p5.image(mainImage, 0, -120, 140, 170);
     p5.pop();
 
     // draw texts
@@ -215,7 +215,7 @@ const createTexts = (p5: p.P5CanvasInstance): Text[] => {
     'Instagram',
     18,
     -0,
-    140,
+    40,
     p5,
     'https://www.instagram.com/waawdj/'
   );
@@ -223,7 +223,7 @@ const createTexts = (p5: p.P5CanvasInstance): Text[] => {
     'Mixcloud',
     18,
     0,
-    180,
+    80,
     p5,
     'https://www.mixcloud.com/waawtwins/stream/'
   );
@@ -231,7 +231,7 @@ const createTexts = (p5: p.P5CanvasInstance): Text[] => {
     'Soundcloud',
     18,
     -0,
-    220,
+    120,
     p5,
     'https://soundcloud.com/waawdj'
   );
