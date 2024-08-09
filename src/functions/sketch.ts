@@ -38,7 +38,7 @@ export const sketch = (
     mainImage = p5.loadImage(theTwins);
   };
 
-  const colourPowerUps = createColourPowerUps(p5, 5);
+  const colourPowerUps = createColourPowerUps(p5);
   const speedPowerUps = createSpeedPowerUps(p5);
   const links = createlinks(p5);
 
@@ -240,9 +240,9 @@ const _drawByKeyPress = (
     star.updateVelocity(0, 15);
   }
 
-  if (!Object.values(pressedKeys).some((value) => value)) {
-    star.updateVelocity(0, 0);
-  }
+  // if (!Object.values(pressedKeys).some((value) => value)) {
+  //   star.updateVelocity(0, 0);
+  // }
 };
 
 const createlinks = (p5: p.P5CanvasInstance): Link[] => {
@@ -274,21 +274,15 @@ const createlinks = (p5: p.P5CanvasInstance): Link[] => {
   return [instagramText, mixcloudText, soundcloudText];
 };
 
-const createColourPowerUps = (
-  p5: p.P5CanvasInstance,
-  amount: number
-): ColourPowerUp[] => {
+const createColourPowerUps = (p5: p.P5CanvasInstance): ColourPowerUp[] => {
   const timeBetweenPowerUps = 3000;
-  const colours: string[] = [];
-
-  while (colours.length < amount) {
-    const randomColour = `#${Math.floor(Math.random() * 16777215).toString(
-      16
-    )}`;
-    if (colours.includes(randomColour)) continue;
-    if (randomColour === '#ffffff') continue;
-    colours.push(randomColour);
-  }
+  const colours: string[] = [
+    '#edf67d',
+    '#f896d8',
+    '#ca7df9',
+    '#724cf9',
+    '#564592',
+  ];
   const colourPowerUps = colours.map((colour, index) => {
     const powerUp = new ColourPowerUp(colour, 0, 0, p5);
     setTimeout(() => {
