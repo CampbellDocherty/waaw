@@ -99,7 +99,7 @@ export class SpeedPowerUp extends PowerUp {
     }
     this.p5.push();
     this.p5.fill(this.color);
-    this.p5.textSize(18);
+    this.p5.textSize(20);
     this.p5.text(`x${this.speed * 2}`, this.xPosition, this.yPosition);
     this.p5.pop();
   }
