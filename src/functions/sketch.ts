@@ -253,12 +253,7 @@ const createColourPowerUps = (
   const colourPowerUps = colours.map((colour, index) => {
     const powerUp = new ColourPowerUp(colour, 0, 0, p5);
     setTimeout(() => {
-      powerUp.setPositionWithinBounds(
-        -innerWidth / 2 + 30,
-        innerWidth / 2 - 30,
-        -innerHeight / 2 + 30,
-        innerHeight / 2 - 30
-      );
+      powerUp.setPositionWithinBounds();
       powerUp.shouldDraw = true;
     }, timeBetweenPowerUps * (index + 1));
     return powerUp;
@@ -274,12 +269,7 @@ const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
   const speedPowerUps = speeds.map((speed, index) => {
     const powerUp = new SpeedPowerUp('#f7b102', speed, 0, 0, p5);
     setTimeout(() => {
-      powerUp.setPositionWithinBounds(
-        -innerWidth / 2 + 30,
-        innerWidth / 2 - 30,
-        -innerHeight / 2 + 30,
-        innerHeight / 2 - 30
-      );
+      powerUp.setPositionWithinBounds();
       powerUp.shouldDraw = true;
     }, timeBetweenPowerUps * (index + 1));
     return powerUp;

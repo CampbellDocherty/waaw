@@ -20,12 +20,11 @@ export class PowerUp {
     this.p5 = p5;
   }
 
-  setPositionWithinBounds = (
-    left: number,
-    right: number,
-    top: number,
-    bottom: number
-  ) => {
+  setPositionWithinBounds = () => {
+    const left = -innerWidth / 2 + 60;
+    const right = innerWidth / 2 - 60;
+    const top = -innerHeight / 2 + 60;
+    const bottom = innerHeight / 2 - 60;
     this.xPosition = this.p5.random(left, right);
     this.yPosition = this.p5.random(top, bottom);
   };
