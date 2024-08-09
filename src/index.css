@@ -34,3 +34,12 @@ button {
 .start-button:focus {
   outline: none;
 }
+
+a {
+  color: #f7b102;
+  text-decoration: none;
+  text-decoration: underline;
+  font-family: 'MonoRegular';
+  font-size: 18px;
+  font-weight: normal;
+}
