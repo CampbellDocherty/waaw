@@ -52,14 +52,39 @@ export const sketch = (
 
     for (const [index, powerUp] of colourPowerUps.entries()) {
       const button = p5.createButton('');
-      const width = 40;
-      button.style('width', `${width}px`);
-      button.style('height', `${width}px`);
-      button.position(innerWidth - width, index * width);
+      const height = 40;
+      button.style('width', `${height}px`);
+      button.style('height', `${height}px`);
+      button.position(innerWidth - height, index * height);
       button.style('background-color', powerUp.color);
       button.hide();
       button.mousePressed(() => {
         star.updateColour(powerUp.color);
+      });
+      powerUp.bindToButton(button);
+    }
+
+    for (const [index, powerUp] of speedPowerUps.entries()) {
+      const button = p5.createButton(`x${powerUp.speed * 2}`);
+      const height = 40;
+      const width = 60;
+      button.style('color', powerUp.color);
+      button.style('font-size', '16px');
+      button.style('width', `${width}px`);
+      button.style('height', `${height}px`);
+      button.style('text-align', 'right');
+      button.style('padding', 'none');
+      button.position(
+        innerWidth - width,
+        index * height + colourPowerUps.length * height
+      );
+      button.style('background-color', 'transparent');
+      button.style('border', 'none');
+      button.style('outline', 'none');
+
+      button.hide();
+      button.mousePressed(() => {
+        star.updateSpeed(powerUp.speed);
       });
       powerUp.bindToButton(button);
     }
