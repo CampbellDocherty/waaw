@@ -50,6 +50,20 @@ export const sketch = (
       p5.createA(text.url, text.text, '_blank');
     }
 
+    for (const [index, powerUp] of colourPowerUps.entries()) {
+      const button = p5.createButton('');
+      const width = 40;
+      button.style('width', `${width}px`);
+      button.style('height', `${width}px`);
+      button.position(innerWidth - width, index * width);
+      button.style('background-color', powerUp.color);
+      button.hide();
+      button.mousePressed(() => {
+        star.updateColour(powerUp.color);
+      });
+      powerUp.bindToButton(button);
+    }
+
     const button = p5.createButton('Click to start!');
     const buttonWidth = p5.width;
     const buttonHeight = p5.height * 2;
