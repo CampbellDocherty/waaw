@@ -7,6 +7,7 @@ export class PowerUp {
   p5: p.P5CanvasInstance;
   shouldDraw = false;
   hasBeenCollected = false;
+  button: any;
 
   constructor(
     color: string,
@@ -19,6 +20,10 @@ export class PowerUp {
     this.yPosition = yPosition;
     this.p5 = p5;
   }
+
+  bindToButton = (button: any): void => {
+    this.button = button;
+  };
 
   setPositionWithinBounds = () => {
     const left = -innerWidth / 2 + 60;
@@ -39,6 +44,7 @@ export class PowerUp {
 
   remove(): void {
     this.hasBeenCollected = true;
+    if (this.button) this.button.show();
     this.shouldDraw = false;
   }
 

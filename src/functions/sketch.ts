@@ -50,6 +50,45 @@ export const sketch = (
       p5.createA(text.url, text.text, '_blank');
     }
 
+    for (const [index, powerUp] of colourPowerUps.entries()) {
+      const button = p5.createButton('');
+      const height = 40;
+      button.style('width', `${height}px`);
+      button.style('height', `${height}px`);
+      button.position(innerWidth - height, index * height);
+      button.style('background-color', powerUp.color);
+      button.hide();
+      button.mousePressed(() => {
+        star.updateColour(powerUp.color);
+      });
+      powerUp.bindToButton(button);
+    }
+
+    for (const [index, powerUp] of speedPowerUps.entries()) {
+      const button = p5.createButton(`x${powerUp.speed * 2}`);
+      const height = 40;
+      const width = 60;
+      button.style('color', powerUp.color);
+      button.style('font-size', '16px');
+      button.style('width', `${width}px`);
+      button.style('height', `${height}px`);
+      button.style('text-align', 'right');
+      button.style('padding', 'none');
+      button.position(
+        innerWidth - width,
+        index * height + colourPowerUps.length * height
+      );
+      button.style('background-color', 'transparent');
+      button.style('border', 'none');
+      button.style('outline', 'none');
+
+      button.hide();
+      button.mousePressed(() => {
+        star.updateSpeed(powerUp.speed);
+      });
+      powerUp.bindToButton(button);
+    }
+
     const button = p5.createButton('Click to start!');
     const buttonWidth = p5.width;
     const buttonHeight = p5.height * 2;
@@ -201,9 +240,9 @@ const _drawByKeyPress = (
     star.updateVelocity(0, 15);
   }
 
-  if (!Object.values(pressedKeys).some((value) => value)) {
-    star.updateVelocity(0, 0);
-  }
+  // if (!Object.values(pressedKeys).some((value) => value)) {
+  //   star.updateVelocity(0, 0);
+  // }
 };
 
 const createTexts = (p5: p.P5CanvasInstance): Text[] => {
