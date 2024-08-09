@@ -1,5 +1,5 @@
 import * as p from '@p5-wrapper/react';
-import { Star } from './Star';
+import { Link } from './Link';
 
 export class LoadingBar {
   width = 0;
@@ -29,12 +29,13 @@ export class LoadingBar {
     this.width = 0;
   };
 
-  draw = (url: string, star: Star): void => {
+  draw = (link: Link): void => {
     this.width += this.progress;
     if (this.width >= this.finalWidth) {
       this.width = this.finalWidth;
-      // this.onLoad(url);
-      star.reset();
+      link.shouldBeLink = true;
+      link.show();
+      this.onLoad(link.url);
     }
     this.p5.push();
     this.p5.fill(this.color);

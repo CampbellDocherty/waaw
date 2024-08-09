@@ -8,7 +8,7 @@ import { Font } from './Font';
 import { LoadingBar } from './LoadingBar';
 import { ColourPowerUp, SpeedPowerUp } from './PowerUp';
 import { Star } from './Star';
-import { Text } from './Text';
+import { Link } from './Link';
 
 export const sketch = (
   p5: p.P5CanvasInstance,
@@ -25,9 +25,6 @@ export const sketch = (
   const loadingBar = new LoadingBar();
   const cd = new CompactDisk(0, -240, p5, cdImage);
 
-  const colourPowerUps = createColourPowerUps(p5, 5);
-  const speedPowerUps = createSpeedPowerUps(p5);
-
   p5.preload = () => {
     font.loadFont(monoRegular);
     star.bindToP5Instance(p5);
@@ -41,13 +38,16 @@ export const sketch = (
     mainImage = p5.loadImage(theTwins);
   };
 
-  const texts = createTexts(p5);
+  const colourPowerUps = createColourPowerUps(p5, 5);
+  const speedPowerUps = createSpeedPowerUps(p5);
+  const links = createlinks(p5);
 
   p5.setup = () => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
     p5.textFont(font.font);
-    for (const text of texts) {
-      p5.createA(text.url, text.text, '_blank');
+    for (const text of links) {
+      text.create();
+      text.hide();
     }
 
     for (const [index, powerUp] of colourPowerUps.entries()) {
@@ -135,9 +135,9 @@ export const sketch = (
     p5.pop();
 
     // draw texts
-    texts.forEach((text) => {
+    links.forEach((link) => {
       if (start) {
-        text.draw();
+        link.draw();
       }
     });
 
@@ -145,19 +145,19 @@ export const sketch = (
     const starVertices = star.draw(p5, !start);
 
     // check for text collisions
-    for (const text of texts) {
+    for (const link of links) {
       const isColliding = starVertices.some((vertex) => {
         const { x, y } = vertex;
-        return text.checkIfColliding(x, y);
+        return link.checkIfColliding(x, y);
       });
 
       if (isColliding) {
-        text.updateColor('#f7b102');
-        text.isSelected = true;
-        loadingBar.draw(text.url, star);
+        link.updateColor('#f7b102');
+        link.isSelected = true;
+        loadingBar.draw(link);
       } else {
-        text.updateColor('white');
-        text.isSelected = false;
+        link.updateColor('white');
+        link.isSelected = false;
       }
     }
 
@@ -194,7 +194,7 @@ export const sketch = (
     }
 
     // reset loading bar if no text is selected
-    const selectedText = texts.find((text) => text.isSelected);
+    const selectedText = links.find((text) => text.isSelected);
     if (!selectedText) {
       loadingBar.reset();
     }
@@ -240,13 +240,13 @@ const _drawByKeyPress = (
     star.updateVelocity(0, 15);
   }
 
-  // if (!Object.values(pressedKeys).some((value) => value)) {
-  //   star.updateVelocity(0, 0);
-  // }
+  if (!Object.values(pressedKeys).some((value) => value)) {
+    star.updateVelocity(0, 0);
+  }
 };
 
-const createTexts = (p5: p.P5CanvasInstance): Text[] => {
-  const instagramText = new Text(
+const createlinks = (p5: p.P5CanvasInstance): Link[] => {
+  const instagramText = new Link(
     'Instagram',
     18,
     -0,
@@ -254,7 +254,7 @@ const createTexts = (p5: p.P5CanvasInstance): Text[] => {
     p5,
     'https://www.instagram.com/waawdj/'
   );
-  const mixcloudText = new Text(
+  const mixcloudText = new Link(
     'Mixcloud',
     18,
     0,
@@ -262,7 +262,7 @@ const createTexts = (p5: p.P5CanvasInstance): Text[] => {
     p5,
     'https://www.mixcloud.com/waawtwins/stream/'
   );
-  const soundcloudText = new Text(
+  const soundcloudText = new Link(
     'Soundcloud',
     18,
     -0,
@@ -306,7 +306,7 @@ const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
   const speeds: number[] = [1, 0.25];
 
   const speedPowerUps = speeds.map((speed, index) => {
-    const powerUp = new SpeedPowerUp('#f7b102', speed, 0, 0, p5);
+    const powerUp = new SpeedPowerUp('#b2f602', speed, 0, 0, p5);
     setTimeout(() => {
       powerUp.setPositionWithinBounds();
       powerUp.shouldDraw = true;

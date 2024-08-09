@@ -1,6 +1,6 @@
 import * as p from '@p5-wrapper/react';
 
-export class Text {
+export class Link {
   text: string;
   fontSize: number;
   color = 'white';
@@ -9,6 +9,8 @@ export class Text {
   p5: p.P5CanvasInstance;
   url: string;
   isSelected = false;
+  link: any;
+  shouldBeLink = false;
 
   constructor(
     text: string,
@@ -31,11 +33,34 @@ export class Text {
   };
 
   checkIfColliding = (x: number, y: number): boolean => {
+    if (this.shouldBeLink) {
+      return false;
+    }
     const { left, right, top, bottom } = this.boundingBox;
     return x > left && x < right && y > top && y < bottom;
   };
 
+  create = () => {
+    const center = this.p5.createVector(this.p5.width / 2, this.p5.height / 2);
+    const link = this.p5.createA(this.url, this.text, '_blank');
+    link.position(center.x + this.xPos, center.y + this.yPos);
+    link.style('transform', 'translate(-50%, -50%)');
+    link.addClass('portfolio-link');
+    this.link = link;
+  };
+
+  hide = () => {
+    this.link.hide();
+  };
+
+  show = () => {
+    this.link.show();
+  };
+
   draw = (): void => {
+    if (this.shouldBeLink) {
+      return;
+    }
     this.p5.push();
     this.p5.textSize(this.fontSize);
     this.p5.fill(this.color);
