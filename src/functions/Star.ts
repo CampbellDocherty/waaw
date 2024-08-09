@@ -50,6 +50,11 @@ export class Star {
     return { x: this.xPos, y: this.yPos };
   }
 
+  reset() {
+    this.xPos = 0;
+    this.yPos = -120;
+  }
+
   constrain(
     containerWidth: number,
     containerHeight: number,

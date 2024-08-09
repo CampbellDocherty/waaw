@@ -84,8 +84,6 @@ export const sketch = (
     p5.resizeCanvas(innerWidth, innerHeight, p5.WEBGL);
   };
 
-  // const waawText = new Text('WAAW', 24, 0, -60, p5, '');
-
   p5.draw = () => {
     p5.background(102);
 
@@ -98,7 +96,6 @@ export const sketch = (
     p5.pop();
 
     // draw texts
-    // waawText.draw();
     texts.forEach((text) => {
       if (start) {
         text.draw();
@@ -118,7 +115,7 @@ export const sketch = (
       if (isColliding) {
         text.updateColor('#f7b102');
         text.isSelected = true;
-        loadingBar.draw(text.url);
+        loadingBar.draw(text.url, star);
       } else {
         text.updateColor('white');
         text.isSelected = false;
@@ -178,7 +175,6 @@ export const sketch = (
       return cd.checkIfColliding(x, y);
     });
     if (isColliding && cd.shouldDraw) {
-      console.log('collected');
       cd.hasCollected = true;
       cd.play();
     }
@@ -205,9 +201,9 @@ const _drawByKeyPress = (
     star.updateVelocity(0, 15);
   }
 
-  // if (!Object.values(pressedKeys).some((value) => value)) {
-  //   star.updateVelocity(0, 0);
-  // }
+  if (!Object.values(pressedKeys).some((value) => value)) {
+    star.updateVelocity(0, 0);
+  }
 };
 
 const createTexts = (p5: p.P5CanvasInstance): Text[] => {
@@ -215,7 +211,7 @@ const createTexts = (p5: p.P5CanvasInstance): Text[] => {
     'Instagram',
     18,
     -0,
-    40,
+    50,
     p5,
     'https://www.instagram.com/waawdj/'
   );
@@ -223,7 +219,7 @@ const createTexts = (p5: p.P5CanvasInstance): Text[] => {
     'Mixcloud',
     18,
     0,
-    80,
+    125,
     p5,
     'https://www.mixcloud.com/waawtwins/stream/'
   );
@@ -231,7 +227,7 @@ const createTexts = (p5: p.P5CanvasInstance): Text[] => {
     'Soundcloud',
     18,
     -0,
-    120,
+    200,
     p5,
     'https://soundcloud.com/waawdj'
   );
