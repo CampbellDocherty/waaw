@@ -1,10 +1,11 @@
 import * as p from '@p5-wrapper/react';
+import { Star } from './Star';
 
 export class LoadingBar {
   width = 0;
   p5: p.P5CanvasInstance;
-  x = -50;
-  y = 60;
+  x = 0;
+  y = 0;
   finalWidth = 100;
   height = 10;
   color = '#f7b102';
@@ -28,14 +29,16 @@ export class LoadingBar {
     this.width = 0;
   };
 
-  draw = (url: string): void => {
+  draw = (url: string, star: Star): void => {
     this.width += this.progress;
     if (this.width >= this.finalWidth) {
       this.width = this.finalWidth;
-      this.onLoad(url);
+      // this.onLoad(url);
+      star.reset();
     }
     this.p5.push();
     this.p5.fill(this.color);
+    this.p5.rectMode(this.p5.CENTER);
     this.p5.rect(this.x, this.y, this.width, this.height);
     this.p5.pop();
   };

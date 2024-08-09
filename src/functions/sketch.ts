@@ -2,6 +2,7 @@ import * as p from '@p5-wrapper/react';
 import { RefObject } from 'react';
 import monoRegular from '../fonts/Mono-Regular.ttf';
 import cdImage from '../images/cd.png';
+import theTwins from '../images/the-twins.jpg';
 import { CompactDisk } from './CompactDisk';
 import { Font } from './Font';
 import { LoadingBar } from './LoadingBar';
@@ -16,11 +17,13 @@ export const sketch = (
   onStart: () => Promise<void>
 ): void => {
   let start = false;
+  let mainImage: any;
+
   const pressedKeys: { [key: string]: boolean } = {};
 
   const font = new Font(p5);
   const loadingBar = new LoadingBar();
-  const cd = new CompactDisk(0, 0, p5, cdImage);
+  const cd = new CompactDisk(0, -240, p5, cdImage);
 
   const colourPowerUps = createColourPowerUps(p5, 5);
   const speedPowerUps = createSpeedPowerUps(p5);
@@ -35,6 +38,7 @@ export const sketch = (
       artist: 'James Massiah',
     });
     loadingBar.bindToP5Instance(p5);
+    mainImage = p5.loadImage(theTwins);
   };
 
   const texts = createTexts(p5);
@@ -54,7 +58,7 @@ export const sketch = (
     button.addClass('start-button');
     button.position(
       innerWidth / 2 - buttonWidth / 2,
-      innerHeight / 2 + 70 - button.height / 2
+      innerHeight / 2 - button.height / 2
     );
     button.mousePressed(async () => {
       await onStart();
@@ -80,16 +84,18 @@ export const sketch = (
     p5.resizeCanvas(innerWidth, innerHeight, p5.WEBGL);
   };
 
-  const waawText = new Text('WAAW', 24, 0, -60, p5, '');
-
   p5.draw = () => {
     p5.background(102);
 
     // key presses for web
     _drawByKeyPress(pressedKeys, star);
 
+    p5.push();
+    p5.imageMode(p5.CENTER);
+    p5.image(mainImage, 0, -120, 140, 170);
+    p5.pop();
+
     // draw texts
-    waawText.draw();
     texts.forEach((text) => {
       if (start) {
         text.draw();
@@ -109,7 +115,7 @@ export const sketch = (
       if (isColliding) {
         text.updateColor('#f7b102');
         text.isSelected = true;
-        loadingBar.draw(text.url);
+        loadingBar.draw(text.url, star);
       } else {
         text.updateColor('white');
         text.isSelected = false;
@@ -169,7 +175,6 @@ export const sketch = (
       return cd.checkIfColliding(x, y);
     });
     if (isColliding && cd.shouldDraw) {
-      console.log('collected');
       cd.hasCollected = true;
       cd.play();
     }
@@ -196,33 +201,33 @@ const _drawByKeyPress = (
     star.updateVelocity(0, 15);
   }
 
-  // if (!Object.values(pressedKeys).some((value) => value)) {
-  //   star.updateVelocity(0, 0);
-  // }
+  if (!Object.values(pressedKeys).some((value) => value)) {
+    star.updateVelocity(0, 0);
+  }
 };
 
 const createTexts = (p5: p.P5CanvasInstance): Text[] => {
   const instagramText = new Text(
     'Instagram',
-    20,
-    -innerWidth / 4,
-    -innerHeight / 4,
+    18,
+    -0,
+    50,
     p5,
     'https://www.instagram.com/waawdj/'
   );
   const mixcloudText = new Text(
     'Mixcloud',
-    20,
-    innerWidth / 4,
-    -innerHeight / 4,
+    18,
+    0,
+    125,
     p5,
     'https://www.mixcloud.com/waawtwins/stream/'
   );
   const soundcloudText = new Text(
     'Soundcloud',
-    20,
-    -innerWidth / 4,
-    innerHeight / 4,
+    18,
+    -0,
+    200,
     p5,
     'https://soundcloud.com/waawdj'
   );
@@ -248,12 +253,7 @@ const createColourPowerUps = (
   const colourPowerUps = colours.map((colour, index) => {
     const powerUp = new ColourPowerUp(colour, 0, 0, p5);
     setTimeout(() => {
-      powerUp.setPositionWithinBounds(
-        -innerWidth / 2 + 30,
-        innerWidth / 2 - 30,
-        -innerHeight / 2 + 30,
-        innerHeight / 2 - 30
-      );
+      powerUp.setPositionWithinBounds();
       powerUp.shouldDraw = true;
     }, timeBetweenPowerUps * (index + 1));
     return powerUp;
@@ -269,12 +269,7 @@ const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
   const speedPowerUps = speeds.map((speed, index) => {
     const powerUp = new SpeedPowerUp('#f7b102', speed, 0, 0, p5);
     setTimeout(() => {
-      powerUp.setPositionWithinBounds(
-        -innerWidth / 2 + 30,
-        innerWidth / 2 - 30,
-        -innerHeight / 2 + 30,
-        innerHeight / 2 - 30
-      );
+      powerUp.setPositionWithinBounds();
       powerUp.shouldDraw = true;
     }, timeBetweenPowerUps * (index + 1));
     return powerUp;

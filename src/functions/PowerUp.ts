@@ -20,12 +20,11 @@ export class PowerUp {
     this.p5 = p5;
   }
 
-  setPositionWithinBounds = (
-    left: number,
-    right: number,
-    top: number,
-    bottom: number
-  ) => {
+  setPositionWithinBounds = () => {
+    const left = -innerWidth / 2 + 60;
+    const right = innerWidth / 2 - 60;
+    const top = -innerHeight / 2 + 60;
+    const bottom = innerHeight / 2 - 60;
     this.xPosition = this.p5.random(left, right);
     this.yPosition = this.p5.random(top, bottom);
   };
@@ -100,7 +99,7 @@ export class SpeedPowerUp extends PowerUp {
     }
     this.p5.push();
     this.p5.fill(this.color);
-    this.p5.textSize(18);
+    this.p5.textSize(20);
     this.p5.text(`x${this.speed * 2}`, this.xPosition, this.yPosition);
     this.p5.pop();
   }

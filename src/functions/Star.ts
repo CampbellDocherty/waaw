@@ -6,8 +6,8 @@ export class Star {
   xPos: number;
   yPos: number;
   p5: p.P5CanvasInstance;
-  closeRadius = 20;
-  farRadius = 40;
+  closeRadius = 15;
+  farRadius = 30;
   colour = 'white';
   speed = 0.5;
 
@@ -48,6 +48,11 @@ export class Star {
 
   get position() {
     return { x: this.xPos, y: this.yPos };
+  }
+
+  reset() {
+    this.xPos = 0;
+    this.yPos = -120;
   }
 
   constrain(

@@ -6,7 +6,7 @@ import { sketch } from './functions/sketch';
 import { Star } from './functions/Star';
 
 const App = () => {
-  const star = new Star(0, 0, 0, 0);
+  const star = new Star(0, -120, 0, 0);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const onStart = useCallback(async () => {
