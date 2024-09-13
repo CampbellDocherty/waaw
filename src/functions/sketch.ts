@@ -2,6 +2,7 @@ import * as p from '@p5-wrapper/react';
 import { RefObject } from 'react';
 import monoRegular from '../fonts/Mono-Regular.ttf';
 import cdImage from '../images/cd.png';
+import folder from '../images/folder.png';
 import theTwins from '../images/the-twins.jpg';
 import { CompactDisk } from './CompactDisk';
 import { Font } from './Font';
@@ -17,6 +18,7 @@ export const sketch = (
 ): void => {
   let start = false;
   let mainImage: any;
+  let folderImage: any;
 
   const pressedKeys: { [key: string]: boolean } = {};
 
@@ -33,6 +35,7 @@ export const sketch = (
       artist: 'James Massiah',
     });
     mainImage = p5.loadImage(theTwins);
+    folderImage = p5.loadImage(folder);
   };
 
   const colourPowerUps = createColourPowerUps(p5);
@@ -144,6 +147,7 @@ export const sketch = (
     p5.push();
     p5.imageMode(p5.CENTER);
     p5.image(mainImage, 0, -120, 140, 170);
+    if (start) p5.image(folderImage, -190, 160, 90, 60);
     p5.pop();
 
     // draw star
