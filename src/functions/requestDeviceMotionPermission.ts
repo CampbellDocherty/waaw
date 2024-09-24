@@ -31,7 +31,6 @@ export const requestDeviceMotionPermission = async (star: Star) => {
   }
   const isProbablyWeb = requestPermission === undefined;
 
-  console.log(isProbablyWeb, requestPermission);
   if (isProbablyWeb) {
     return isProbablyWeb;
   }
