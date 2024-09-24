@@ -43,6 +43,8 @@ export const sketch = (
   const speedPowerUps = createSpeedPowerUps(p5);
   const links = createlinks(p5);
 
+  let instructionsButton: any;
+
   p5.setup = () => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
     p5.textFont(font.font);
@@ -109,12 +111,13 @@ export const sketch = (
         audioRef.current.currentTime = 0;
       }
       button.hide();
-      _addInstructions(isProbablyWeb, p5);
+      instructionsButton = _addInstructions(isProbablyWeb, p5);
     });
   };
 
   p5.keyPressed = (event: { key: string }) => {
     if (isProbablyWeb) {
+      instructionsButton.addClass('hide');
       pressedKeys[event.key] = true;
     }
   };
@@ -321,8 +324,8 @@ const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
 
 const _addInstructions = (isProbablyWeb: boolean, p5: any) => {
   const instructionText = isProbablyWeb
-    ? 'Use the arrow keys to move the star :)'
-    : 'Tilt your device to move the star :)';
+    ? 'Collect the powerups using the arrow keys :)'
+    : 'Collect the powerups by tilting your device :)';
   const instructions = p5.createButton(instructionText);
   instructions.addClass('start-button');
   instructions.position(
