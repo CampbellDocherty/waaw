@@ -92,7 +92,9 @@ export const sketch = (
       powerUp.bindToButton(button);
     }
 
-    const button = p5.createButton('Click to start!');
+    const button = p5.createButton(
+      isProbablyWeb ? 'Click to start!' : 'Press to start!'
+    );
     const buttonWidth = p5.width;
     const buttonHeight = p5.height * 2;
     button.style('width', `${buttonWidth}px`);
