@@ -14,7 +14,8 @@ export const sketch = (
   p5: p.P5CanvasInstance,
   star: Star,
   audioRef: RefObject<HTMLAudioElement>,
-  onStart: () => Promise<void>
+  onStart: () => Promise<void>,
+  isProbablyWeb: boolean
 ): void => {
   let start = false;
   let mainImage: any;
@@ -41,6 +42,8 @@ export const sketch = (
   const colourPowerUps = createColourPowerUps(p5);
   const speedPowerUps = createSpeedPowerUps(p5);
   const links = createlinks(p5);
+
+  let instructionsButton: any;
 
   p5.setup = () => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
@@ -89,7 +92,9 @@ export const sketch = (
       powerUp.bindToButton(button);
     }
 
-    const button = p5.createButton('Click to start!');
+    const button = p5.createButton(
+      isProbablyWeb ? 'Click to start!' : 'Press to start!'
+    );
     const buttonWidth = p5.width;
     const buttonHeight = p5.height * 2;
     button.style('width', `${buttonWidth}px`);
@@ -108,15 +113,21 @@ export const sketch = (
         audioRef.current.currentTime = 0;
       }
       button.hide();
+      instructionsButton = _addInstructions(isProbablyWeb, p5);
     });
   };
 
   p5.keyPressed = (event: { key: string }) => {
-    pressedKeys[event.key] = true;
+    if (isProbablyWeb) {
+      instructionsButton.addClass('hide');
+      pressedKeys[event.key] = true;
+    }
   };
 
   p5.keyReleased = (event: { key: string }) => {
-    pressedKeys[event.key] = false;
+    if (isProbablyWeb) {
+      pressedKeys[event.key] = false;
+    }
   };
 
   p5.windowResized = () => {
@@ -127,7 +138,9 @@ export const sketch = (
     p5.background(102);
 
     // key presses for web
-    _drawByKeyPress(pressedKeys, star);
+    if (isProbablyWeb) {
+      _drawByKeyPress(pressedKeys, star);
+    }
 
     p5.push();
     p5.imageMode(p5.CENTER);
@@ -240,9 +253,9 @@ const _drawByKeyPress = (
     star.updateVelocity(0, 15);
   }
 
-  // if (!Object.values(pressedKeys).some((value) => value)) {
-  //   star.updateVelocity(0, 0);
-  // }
+  if (!Object.values(pressedKeys).some((value) => value)) {
+    star.updateVelocity(0, 0);
+  }
 };
 
 const createlinks = (p5: p.P5CanvasInstance): Link[] => {
@@ -309,4 +322,23 @@ const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
   });
 
   return speedPowerUps;
+};
+
+const _addInstructions = (isProbablyWeb: boolean, p5: any) => {
+  const instructionText = isProbablyWeb
+    ? 'Collect the powerups using the arrow keys :)'
+    : 'Collect the powerups by tilting your device :)';
+  const instructions = p5.createButton(instructionText);
+  instructions.addClass('start-button');
+  instructions.position(
+    innerWidth / 2 - instructions.width / 2,
+    innerHeight / 2 - instructions.height / 2
+  );
+
+  if (!isProbablyWeb) {
+    setTimeout(() => {
+      instructions.hide();
+    }, 2000);
+  }
+  return instructions;
 };

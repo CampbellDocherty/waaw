@@ -43,3 +43,17 @@ a {
   font-size: 18px;
   font-weight: normal;
 }
+
+@keyframes fade {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.hide {
+  opacity: 0;
+  animation: fade 0.5s linear;
+}
