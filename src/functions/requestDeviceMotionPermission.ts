@@ -1,6 +1,6 @@
 import { Star } from './Star';
 
-interface DeviceMotionEventiOS extends DeviceMotionEvent {
+export interface DeviceMotionEventiOS extends DeviceMotionEvent {
   requestPermission?: () => Promise<'granted' | 'denied'>;
 }
 
@@ -27,16 +27,18 @@ export const requestDeviceMotionPermission = async (star: Star) => {
         star.updateVelocity(motion.x * 2, -motion.y * 4);
       });
     }
-    return;
+    return false;
   }
   const isProbablyWeb = requestPermission === undefined;
 
+  console.log(isProbablyWeb, requestPermission);
   if (isProbablyWeb) {
-    return;
+    return isProbablyWeb;
   }
 
   window.addEventListener('devicemotion', (event) => {
     const motion = handleMotion(event);
     star.updateVelocity(motion.x * 2, motion.y * 4);
   });
+  return false;
 };

@@ -14,7 +14,8 @@ export const sketch = (
   p5: p.P5CanvasInstance,
   star: Star,
   audioRef: RefObject<HTMLAudioElement>,
-  onStart: () => Promise<void>
+  onStart: () => Promise<void>,
+  isProbablyWeb: boolean
 ): void => {
   let start = false;
   let mainImage: any;
@@ -112,11 +113,15 @@ export const sketch = (
   };
 
   p5.keyPressed = (event: { key: string }) => {
-    pressedKeys[event.key] = true;
+    if (isProbablyWeb) {
+      pressedKeys[event.key] = true;
+    }
   };
 
   p5.keyReleased = (event: { key: string }) => {
-    pressedKeys[event.key] = false;
+    if (isProbablyWeb) {
+      pressedKeys[event.key] = false;
+    }
   };
 
   p5.windowResized = () => {
@@ -127,7 +132,9 @@ export const sketch = (
     p5.background(102);
 
     // key presses for web
-    _drawByKeyPress(pressedKeys, star);
+    if (isProbablyWeb) {
+      _drawByKeyPress(pressedKeys, star);
+    }
 
     p5.push();
     p5.imageMode(p5.CENTER);
