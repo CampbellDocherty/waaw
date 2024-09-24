@@ -109,6 +109,7 @@ export const sketch = (
         audioRef.current.currentTime = 0;
       }
       button.hide();
+      _addInstructions(isProbablyWeb, p5);
     });
   };
 
@@ -247,9 +248,9 @@ const _drawByKeyPress = (
     star.updateVelocity(0, 15);
   }
 
-  // if (!Object.values(pressedKeys).some((value) => value)) {
-  //   star.updateVelocity(0, 0);
-  // }
+  if (!Object.values(pressedKeys).some((value) => value)) {
+    star.updateVelocity(0, 0);
+  }
 };
 
 const createlinks = (p5: p.P5CanvasInstance): Link[] => {
@@ -316,4 +317,17 @@ const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
   });
 
   return speedPowerUps;
+};
+
+const _addInstructions = (isProbablyWeb: boolean, p5: any) => {
+  const instructionText = isProbablyWeb
+    ? 'Use the arrow keys to move the star :)'
+    : 'Tilt your device to move the star :)';
+  const instructions = p5.createButton(instructionText);
+  instructions.addClass('start-button');
+  instructions.position(
+    innerWidth / 2 - instructions.width / 2,
+    innerHeight / 2 - instructions.height / 2
+  );
+  return instructions;
 };
