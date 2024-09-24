@@ -332,5 +332,11 @@ const _addInstructions = (isProbablyWeb: boolean, p5: any) => {
     innerWidth / 2 - instructions.width / 2,
     innerHeight / 2 - instructions.height / 2
   );
+
+  if (!isProbablyWeb) {
+    setTimeout(() => {
+      instructions.hide();
+    }, 2000);
+  }
   return instructions;
 };
