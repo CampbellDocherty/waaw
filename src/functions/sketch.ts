@@ -47,6 +47,7 @@ export const sketch = (
 
   let instructionsButton: any;
   let colourPowerUpInstructions: any;
+  let socialPowerUpInstructions: any;
 
   p5.setup = () => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
@@ -54,6 +55,10 @@ export const sketch = (
 
     colourPowerUpInstructions = p5.createP(
       isProbablyWeb ? 'Click to power up ->' : 'Press to power up ->'
+    );
+
+    socialPowerUpInstructions = p5.createP(
+      isProbablyWeb ? 'Click to visit link ->' : 'Press to visit link ->'
     );
 
     for (const [index, powerUp] of colourPowerUps.entries()) {
@@ -231,6 +236,28 @@ export const sketch = (
       100 - colourPowerUpInstructions.height / 2
     );
     colourPowerUpInstructions.addClass('hidden');
+
+    socialPowerUpInstructions.position(
+      innerWidth - 280,
+      innerHeight -
+        socialPowerUps[0].button.height * 2 -
+        socialPowerUpInstructions.height / 2 +
+        10
+    );
+    socialPowerUpInstructions.addClass('hidden');
+
+    const collectedSocialPowerUps = socialPowerUps.filter(
+      (powerUp) => powerUp.hasBeenCollected
+    );
+    if (collectedSocialPowerUps.length === socialPowerUps.length) {
+      if (!socialPowerUpInstructions.elt.classList.contains('hide')) {
+        socialPowerUpInstructions.addClass('show');
+        setTimeout(() => {
+          socialPowerUpInstructions.removeClass('show');
+          socialPowerUpInstructions.addClass('hide');
+        }, 2500);
+      }
+    }
 
     // draw compact disk if all powerups have been collected
     const collectedPowerUps = colourPowerUps.filter(
