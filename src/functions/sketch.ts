@@ -187,7 +187,6 @@ export const sketch = (
     colourPowerUpInstructions.addClass('hidden');
 
     // draw compact disk if all powerups have been collected
-
     const collectedPowerUps = colourPowerUps.filter(
       (powerUp) => powerUp.hasBeenCollected
     );
@@ -280,12 +279,9 @@ const _addInstructions = (isProbablyWeb: boolean, p5: p.P5CanvasInstance) => {
   const instructionText = isProbablyWeb
     ? 'Collect the powerups using the arrow keys :)'
     : 'Collect the powerups by tilting your device :)';
-  const instructions = p5.createButton(instructionText);
-  instructions.addClass('start-button');
-  instructions.position(
-    innerWidth / 2 - instructions.width / 2,
-    innerHeight / 2 - instructions.height / 2
-  );
+
+  const instructions = p5.createP(instructionText);
+  instructions.addClass('centered-text');
 
   if (!isProbablyWeb) {
     setTimeout(() => {
