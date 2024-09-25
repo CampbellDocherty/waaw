@@ -5,8 +5,11 @@ import cdImage from '../images/cd.png';
 import theTwins from '../images/the-twins.jpg';
 import { CompactDisk } from './CompactDisk';
 import { Font } from './Font';
-import { ColourPowerUp, SpeedPowerUp } from './PowerUp';
+import { ColourPowerUp, ImagePowerUp, SpeedPowerUp } from './PowerUp';
 import { Star } from './Star';
+import insta from '../images/instagram.png';
+import soundcloud from '../images/soundcloud.png';
+import mixcloud from '../images/mixcloud.png';
 
 export const sketch = (
   p5: p.P5CanvasInstance,
@@ -22,6 +25,7 @@ export const sketch = (
 
   const font = new Font(p5);
   const cd = new CompactDisk(0, -240, p5, cdImage);
+  const socialPowerUps = createSocialPowerUps(p5);
 
   p5.preload = () => {
     font.loadFont(monoRegular);
@@ -33,6 +37,9 @@ export const sketch = (
       artist: 'James Massiah',
     });
     mainImage = p5.loadImage(theTwins);
+    for (const powerUp of socialPowerUps) {
+      powerUp.load();
+    }
   };
 
   const colourPowerUps = createColourPowerUps(p5);
@@ -111,6 +118,7 @@ export const sketch = (
       button.hide();
       instructionsButton = _addInstructions(isProbablyWeb, p5);
     });
+    p5.imageMode(p5.CENTER);
   };
 
   p5.keyPressed = (event: { key: string }) => {
@@ -161,6 +169,19 @@ export const sketch = (
         const powerUpColour = colourPowerUp.color;
         star.updateColour(powerUpColour);
         colourPowerUp.remove();
+      }
+    }
+
+    for (const socialPowerUp of socialPowerUps) {
+      if (!start) return;
+      socialPowerUp.draw();
+      const isColliding = starVertices.some((vertex) => {
+        const { x, y } = vertex;
+        return socialPowerUp.checkIfColliding(x, y);
+      });
+
+      if (isColliding) {
+        socialPowerUp.remove();
       }
     }
 
@@ -273,6 +294,22 @@ const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
   });
 
   return speedPowerUps;
+};
+
+const createSocialPowerUps = (p5: p.P5CanvasInstance): ImagePowerUp[] => {
+  const timeBetweenPowerUps = 1000;
+  const socials = [insta, mixcloud, soundcloud];
+
+  const socialPowerUps = socials.map((src, index) => {
+    const powerUp = new ImagePowerUp('#000', 0, 0, p5, src);
+    setTimeout(() => {
+      powerUp.setPositionWithinBounds();
+      powerUp.shouldDraw = true;
+    }, timeBetweenPowerUps * (index + 1));
+    return powerUp;
+  });
+
+  return socialPowerUps;
 };
 
 const _addInstructions = (isProbablyWeb: boolean, p5: p.P5CanvasInstance) => {

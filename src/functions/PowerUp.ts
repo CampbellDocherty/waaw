@@ -85,6 +85,37 @@ export class ColourPowerUp extends PowerUp {
   }
 }
 
+export class ImagePowerUp extends PowerUp {
+  image: any;
+  src: string;
+
+  constructor(
+    color: string,
+    xPosition: number,
+    yPosition: number,
+    p5: p.P5CanvasInstance,
+    src: string
+  ) {
+    super(color, xPosition, yPosition, p5);
+    this.src = src;
+  }
+
+  load() {
+    this.image = this.p5.loadImage(this.src);
+  }
+
+  draw(): void {
+    if (!this.shouldDraw) {
+      return;
+    }
+    this.p5.push();
+    this.p5.translate(this.xPosition, this.yPosition);
+    this.p5.rotateY(this.p5.frameCount * 0.03);
+    this.p5.image(this.image, 0, 0, 30, 30);
+    this.p5.pop();
+  }
+}
+
 export class SpeedPowerUp extends PowerUp {
   speed: number;
 
