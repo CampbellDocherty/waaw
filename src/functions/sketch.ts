@@ -5,10 +5,11 @@ import cdImage from '../images/cd.png';
 import theTwins from '../images/the-twins.jpg';
 import { CompactDisk } from './CompactDisk';
 import { Font } from './Font';
-import { LoadingBar } from './LoadingBar';
-import { ColourPowerUp, SpeedPowerUp } from './PowerUp';
+import { ColourPowerUp, ImagePowerUp, SpeedPowerUp } from './PowerUp';
 import { Star } from './Star';
-import { Link } from './Link';
+import insta from '../images/instagram.png';
+import soundcloud from '../images/soundcloud.png';
+import mixcloud from '../images/mixcloud.png';
 
 export const sketch = (
   p5: p.P5CanvasInstance,
@@ -23,8 +24,8 @@ export const sketch = (
   const pressedKeys: { [key: string]: boolean } = {};
 
   const font = new Font(p5);
-  const loadingBar = new LoadingBar();
   const cd = new CompactDisk(0, -240, p5, cdImage);
+  const socialPowerUps = createSocialPowerUps(p5);
 
   p5.preload = () => {
     font.loadFont(monoRegular);
@@ -35,27 +36,29 @@ export const sketch = (
       title: 'Last Kiss',
       artist: 'James Massiah',
     });
-    loadingBar.bindToP5Instance(p5);
     mainImage = p5.loadImage(theTwins);
+    for (const powerUp of socialPowerUps) {
+      powerUp.load();
+    }
   };
 
   const colourPowerUps = createColourPowerUps(p5);
   const speedPowerUps = createSpeedPowerUps(p5);
-  const links = createlinks(p5);
 
   let instructionsButton: any;
   let colourPowerUpInstructions: any;
+  let socialPowerUpInstructions: any;
 
   p5.setup = () => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
     p5.textFont(font.font);
-    for (const text of links) {
-      text.create();
-      text.hide();
-    }
 
     colourPowerUpInstructions = p5.createP(
       isProbablyWeb ? 'Click to power up ->' : 'Press to power up ->'
+    );
+
+    socialPowerUpInstructions = p5.createP(
+      isProbablyWeb ? 'Click to visit link ->' : 'Press to visit link ->'
     );
 
     for (const [index, powerUp] of colourPowerUps.entries()) {
@@ -68,6 +71,31 @@ export const sketch = (
       button.addClass('hide-button');
       button.mousePressed(() => {
         star.updateColour(powerUp.color);
+      });
+      powerUp.bindToButton(button);
+    }
+
+    for (const [index, powerUp] of socialPowerUps.entries()) {
+      const button = p5.createButton('');
+      const height = 50;
+      button.style('width', `${height}px`);
+      button.style('height', `${height}px`);
+      button.position(
+        innerWidth - height,
+        innerHeight - (index + 1) * height - index * 15
+      );
+      button.style('margin-right', '15px');
+      button.style('background-image', `url(${powerUp.src})`);
+      button.style('background-size', 'contain');
+      button.style('background-position', 'center center');
+      button.style('background-repeat', 'no-repeat');
+      button.style('background-color', 'transparent');
+      button.style('border', 'none');
+      button.style('outline', 'none');
+
+      button.addClass('hide-button');
+      button.mousePressed(() => {
+        window.open(powerUp.link, '_blank');
       });
       powerUp.bindToButton(button);
     }
@@ -120,6 +148,7 @@ export const sketch = (
       button.hide();
       instructionsButton = _addInstructions(isProbablyWeb, p5);
     });
+    p5.imageMode(p5.CENTER);
   };
 
   p5.keyPressed = (event: { key: string }) => {
@@ -154,32 +183,8 @@ export const sketch = (
     p5.image(mainImage, 0, -120, 140, 170);
     p5.pop();
 
-    // draw texts
-    links.forEach((link) => {
-      if (start) {
-        link.draw();
-      }
-    });
-
     // draw star
     const starVertices = star.draw(p5, !start);
-
-    // check for text collisions
-    for (const link of links) {
-      const isColliding = starVertices.some((vertex) => {
-        const { x, y } = vertex;
-        return link.checkIfColliding(x, y);
-      });
-
-      if (isColliding) {
-        link.updateColor('#f7b102');
-        link.isSelected = true;
-        loadingBar.draw(link);
-      } else {
-        link.updateColor('white');
-        link.isSelected = false;
-      }
-    }
 
     // check for colour powerup collisions
     for (const colourPowerUp of colourPowerUps) {
@@ -194,6 +199,19 @@ export const sketch = (
         const powerUpColour = colourPowerUp.color;
         star.updateColour(powerUpColour);
         colourPowerUp.remove();
+      }
+    }
+
+    for (const socialPowerUp of socialPowerUps) {
+      if (!start) return;
+      socialPowerUp.draw();
+      const isColliding = starVertices.some((vertex) => {
+        const { x, y } = vertex;
+        return socialPowerUp.checkIfColliding(x, y);
+      });
+
+      if (isColliding) {
+        socialPowerUp.remove();
       }
     }
 
@@ -213,20 +231,35 @@ export const sketch = (
       }
     }
 
-    // reset loading bar if no text is selected
-    const selectedText = links.find((text) => text.isSelected);
-    if (!selectedText) {
-      loadingBar.reset();
-    }
-
     colourPowerUpInstructions.position(
       innerWidth - 240,
       100 - colourPowerUpInstructions.height / 2
     );
     colourPowerUpInstructions.addClass('hidden');
 
-    // draw compact disk if all powerups have been collected
+    socialPowerUpInstructions.position(
+      innerWidth - 280,
+      innerHeight -
+        socialPowerUps[0].button.height * 2 -
+        socialPowerUpInstructions.height / 2 +
+        10
+    );
+    socialPowerUpInstructions.addClass('hidden');
 
+    const collectedSocialPowerUps = socialPowerUps.filter(
+      (powerUp) => powerUp.hasBeenCollected
+    );
+    if (collectedSocialPowerUps.length === socialPowerUps.length) {
+      if (!socialPowerUpInstructions.elt.classList.contains('hide')) {
+        socialPowerUpInstructions.addClass('show');
+        setTimeout(() => {
+          socialPowerUpInstructions.removeClass('show');
+          socialPowerUpInstructions.addClass('hide');
+        }, 2500);
+      }
+    }
+
+    // draw compact disk if all powerups have been collected
     const collectedPowerUps = colourPowerUps.filter(
       (powerUp) => powerUp.hasBeenCollected
     );
@@ -278,37 +311,8 @@ const _drawByKeyPress = (
   }
 };
 
-const createlinks = (p5: p.P5CanvasInstance): Link[] => {
-  const instagramText = new Link(
-    'Instagram',
-    18,
-    -0,
-    50,
-    p5,
-    'https://www.instagram.com/waawdj/'
-  );
-  const mixcloudText = new Link(
-    'Mixcloud',
-    18,
-    0,
-    125,
-    p5,
-    'https://www.mixcloud.com/waawtwins/stream/'
-  );
-  const soundcloudText = new Link(
-    'Soundcloud',
-    18,
-    -0,
-    200,
-    p5,
-    'https://soundcloud.com/waawdj'
-  );
-
-  return [instagramText, mixcloudText, soundcloudText];
-};
-
 const createColourPowerUps = (p5: p.P5CanvasInstance): ColourPowerUp[] => {
-  const timeBetweenPowerUps = 3000;
+  const timeBetweenPowerUps = 1200;
   const colours: string[] = [
     '#edf67d',
     '#f896d8',
@@ -329,7 +333,7 @@ const createColourPowerUps = (p5: p.P5CanvasInstance): ColourPowerUp[] => {
 };
 
 const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
-  const timeBetweenPowerUps = 4500;
+  const timeBetweenPowerUps = 2000;
   const speeds: number[] = [1, 0.25];
 
   const speedPowerUps = speeds.map((speed, index) => {
@@ -344,16 +348,40 @@ const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
   return speedPowerUps;
 };
 
+const createSocialPowerUps = (p5: p.P5CanvasInstance): ImagePowerUp[] => {
+  const timeBetweenPowerUps = 1000;
+  const socials = [
+    { imgSrc: insta, link: 'https://www.instagram.com/waawdj/' },
+    { imgSrc: mixcloud, link: 'https://www.mixcloud.com/waawtwins/stream/' },
+    { imgSrc: soundcloud, link: 'https://soundcloud.com/waawdj' },
+  ];
+
+  const socialPowerUps = socials.map((social, index) => {
+    const powerUp = new ImagePowerUp(
+      '#000',
+      0,
+      0,
+      p5,
+      social.imgSrc,
+      social.link
+    );
+    setTimeout(() => {
+      powerUp.setPositionWithinBounds();
+      powerUp.shouldDraw = true;
+    }, timeBetweenPowerUps * (index + 1));
+    return powerUp;
+  });
+
+  return socialPowerUps;
+};
+
 const _addInstructions = (isProbablyWeb: boolean, p5: p.P5CanvasInstance) => {
   const instructionText = isProbablyWeb
     ? 'Collect the powerups using the arrow keys :)'
     : 'Collect the powerups by tilting your device :)';
-  const instructions = p5.createButton(instructionText);
-  instructions.addClass('start-button');
-  instructions.position(
-    innerWidth / 2 - instructions.width / 2,
-    innerHeight / 2 - instructions.height / 2
-  );
+
+  const instructions = p5.createP(instructionText);
+  instructions.addClass('centered-text');
 
   if (!isProbablyWeb) {
     setTimeout(() => {

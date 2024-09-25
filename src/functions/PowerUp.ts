@@ -26,10 +26,10 @@ export class PowerUp {
   };
 
   setPositionWithinBounds = () => {
-    const left = -innerWidth / 2 + 60;
-    const right = innerWidth / 2 - 60;
-    const top = -innerHeight / 2 + 60;
-    const bottom = innerHeight / 2 - 60;
+    const left = -innerWidth / 2 + 80;
+    const right = innerWidth / 2 - 80;
+    const top = -innerHeight / 2 + 80;
+    const bottom = innerHeight / 2 - 80;
     this.xPosition = this.p5.random(left, right);
     this.yPosition = this.p5.random(top, bottom);
   };
@@ -81,6 +81,40 @@ export class ColourPowerUp extends PowerUp {
     this.p5.fill(this.color);
 
     this.p5.circle(this.xPosition, this.yPosition, 20);
+    this.p5.pop();
+  }
+}
+
+export class ImagePowerUp extends PowerUp {
+  image: any;
+  src: string;
+  link: string;
+
+  constructor(
+    color: string,
+    xPosition: number,
+    yPosition: number,
+    p5: p.P5CanvasInstance,
+    src: string,
+    link: string
+  ) {
+    super(color, xPosition, yPosition, p5);
+    this.src = src;
+    this.link = link;
+  }
+
+  load() {
+    this.image = this.p5.loadImage(this.src);
+  }
+
+  draw(): void {
+    if (!this.shouldDraw) {
+      return;
+    }
+    this.p5.push();
+    this.p5.translate(this.xPosition, this.yPosition);
+    this.p5.rotateY(this.p5.frameCount * 0.03);
+    this.p5.image(this.image, 0, 0, 30, 30);
     this.p5.pop();
   }
 }
