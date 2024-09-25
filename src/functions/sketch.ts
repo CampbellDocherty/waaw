@@ -60,7 +60,7 @@ export const sketch = (
       button.style('height', `${height}px`);
       button.position(innerWidth - height, index * height);
       button.style('background-color', powerUp.color);
-      button.hide();
+      button.addClass('hide-button');
       button.mousePressed(() => {
         star.updateColour(powerUp.color);
       });

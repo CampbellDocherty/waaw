@@ -57,3 +57,24 @@ a {
   opacity: 0;
   animation: fade 0.5s linear;
 }
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0%);
+  }
+}
+
+.hide-button {
+  transform: translateX(100%);
+}
+
+.show-button {
+  animation: slideIn 0.3s linear;
+  transform: translateX(0%);
+  cursor: pointer;
+}
