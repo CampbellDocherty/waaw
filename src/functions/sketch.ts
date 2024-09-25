@@ -324,7 +324,7 @@ const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
   return speedPowerUps;
 };
 
-const _addInstructions = (isProbablyWeb: boolean, p5: any) => {
+const _addInstructions = (isProbablyWeb: boolean, p5: p.P5CanvasInstance) => {
   const instructionText = isProbablyWeb
     ? 'Collect the powerups using the arrow keys :)'
     : 'Collect the powerups by tilting your device :)';
@@ -337,7 +337,7 @@ const _addInstructions = (isProbablyWeb: boolean, p5: any) => {
 
   if (!isProbablyWeb) {
     setTimeout(() => {
-      instructions.hide();
+      instructions.addClass('hide');
     }, 2000);
   }
   return instructions;
