@@ -44,7 +44,7 @@ export class PowerUp {
 
   remove(): void {
     this.hasBeenCollected = true;
-    if (this.button) this.button.show();
+    if (this.button) this.button.addClass('show-button');
     this.shouldDraw = false;
   }
 

@@ -44,6 +44,7 @@ export const sketch = (
   const links = createlinks(p5);
 
   let instructionsButton: any;
+  let colourPowerUpInstructions: any;
 
   p5.setup = () => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
@@ -53,6 +54,10 @@ export const sketch = (
       text.hide();
     }
 
+    colourPowerUpInstructions = p5.createP(
+      isProbablyWeb ? 'Click to power up ->' : 'Press to power up ->'
+    );
+
     for (const [index, powerUp] of colourPowerUps.entries()) {
       const button = p5.createButton('');
       const height = 40;
@@ -60,7 +65,7 @@ export const sketch = (
       button.style('height', `${height}px`);
       button.position(innerWidth - height, index * height);
       button.style('background-color', powerUp.color);
-      button.hide();
+      button.addClass('hide-button');
       button.mousePressed(() => {
         star.updateColour(powerUp.color);
       });
@@ -119,7 +124,9 @@ export const sketch = (
 
   p5.keyPressed = (event: { key: string }) => {
     if (isProbablyWeb) {
-      instructionsButton.addClass('hide');
+      if (instructionsButton) {
+        instructionsButton.addClass('hide');
+      }
       pressedKeys[event.key] = true;
     }
   };
@@ -212,15 +219,28 @@ export const sketch = (
       loadingBar.reset();
     }
 
+    colourPowerUpInstructions.position(
+      innerWidth - 240,
+      100 - colourPowerUpInstructions.height / 2
+    );
+    colourPowerUpInstructions.addClass('hidden');
+
     // draw compact disk if all powerups have been collected
+
     const collectedPowerUps = colourPowerUps.filter(
       (powerUp) => powerUp.hasBeenCollected
     );
     if (collectedPowerUps.length === colourPowerUps.length) {
+      if (!colourPowerUpInstructions.elt.classList.contains('hide')) {
+        colourPowerUpInstructions.addClass('show');
+        setTimeout(() => {
+          colourPowerUpInstructions.removeClass('show');
+          colourPowerUpInstructions.addClass('hide');
+        }, 2500);
+      }
       cd.shouldDraw = true;
       cd.draw();
     }
-
     // if star collides with compact disk
     const isColliding = starVertices.some((vertex) => {
       const { x, y } = vertex;
@@ -324,7 +344,7 @@ const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
   return speedPowerUps;
 };
 
-const _addInstructions = (isProbablyWeb: boolean, p5: any) => {
+const _addInstructions = (isProbablyWeb: boolean, p5: p.P5CanvasInstance) => {
   const instructionText = isProbablyWeb
     ? 'Collect the powerups using the arrow keys :)'
     : 'Collect the powerups by tilting your device :)';
@@ -337,7 +357,7 @@ const _addInstructions = (isProbablyWeb: boolean, p5: any) => {
 
   if (!isProbablyWeb) {
     setTimeout(() => {
-      instructions.hide();
+      instructions.addClass('hide');
     }, 2000);
   }
   return instructions;

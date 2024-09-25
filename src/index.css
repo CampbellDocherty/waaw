@@ -16,6 +16,14 @@ body {
   align-items: center;
 }
 
+p {
+  font-family: 'MonoRegular';
+  color: white;
+  padding: 0;
+  font-size: 15px;
+  margin: 0;
+}
+
 button {
   font-family: 'MonoRegular';
 }
@@ -44,7 +52,7 @@ a {
   font-weight: normal;
 }
 
-@keyframes fade {
+@keyframes fadeOut {
   0% {
     opacity: 1;
   }
@@ -55,5 +63,44 @@ a {
 
 .hide {
   opacity: 0;
-  animation: fade 0.5s linear;
+  animation: fadeOut 0.5s linear;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.show {
+  opacity: 1;
+  animation: fadeIn 0.5s linear;
+}
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0%);
+  }
+}
+
+.hide-button {
+  transform: translateX(100%);
+}
+
+.show-button {
+  animation: slideIn 0.3s linear;
+  transform: translateX(0%);
+  cursor: pointer;
 }
