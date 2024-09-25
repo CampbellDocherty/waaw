@@ -5,10 +5,8 @@ import cdImage from '../images/cd.png';
 import theTwins from '../images/the-twins.jpg';
 import { CompactDisk } from './CompactDisk';
 import { Font } from './Font';
-import { LoadingBar } from './LoadingBar';
 import { ColourPowerUp, SpeedPowerUp } from './PowerUp';
 import { Star } from './Star';
-import { Link } from './Link';
 
 export const sketch = (
   p5: p.P5CanvasInstance,
@@ -23,7 +21,6 @@ export const sketch = (
   const pressedKeys: { [key: string]: boolean } = {};
 
   const font = new Font(p5);
-  const loadingBar = new LoadingBar();
   const cd = new CompactDisk(0, -240, p5, cdImage);
 
   p5.preload = () => {
@@ -35,13 +32,11 @@ export const sketch = (
       title: 'Last Kiss',
       artist: 'James Massiah',
     });
-    loadingBar.bindToP5Instance(p5);
     mainImage = p5.loadImage(theTwins);
   };
 
   const colourPowerUps = createColourPowerUps(p5);
   const speedPowerUps = createSpeedPowerUps(p5);
-  const links = createlinks(p5);
 
   let instructionsButton: any;
   let colourPowerUpInstructions: any;
@@ -49,10 +44,6 @@ export const sketch = (
   p5.setup = () => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
     p5.textFont(font.font);
-    for (const text of links) {
-      text.create();
-      text.hide();
-    }
 
     colourPowerUpInstructions = p5.createP(
       isProbablyWeb ? 'Click to power up ->' : 'Press to power up ->'
@@ -154,32 +145,8 @@ export const sketch = (
     p5.image(mainImage, 0, -120, 140, 170);
     p5.pop();
 
-    // draw texts
-    links.forEach((link) => {
-      if (start) {
-        link.draw();
-      }
-    });
-
     // draw star
     const starVertices = star.draw(p5, !start);
-
-    // check for text collisions
-    for (const link of links) {
-      const isColliding = starVertices.some((vertex) => {
-        const { x, y } = vertex;
-        return link.checkIfColliding(x, y);
-      });
-
-      if (isColliding) {
-        link.updateColor('#f7b102');
-        link.isSelected = true;
-        loadingBar.draw(link);
-      } else {
-        link.updateColor('white');
-        link.isSelected = false;
-      }
-    }
 
     // check for colour powerup collisions
     for (const colourPowerUp of colourPowerUps) {
@@ -211,12 +178,6 @@ export const sketch = (
         star.updateSpeed(powerUpSpeed);
         speedPowerUp.remove();
       }
-    }
-
-    // reset loading bar if no text is selected
-    const selectedText = links.find((text) => text.isSelected);
-    if (!selectedText) {
-      loadingBar.reset();
     }
 
     colourPowerUpInstructions.position(
@@ -276,35 +237,6 @@ const _drawByKeyPress = (
   if (!Object.values(pressedKeys).some((value) => value)) {
     star.updateVelocity(0, 0);
   }
-};
-
-const createlinks = (p5: p.P5CanvasInstance): Link[] => {
-  const instagramText = new Link(
-    'Instagram',
-    18,
-    -0,
-    50,
-    p5,
-    'https://www.instagram.com/waawdj/'
-  );
-  const mixcloudText = new Link(
-    'Mixcloud',
-    18,
-    0,
-    125,
-    p5,
-    'https://www.mixcloud.com/waawtwins/stream/'
-  );
-  const soundcloudText = new Link(
-    'Soundcloud',
-    18,
-    -0,
-    200,
-    p5,
-    'https://soundcloud.com/waawdj'
-  );
-
-  return [instagramText, mixcloudText, soundcloudText];
 };
 
 const createColourPowerUps = (p5: p.P5CanvasInstance): ColourPowerUp[] => {
