@@ -70,6 +70,31 @@ export const sketch = (
       powerUp.bindToButton(button);
     }
 
+    for (const [index, powerUp] of socialPowerUps.entries()) {
+      const button = p5.createButton('');
+      const height = 50;
+      button.style('width', `${height}px`);
+      button.style('height', `${height}px`);
+      button.position(
+        innerWidth - height,
+        innerHeight - (index + 1) * height - index * 15
+      );
+      button.style('margin-right', '15px');
+      button.style('background-image', `url(${powerUp.src})`);
+      button.style('background-size', 'contain');
+      button.style('background-position', 'center center');
+      button.style('background-repeat', 'no-repeat');
+      button.style('background-color', 'transparent');
+      button.style('border', 'none');
+      button.style('outline', 'none');
+
+      button.addClass('hide-button');
+      button.mousePressed(() => {
+        window.open(powerUp.link, '_blank');
+      });
+      powerUp.bindToButton(button);
+    }
+
     for (const [index, powerUp] of speedPowerUps.entries()) {
       const button = p5.createButton(`x${powerUp.speed * 2}`);
       const height = 40;
@@ -260,7 +285,7 @@ const _drawByKeyPress = (
 };
 
 const createColourPowerUps = (p5: p.P5CanvasInstance): ColourPowerUp[] => {
-  const timeBetweenPowerUps = 3000;
+  const timeBetweenPowerUps = 1200;
   const colours: string[] = [
     '#edf67d',
     '#f896d8',
@@ -281,7 +306,7 @@ const createColourPowerUps = (p5: p.P5CanvasInstance): ColourPowerUp[] => {
 };
 
 const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
-  const timeBetweenPowerUps = 4500;
+  const timeBetweenPowerUps = 2000;
   const speeds: number[] = [1, 0.25];
 
   const speedPowerUps = speeds.map((speed, index) => {
@@ -298,10 +323,21 @@ const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
 
 const createSocialPowerUps = (p5: p.P5CanvasInstance): ImagePowerUp[] => {
   const timeBetweenPowerUps = 1000;
-  const socials = [insta, mixcloud, soundcloud];
+  const socials = [
+    { imgSrc: insta, link: 'https://www.instagram.com/waawdj/' },
+    { imgSrc: mixcloud, link: 'https://www.mixcloud.com/waawtwins/stream/' },
+    { imgSrc: soundcloud, link: 'https://soundcloud.com/waawdj' },
+  ];
 
-  const socialPowerUps = socials.map((src, index) => {
-    const powerUp = new ImagePowerUp('#000', 0, 0, p5, src);
+  const socialPowerUps = socials.map((social, index) => {
+    const powerUp = new ImagePowerUp(
+      '#000',
+      0,
+      0,
+      p5,
+      social.imgSrc,
+      social.link
+    );
     setTimeout(() => {
       powerUp.setPositionWithinBounds();
       powerUp.shouldDraw = true;

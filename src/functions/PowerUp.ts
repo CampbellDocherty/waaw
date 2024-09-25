@@ -26,10 +26,10 @@ export class PowerUp {
   };
 
   setPositionWithinBounds = () => {
-    const left = -innerWidth / 2 + 60;
-    const right = innerWidth / 2 - 60;
-    const top = -innerHeight / 2 + 60;
-    const bottom = innerHeight / 2 - 60;
+    const left = -innerWidth / 2 + 80;
+    const right = innerWidth / 2 - 80;
+    const top = -innerHeight / 2 + 80;
+    const bottom = innerHeight / 2 - 80;
     this.xPosition = this.p5.random(left, right);
     this.yPosition = this.p5.random(top, bottom);
   };
@@ -88,16 +88,19 @@ export class ColourPowerUp extends PowerUp {
 export class ImagePowerUp extends PowerUp {
   image: any;
   src: string;
+  link: string;
 
   constructor(
     color: string,
     xPosition: number,
     yPosition: number,
     p5: p.P5CanvasInstance,
-    src: string
+    src: string,
+    link: string
   ) {
     super(color, xPosition, yPosition, p5);
     this.src = src;
+    this.link = link;
   }
 
   load() {
