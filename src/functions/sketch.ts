@@ -71,31 +71,6 @@ export const sketch = (
       powerUp.bindToButton(button);
     }
 
-    for (const [index, powerUp] of speedPowerUps.entries()) {
-      const button = p5.createButton(`x${powerUp.speed * 2}`);
-      const height = 40;
-      const width = 60;
-      button.style('color', powerUp.color);
-      button.style('font-size', '16px');
-      button.style('width', `${width}px`);
-      button.style('height', `${height}px`);
-      button.style('text-align', 'right');
-      button.style('padding', 'none');
-      button.position(
-        innerWidth - width,
-        index * height + colourPowerUps.length * height
-      );
-      button.style('background-color', 'transparent');
-      button.style('border', 'none');
-      button.style('outline', 'none');
-
-      button.hide();
-      button.mousePressed(() => {
-        star.updateSpeed(powerUp.speed);
-      });
-      powerUp.bindToButton(button);
-    }
-
     const button = p5.createButton(
       isProbablyWeb ? 'Click to start!' : 'Press to start!'
     );
