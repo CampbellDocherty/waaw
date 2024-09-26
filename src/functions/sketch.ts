@@ -6,7 +6,7 @@ import folder from '../images/folder.png';
 import theTwins from '../images/the-twins.jpg';
 import { CompactDisk } from './CompactDisk';
 import { Font } from './Font';
-import { ColourPowerUp, SpeedPowerUp } from './PowerUp';
+import { ColourPowerUp, TrackPowerUp, SpeedPowerUp } from './PowerUp';
 import { Star } from './Star';
 
 export const sketch = (
@@ -24,6 +24,7 @@ export const sketch = (
 
   const font = new Font(p5);
   const cd = new CompactDisk(0, -240, p5, cdImage);
+  const trackPowerUps = createTrackPowerUps(p5);
 
   p5.preload = () => {
     font.loadFont(monoRegular);
@@ -36,6 +37,10 @@ export const sketch = (
     });
     mainImage = p5.loadImage(theTwins);
     folderImage = p5.loadImage(folder);
+
+    for (const track of trackPowerUps) {
+      track.loadImage();
+    }
   };
 
   const colourPowerUps = createColourPowerUps(p5);
@@ -144,14 +149,33 @@ export const sketch = (
       _drawByKeyPress(pressedKeys, star);
     }
 
-    p5.push();
-    p5.imageMode(p5.CENTER);
-    p5.image(mainImage, 0, -120, 140, 170);
-    if (start) p5.image(folderImage, -190, 160, 90, 60);
-    p5.pop();
-
     // draw star
+    p5.image(mainImage, 0, -120, 140, 170);
     const starVertices = star.draw(p5, !start);
+
+    for (const track of trackPowerUps) {
+      if (!start) return;
+      track.draw();
+      const isCollidingWithTemp = starVertices.some((vertex) => {
+        const { x, y } = vertex;
+        return track.checkIfColliding(x, y);
+      });
+      if (isCollidingWithTemp) {
+        track.hasBeenCollected = true;
+      }
+    }
+
+    if (start) {
+      const collectedTracks = trackPowerUps.filter(
+        (track) => track.hasBeenCollected
+      );
+      p5.image(folderImage, 0, 100, 90, 60);
+      p5.push();
+      p5.textSize(16);
+      p5.textAlign(p5.CENTER, p5.CENTER);
+      p5.text(`Tracks (${collectedTracks.length})`, 0, 150);
+      p5.pop();
+    }
 
     // check for colour powerup collisions
     for (const colourPowerUp of colourPowerUps) {
@@ -262,6 +286,26 @@ const createColourPowerUps = (p5: p.P5CanvasInstance): ColourPowerUp[] => {
   });
 
   return colourPowerUps;
+};
+
+const createTrackPowerUps = (p5: p.P5CanvasInstance): TrackPowerUp[] => {
+  const timeBetweenPowerUps = 500;
+  const tracks = [
+    {
+      title: 'Last Kiss',
+      artist: 'James Massiah',
+    },
+  ];
+  const trackPowerUps = tracks.map(({ title, artist }, index) => {
+    const powerUp = new TrackPowerUp(p5, cdImage, title, artist);
+    setTimeout(() => {
+      powerUp.setPositionWithinBounds();
+      powerUp.shouldDraw = true;
+    }, timeBetweenPowerUps * (index + 1));
+    return powerUp;
+  });
+
+  return trackPowerUps;
 };
 
 const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {

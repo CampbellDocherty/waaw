@@ -85,25 +85,25 @@ export class ColourPowerUp extends PowerUp {
   }
 }
 
-export class ImagePowerUp extends PowerUp {
+export class TrackPowerUp extends PowerUp {
   image: any;
   src: string;
-  link: string;
+  title: string;
+  artist: string;
 
   constructor(
-    color: string,
-    xPosition: number,
-    yPosition: number,
     p5: p.P5CanvasInstance,
     src: string,
-    link: string
+    title: string,
+    artist: string
   ) {
-    super(color, xPosition, yPosition, p5);
+    super('#000', 0, 0, p5);
     this.src = src;
-    this.link = link;
+    this.title = title;
+    this.artist = artist;
   }
 
-  load() {
+  loadImage() {
     this.image = this.p5.loadImage(this.src);
   }
 
@@ -111,10 +111,22 @@ export class ImagePowerUp extends PowerUp {
     if (!this.shouldDraw) {
       return;
     }
+    if (this.hasBeenCollected) {
+      const m = this.p5.createVector(this.xPosition - 0, this.yPosition - 100);
+      //This sets the magnitude so that it moves in a constant rate but in the right direction.
+      m.normalize();
+      //Set d equal to the speed
+      this.xPosition -= m.x * 10;
+      this.yPosition -= m.y * 10;
+      this.p5.push();
+      this.p5.image(this.image, this.xPosition, this.yPosition, 24, 30);
+      this.p5.pop();
+      return;
+    }
     this.p5.push();
     this.p5.translate(this.xPosition, this.yPosition);
     this.p5.rotateY(this.p5.frameCount * 0.03);
-    this.p5.image(this.image, 0, 0, 30, 30);
+    this.p5.image(this.image, 0, 0, 24, 30);
     this.p5.pop();
   }
 }
