@@ -5,11 +5,8 @@ import cdImage from '../images/cd.png';
 import theTwins from '../images/the-twins.jpg';
 import { CompactDisk } from './CompactDisk';
 import { Font } from './Font';
-import { ColourPowerUp, ImagePowerUp, SpeedPowerUp } from './PowerUp';
+import { ColourPowerUp, SpeedPowerUp } from './PowerUp';
 import { Star } from './Star';
-import insta from '../images/instagram.png';
-import soundcloud from '../images/soundcloud.png';
-import mixcloud from '../images/mixcloud.png';
 
 export const sketch = (
   p5: p.P5CanvasInstance,
@@ -25,7 +22,6 @@ export const sketch = (
 
   const font = new Font(p5);
   const cd = new CompactDisk(0, -240, p5, cdImage);
-  const socialPowerUps = createSocialPowerUps(p5);
 
   p5.preload = () => {
     font.loadFont(monoRegular);
@@ -37,9 +33,6 @@ export const sketch = (
       artist: 'James Massiah',
     });
     mainImage = p5.loadImage(theTwins);
-    for (const powerUp of socialPowerUps) {
-      powerUp.load();
-    }
   };
 
   const colourPowerUps = createColourPowerUps(p5);
@@ -47,7 +40,6 @@ export const sketch = (
 
   let instructionsButton: any;
   let colourPowerUpInstructions: any;
-  let socialPowerUpInstructions: any;
 
   p5.setup = () => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
@@ -55,10 +47,6 @@ export const sketch = (
 
     colourPowerUpInstructions = p5.createP(
       isProbablyWeb ? 'Click to power up ->' : 'Press to power up ->'
-    );
-
-    socialPowerUpInstructions = p5.createP(
-      isProbablyWeb ? 'Click to visit link ->' : 'Press to visit link ->'
     );
 
     for (const [index, powerUp] of colourPowerUps.entries()) {
@@ -71,31 +59,6 @@ export const sketch = (
       button.addClass('hide-button');
       button.mousePressed(() => {
         star.updateColour(powerUp.color);
-      });
-      powerUp.bindToButton(button);
-    }
-
-    for (const [index, powerUp] of socialPowerUps.entries()) {
-      const button = p5.createButton('');
-      const height = 50;
-      button.style('width', `${height}px`);
-      button.style('height', `${height}px`);
-      button.position(
-        innerWidth - height,
-        innerHeight - (index + 1) * height - index * 15
-      );
-      button.style('margin-right', '15px');
-      button.style('background-image', `url(${powerUp.src})`);
-      button.style('background-size', 'contain');
-      button.style('background-position', 'center center');
-      button.style('background-repeat', 'no-repeat');
-      button.style('background-color', 'transparent');
-      button.style('border', 'none');
-      button.style('outline', 'none');
-
-      button.addClass('hide-button');
-      button.mousePressed(() => {
-        window.open(powerUp.link, '_blank');
       });
       powerUp.bindToButton(button);
     }
@@ -202,19 +165,6 @@ export const sketch = (
       }
     }
 
-    for (const socialPowerUp of socialPowerUps) {
-      if (!start) return;
-      socialPowerUp.draw();
-      const isColliding = starVertices.some((vertex) => {
-        const { x, y } = vertex;
-        return socialPowerUp.checkIfColliding(x, y);
-      });
-
-      if (isColliding) {
-        socialPowerUp.remove();
-      }
-    }
-
     // check for speed powerup collisions
     for (const speedPowerUp of speedPowerUps) {
       if (!start) return;
@@ -236,28 +186,6 @@ export const sketch = (
       100 - colourPowerUpInstructions.height / 2
     );
     colourPowerUpInstructions.addClass('hidden');
-
-    socialPowerUpInstructions.position(
-      innerWidth - 280,
-      innerHeight -
-        socialPowerUps[0].button.height * 2 -
-        socialPowerUpInstructions.height / 2 +
-        10
-    );
-    socialPowerUpInstructions.addClass('hidden');
-
-    const collectedSocialPowerUps = socialPowerUps.filter(
-      (powerUp) => powerUp.hasBeenCollected
-    );
-    if (collectedSocialPowerUps.length === socialPowerUps.length) {
-      if (!socialPowerUpInstructions.elt.classList.contains('hide')) {
-        socialPowerUpInstructions.addClass('show');
-        setTimeout(() => {
-          socialPowerUpInstructions.removeClass('show');
-          socialPowerUpInstructions.addClass('hide');
-        }, 2500);
-      }
-    }
 
     // draw compact disk if all powerups have been collected
     const collectedPowerUps = colourPowerUps.filter(
@@ -346,33 +274,6 @@ const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
   });
 
   return speedPowerUps;
-};
-
-const createSocialPowerUps = (p5: p.P5CanvasInstance): ImagePowerUp[] => {
-  const timeBetweenPowerUps = 1000;
-  const socials = [
-    { imgSrc: insta, link: 'https://www.instagram.com/waawdj/' },
-    { imgSrc: mixcloud, link: 'https://www.mixcloud.com/waawtwins/stream/' },
-    { imgSrc: soundcloud, link: 'https://soundcloud.com/waawdj' },
-  ];
-
-  const socialPowerUps = socials.map((social, index) => {
-    const powerUp = new ImagePowerUp(
-      '#000',
-      0,
-      0,
-      p5,
-      social.imgSrc,
-      social.link
-    );
-    setTimeout(() => {
-      powerUp.setPositionWithinBounds();
-      powerUp.shouldDraw = true;
-    }, timeBetweenPowerUps * (index + 1));
-    return powerUp;
-  });
-
-  return socialPowerUps;
 };
 
 const _addInstructions = (isProbablyWeb: boolean, p5: p.P5CanvasInstance) => {
