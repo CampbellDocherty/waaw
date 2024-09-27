@@ -176,11 +176,11 @@ export const sketch = (
 
     for (const track of trackPowerUps) {
       track.draw();
-      const isCollidingWithTemp = starVertices.some((vertex) => {
+      const isCollidingWithTrack = starVertices.some((vertex) => {
         const { x, y } = vertex;
         return track.checkIfColliding(x, y);
       });
-      if (isCollidingWithTemp) {
+      if (isCollidingWithTrack) {
         track.hasBeenCollected = true;
         track.showButton();
       }
