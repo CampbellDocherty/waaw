@@ -21,7 +21,7 @@ const App = () => {
 
   return (
     <>
-      <Draggable>
+      <Draggable bounds="parent">
         <div className="track-container" style={{ display: 'none' }}></div>
       </Draggable>
       <ReactP5Wrapper
