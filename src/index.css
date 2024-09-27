@@ -157,7 +157,38 @@ a {
   border-left: 1px solid #000000;
   border-right: 1px solid #000000;
   background-color: white;
-  min-height: 170px;
-  max-height: 170px;
+  min-height: 75%;
+  max-height: 75%;
   overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.track-button {
+  width: 100%;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  display: flex !important;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  padding: 0;
+  width: 33.3%;
+}
+
+.track-button:hover {
+  outline: 2px dotted black;
+  outline-offset: 4px;
+}
+
+.track-button-image {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  width: 30px;
+  height: 30px;
 }

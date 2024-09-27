@@ -1,4 +1,5 @@
 import * as p from '@p5-wrapper/react';
+import cd from '../images/cd.png';
 
 export class PowerUp {
   color: string;
@@ -88,6 +89,7 @@ export class ColourPowerUp extends PowerUp {
 export class TrackPowerUp extends PowerUp {
   image: any;
   audio: any;
+  declare button: any;
   src: string;
   title: string;
   artist: string;
@@ -113,6 +115,24 @@ export class TrackPowerUp extends PowerUp {
 
   createAudio() {
     this.audio = this.p5.createAudio(this.audioSrc);
+  }
+
+  createButton() {
+    this.button = this.p5.createButton('');
+    this.button.addClass('track-button');
+    const imageSpan = this.p5.createSpan();
+    imageSpan.addClass('track-button-image');
+    imageSpan.style('background-image', `url(${cd})`);
+    this.button.child(imageSpan);
+    const title = `${this.title.toLowerCase().replace(/\s+/g, '-')}.mp3`;
+    const titleSpan = this.p5.createSpan(title);
+    imageSpan.addClass('track-button-title');
+    this.button.child(titleSpan);
+    this.button.hide();
+  }
+
+  showButton() {
+    this.button.show();
   }
 
   draw(): void {

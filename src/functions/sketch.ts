@@ -19,7 +19,6 @@ export const sketch = (
 ): void => {
   let start = false;
   let mainImage: any;
-  let folderImage: any;
 
   const pressedKeys: { [key: string]: boolean } = {};
 
@@ -37,7 +36,6 @@ export const sketch = (
       artist: 'James Massiah',
     });
     mainImage = p5.loadImage(theTwins);
-    folderImage = p5.loadImage(folder);
 
     for (const track of trackPowerUps) {
       track.loadImage();
@@ -57,10 +55,6 @@ export const sketch = (
   p5.setup = () => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
     p5.textFont(font.font);
-
-    for (const track of trackPowerUps) {
-      track.createAudio();
-    }
 
     folderButton = p5.createButton('');
     folderButton.style('width', '90px');
@@ -98,6 +92,12 @@ export const sketch = (
 
     const tracksSection = p5.createDiv();
     tracksSection.addClass('tracks-section');
+    for (const track of trackPowerUps) {
+      track.createAudio();
+      track.createButton();
+      tracksSection.child(track.button);
+    }
+
     trackContainer.child(tracksSection);
 
     colourPowerUpInstructions = p5.createP(
@@ -186,6 +186,7 @@ export const sketch = (
       });
       if (isCollidingWithTemp) {
         track.hasBeenCollected = true;
+        track.showButton();
       }
     }
 
