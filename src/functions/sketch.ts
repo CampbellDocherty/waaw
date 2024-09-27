@@ -1,40 +1,32 @@
 import * as p from '@p5-wrapper/react';
-import { RefObject } from 'react';
+import lastKissAudioSrc from '../audio/last-kiss.mp3';
 import monoRegular from '../fonts/Mono-Regular.ttf';
 import cdImage from '../images/cd.png';
 import folder from '../images/folder.png';
 import theTwins from '../images/the-twins.jpg';
-import { CompactDisk } from './CompactDisk';
 import { Font } from './Font';
-import { ColourPowerUp, TrackPowerUp, SpeedPowerUp } from './PowerUp';
+import { ColourPowerUp, SpeedPowerUp, TrackPowerUp } from './PowerUp';
 import { Star } from './Star';
-import lastKissAudioSrc from '../audio/last-kiss.mp3';
 
 export const sketch = (
   p5: p.P5CanvasInstance,
   star: Star,
-  audioRef: RefObject<HTMLAudioElement>,
   onStart: () => Promise<void>,
   isProbablyWeb: boolean
 ): void => {
   let start = false;
   let mainImage: any;
+  let cd: any;
 
   const pressedKeys: { [key: string]: boolean } = {};
 
   const font = new Font(p5);
-  const cd = new CompactDisk(0, -240, p5, cdImage);
   const trackPowerUps = createTrackPowerUps(p5);
 
   p5.preload = () => {
     font.loadFont(monoRegular);
     star.bindToP5Instance(p5);
-    cd.load();
-    cd.loadAudio({
-      audio: audioRef?.current,
-      title: 'Last Kiss',
-      artist: 'James Massiah',
-    });
+    cd = p5.loadImage(cdImage);
     mainImage = p5.loadImage(theTwins);
 
     for (const track of trackPowerUps) {
@@ -49,6 +41,7 @@ export const sketch = (
   let colourPowerUpInstructions: any;
   let folderButton: any;
   let trackContainer: any;
+  let selectedTrack: TrackPowerUp | null = null;
 
   let isFolderOpen = false;
 
@@ -96,6 +89,14 @@ export const sketch = (
       track.createAudio();
       track.createButton();
       tracksSection.child(track.button);
+      track.button.mousePressed(() => {
+        selectedTrack = track;
+        track.audio.stop();
+        track.audio.time = 0;
+        track.audio.play();
+        trackContainer.hide();
+        isFolderOpen = false;
+      });
     }
 
     trackContainer.child(tracksSection);
@@ -133,11 +134,6 @@ export const sketch = (
     button.mousePressed(async () => {
       await onStart();
       start = true;
-      if (audioRef.current) {
-        audioRef.current.play();
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
       button.hide();
       instructionsButton = _addInstructions(isProbablyWeb, p5);
     });
@@ -253,17 +249,27 @@ export const sketch = (
           colourPowerUpInstructions.addClass('hide');
         }, 2500);
       }
-      cd.shouldDraw = true;
-      cd.draw();
     }
-    // if star collides with compact disk
-    const isColliding = starVertices.some((vertex) => {
-      const { x, y } = vertex;
-      return cd.checkIfColliding(x, y);
-    });
-    if (isColliding && cd.shouldDraw) {
-      cd.hasCollected = true;
-      cd.play();
+
+    if (selectedTrack) {
+      p5.push();
+
+      // draw image
+      p5.imageMode(p5.CENTER);
+      const xCenterOfDisk = -p5.width / 2 + 30;
+      const yCenterOfDisk = -p5.height / 2 + 30;
+      p5.image(cd, xCenterOfDisk, yCenterOfDisk, 30, 30);
+
+      // draw song title
+      p5.fill('white');
+      p5.textSize(12);
+      p5.text(selectedTrack.title, xCenterOfDisk + 20, yCenterOfDisk - 4);
+
+      // draw song artist
+      p5.textSize(10);
+      p5.text(selectedTrack.artist, xCenterOfDisk + 20, yCenterOfDisk + 10);
+
+      p5.pop();
     }
 
     // update star position
