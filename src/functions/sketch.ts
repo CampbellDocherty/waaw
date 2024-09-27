@@ -50,6 +50,9 @@ export const sketch = (
   let instructionsButton: any;
   let colourPowerUpInstructions: any;
   let folderButton: any;
+  let trackContainer: any;
+
+  let isFolderOpen = false;
 
   p5.setup = () => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
@@ -58,6 +61,44 @@ export const sketch = (
     for (const track of trackPowerUps) {
       track.createAudio();
     }
+
+    folderButton = p5.createButton('');
+    folderButton.style('width', '90px');
+    folderButton.style('height', '60px');
+    folderButton.style('background-image', `url(${folder})`);
+    folderButton.style('background-size', 'cover');
+    folderButton.style('background-repeat', 'no-repeat');
+    folderButton.style('background-color', 'transparent');
+    folderButton.style('outline', 'none');
+    folderButton.style('border', 'none');
+    folderButton.style('cursor', 'pointer');
+    folderButton.position(
+      innerWidth / 2 - folderButton.width / 2,
+      innerHeight / 2 - folderButton.height / 2 + 100
+    );
+    folderButton.mousePressed(() => {
+      if (isFolderOpen) {
+        trackContainer.hide();
+      }
+      isFolderOpen = !isFolderOpen;
+    });
+    folderButton.hide();
+
+    trackContainer = p5.createDiv();
+    trackContainer.addClass('track-container');
+    trackContainer.position(
+      innerWidth / 2 - trackContainer.size().width / 2,
+      innerHeight / 2 - trackContainer.size().height / 2 - 60
+    );
+    trackContainer.hide();
+
+    const trackContainerTitle = p5.createDiv('Tracks');
+    trackContainerTitle.addClass('track-container-title');
+    trackContainer.child(trackContainerTitle);
+
+    const tracksSection = p5.createDiv();
+    tracksSection.addClass('tracks-section');
+    trackContainer.child(tracksSection);
 
     colourPowerUpInstructions = p5.createP(
       isProbablyWeb ? 'Click to power up ->' : 'Press to power up ->'
@@ -100,22 +141,6 @@ export const sketch = (
       button.hide();
       instructionsButton = _addInstructions(isProbablyWeb, p5);
     });
-
-    folderButton = p5.createButton('');
-    folderButton.style('width', '90px');
-    folderButton.style('height', '60px');
-    folderButton.style('background-image', `url(${folder})`);
-    folderButton.style('background-size', 'cover');
-    folderButton.style('background-repeat', 'no-repeat');
-    folderButton.style('background-color', 'transparent');
-    folderButton.style('outline', 'none');
-    folderButton.style('border', 'none');
-    folderButton.style('cursor', 'pointer');
-    folderButton.position(
-      innerWidth / 2 - folderButton.width / 2,
-      innerHeight / 2 - folderButton.height / 2 + 100
-    );
-    folderButton.hide();
 
     p5.imageMode(p5.CENTER);
   };
@@ -174,6 +199,10 @@ export const sketch = (
     p5.textAlign(p5.CENTER, p5.CENTER);
     p5.text(`Tracks (${collectedTracks.length})`, 0, 150);
     p5.pop();
+
+    if (isFolderOpen) {
+      trackContainer.show();
+    }
 
     // check for colour powerup collisions
     for (const colourPowerUp of colourPowerUps) {
