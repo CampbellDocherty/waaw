@@ -22,7 +22,7 @@ const App = () => {
   return (
     <>
       <Draggable>
-        <div className="track-container"></div>
+        <div className="track-container" style={{ display: 'none' }}></div>
       </Draggable>
       <ReactP5Wrapper
         sketch={(p5) => sketch(p5, star, onStart, isProbablyWeb)}
