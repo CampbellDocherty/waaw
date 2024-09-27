@@ -50,6 +50,24 @@ button {
   outline: none;
 }
 
+.hidden-menu {
+  transform: translateX(-100%);
+}
+
+@keyframes slideRight {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.shown-menu {
+  transform: translateX(0%);
+  animation: slideRight 1s linear;
+}
+
 a {
   color: #f7b102;
   text-decoration: none;
