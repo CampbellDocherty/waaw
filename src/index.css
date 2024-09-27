@@ -104,10 +104,92 @@ a {
 
 .hide-button {
   transform: translateX(100%);
+  opacity: 0;
 }
 
 .show-button {
   animation: slideIn 0.3s linear;
   transform: translateX(0%);
   cursor: pointer;
+  opacity: 1;
+}
+
+.track-container {
+  border: solid;
+  border-width: 2px;
+  border-bottom-color: #424242;
+  border-right-color: #424242;
+  border-left-color: #fcfbfa;
+  border-top-color: #fcfbfa;
+  background: #c6c6c6;
+  padding: 4px;
+  color: #212529;
+  border-radius: 0px;
+  width: 20%;
+  height: 200px;
+  z-index: 999;
+  display: flex;
+  cursor: grab;
+}
+
+@media (max-width: 600px) {
+  .track-container {
+    width: 70%;
+  }
+}
+
+.track-container-title {
+  font-family: 'MonoRegular';
+  color: white;
+  padding: 0;
+  font-size: 15px;
+  margin: 0;
+  background-color: rgb(7, 0, 160);
+  border-top: 1px solid #252176;
+  border-left: 1px solid #252176;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.tracks-section {
+  border-top: 1px solid #000000;
+  border-left: 1px solid #000000;
+  border-right: 1px solid #000000;
+  background-color: white;
+  min-height: 75%;
+  max-height: 75%;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.track-button {
+  width: 100%;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  padding: 0;
+  width: 33.3%;
+}
+
+.track-button:hover {
+  outline: 2px dotted black;
+  outline-offset: 4px;
+}
+
+.track-button-image {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  width: 30px;
+  height: 30px;
 }
