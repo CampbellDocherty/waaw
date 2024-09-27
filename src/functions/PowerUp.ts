@@ -133,6 +133,7 @@ export class TrackPowerUp extends PowerUp {
 
   showButton() {
     this.button.show();
+    this.button.style('display', 'flex');
   }
 
   draw(): void {
