@@ -49,6 +49,7 @@ export const sketch = (
 
   let instructionsButton: any;
   let colourPowerUpInstructions: any;
+  let folderButton: any;
 
   p5.setup = () => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
@@ -100,6 +101,22 @@ export const sketch = (
       instructionsButton = _addInstructions(isProbablyWeb, p5);
     });
 
+    folderButton = p5.createButton('');
+    folderButton.style('width', '90px');
+    folderButton.style('height', '60px');
+    folderButton.style('background-image', `url(${folder})`);
+    folderButton.style('background-size', 'cover');
+    folderButton.style('background-repeat', 'no-repeat');
+    folderButton.style('background-color', 'transparent');
+    folderButton.style('outline', 'none');
+    folderButton.style('border', 'none');
+    folderButton.style('cursor', 'pointer');
+    folderButton.position(
+      innerWidth / 2 - folderButton.width / 2,
+      innerHeight / 2 - folderButton.height / 2 + 100
+    );
+    folderButton.hide();
+
     p5.imageMode(p5.CENTER);
   };
 
@@ -150,7 +167,8 @@ export const sketch = (
     const collectedTracks = trackPowerUps.filter(
       (track) => track.hasBeenCollected
     );
-    p5.image(folderImage, 0, 100, 90, 60);
+
+    folderButton.show();
     p5.push();
     p5.textSize(16);
     p5.textAlign(p5.CENTER, p5.CENTER);
