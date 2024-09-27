@@ -8,6 +8,7 @@ import { CompactDisk } from './CompactDisk';
 import { Font } from './Font';
 import { ColourPowerUp, TrackPowerUp, SpeedPowerUp } from './PowerUp';
 import { Star } from './Star';
+import lastKissAudioSrc from '../audio/last-kiss.mp3';
 
 export const sketch = (
   p5: p.P5CanvasInstance,
@@ -53,6 +54,10 @@ export const sketch = (
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
     p5.textFont(font.font);
 
+    for (const track of trackPowerUps) {
+      track.createAudio();
+    }
+
     colourPowerUpInstructions = p5.createP(
       isProbablyWeb ? 'Click to power up ->' : 'Press to power up ->'
     );
@@ -94,6 +99,7 @@ export const sketch = (
       button.hide();
       instructionsButton = _addInstructions(isProbablyWeb, p5);
     });
+
     p5.imageMode(p5.CENTER);
   };
 
@@ -128,8 +134,9 @@ export const sketch = (
     p5.image(mainImage, 0, -120, 140, 170);
     const starVertices = star.draw(p5, !start);
 
+    if (!start) return;
+
     for (const track of trackPowerUps) {
-      if (!start) return;
       track.draw();
       const isCollidingWithTemp = starVertices.some((vertex) => {
         const { x, y } = vertex;
@@ -140,21 +147,18 @@ export const sketch = (
       }
     }
 
-    if (start) {
-      const collectedTracks = trackPowerUps.filter(
-        (track) => track.hasBeenCollected
-      );
-      p5.image(folderImage, 0, 100, 90, 60);
-      p5.push();
-      p5.textSize(16);
-      p5.textAlign(p5.CENTER, p5.CENTER);
-      p5.text(`Tracks (${collectedTracks.length})`, 0, 150);
-      p5.pop();
-    }
+    const collectedTracks = trackPowerUps.filter(
+      (track) => track.hasBeenCollected
+    );
+    p5.image(folderImage, 0, 100, 90, 60);
+    p5.push();
+    p5.textSize(16);
+    p5.textAlign(p5.CENTER, p5.CENTER);
+    p5.text(`Tracks (${collectedTracks.length})`, 0, 150);
+    p5.pop();
 
     // check for colour powerup collisions
     for (const colourPowerUp of colourPowerUps) {
-      if (!start) return;
       colourPowerUp.draw();
       const isColliding = starVertices.some((vertex) => {
         const { x, y } = vertex;
@@ -170,7 +174,6 @@ export const sketch = (
 
     // check for speed powerup collisions
     for (const speedPowerUp of speedPowerUps) {
-      if (!start) return;
       speedPowerUp.draw();
       const isColliding = starVertices.some((vertex) => {
         const { x, y } = vertex;
@@ -269,10 +272,11 @@ const createTrackPowerUps = (p5: p.P5CanvasInstance): TrackPowerUp[] => {
     {
       title: 'Last Kiss',
       artist: 'James Massiah',
+      audioSrc: lastKissAudioSrc,
     },
   ];
-  const trackPowerUps = tracks.map(({ title, artist }, index) => {
-    const powerUp = new TrackPowerUp(p5, cdImage, title, artist);
+  const trackPowerUps = tracks.map(({ title, artist, audioSrc }, index) => {
+    const powerUp = new TrackPowerUp(p5, cdImage, title, artist, audioSrc);
     setTimeout(() => {
       powerUp.setPositionWithinBounds();
       powerUp.shouldDraw = true;

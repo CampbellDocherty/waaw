@@ -87,24 +87,32 @@ export class ColourPowerUp extends PowerUp {
 
 export class TrackPowerUp extends PowerUp {
   image: any;
+  audio: any;
   src: string;
   title: string;
   artist: string;
+  audioSrc: string;
 
   constructor(
     p5: p.P5CanvasInstance,
     src: string,
     title: string,
-    artist: string
+    artist: string,
+    audioSrc: string
   ) {
     super('#000', 0, 0, p5);
     this.src = src;
     this.title = title;
     this.artist = artist;
+    this.audioSrc = audioSrc;
   }
 
   loadImage() {
     this.image = this.p5.loadImage(this.src);
+  }
+
+  createAudio() {
+    this.audio = this.p5.createAudio(this.audioSrc);
   }
 
   draw(): void {
