@@ -1,4 +1,5 @@
 import { ReactP5Wrapper } from '@p5-wrapper/react';
+import Draggable from 'react-draggable';
 import { useCallback } from 'react';
 import {
   DeviceMotionEventiOS,
@@ -19,7 +20,14 @@ const App = () => {
   }, []);
 
   return (
-    <ReactP5Wrapper sketch={(p5) => sketch(p5, star, onStart, isProbablyWeb)} />
+    <>
+      <Draggable>
+        <div className="track-container"></div>
+      </Draggable>
+      <ReactP5Wrapper
+        sketch={(p5) => sketch(p5, star, onStart, isProbablyWeb)}
+      />
+    </>
   );
 };
 

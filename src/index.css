@@ -129,6 +129,7 @@ a {
   height: 200px;
   z-index: 999;
   display: flex;
+  cursor: grab;
 }
 
 @media (max-width: 600px) {

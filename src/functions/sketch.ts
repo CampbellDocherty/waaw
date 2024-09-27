@@ -71,8 +71,7 @@ export const sketch = (
     });
     folderButton.hide();
 
-    trackContainer = p5.createDiv();
-    trackContainer.addClass('track-container');
+    trackContainer = p5.select('.track-container');
     trackContainer.position(
       innerWidth / 2 - trackContainer.size().width / 2,
       innerHeight / 2 - trackContainer.size().height / 2 - 60
