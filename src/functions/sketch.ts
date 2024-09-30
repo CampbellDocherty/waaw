@@ -96,6 +96,14 @@ export const sketch = (
         trackContainer.hide();
         isFolderOpen = false;
       });
+      track.button.touchStarted(() => {
+        selectedTrack = track;
+        track.audio.stop();
+        track.audio.time = 0;
+        track.audio.play();
+        trackContainer.hide();
+        isFolderOpen = false;
+      });
     }
 
     trackContainer.child(tracksSection);
