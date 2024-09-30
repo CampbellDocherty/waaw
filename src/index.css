@@ -262,6 +262,10 @@ a {
   opacity: 1;
 }
 
+.instructions {
+  max-width: 70%;
+}
+
 .tracks {
   font-size: 16;
 }
