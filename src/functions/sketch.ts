@@ -8,6 +8,12 @@ import { Font } from './Font';
 import { ColourPowerUp, SpeedPowerUp, TrackPowerUp } from './PowerUp';
 import { Star } from './Star';
 
+enum Screen {
+  INITIAL = 'initial',
+  GAME = 'game',
+  SOCIALS = 'socials',
+}
+
 export const sketch = (
   p5: p.P5CanvasInstance,
   star: Star,
@@ -37,28 +43,33 @@ export const sketch = (
   const colourPowerUps = createColourPowerUps(p5);
   const speedPowerUps = createSpeedPowerUps(p5);
 
-  let instructionsButton: any;
-  let colourPowerUpInstructions: any;
-  let folderButton: any;
+  const instructionsButton = p5.select('.instructions');
+  const gameScreen = p5.select('.game-screen');
+  const socialScreen = p5.select('.social-screen');
+  const folderButton = p5.select('.folder-button');
+  const tracksText = p5.select('.tracks');
+  const menuButton = p5.select('.top-left');
+  const gameButton = p5.select('.top-right');
+
   let trackContainer: any;
   let selectedTrack: TrackPowerUp | null = null;
 
   let isFolderOpen = false;
+  let screen: Screen = Screen.INITIAL;
 
   p5.setup = () => {
-    p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
+    p5.createCanvas(innerWidth * 2, innerHeight, p5.WEBGL);
     p5.textFont(font.font);
 
-    folderButton = p5.createButton('');
-    folderButton.style('width', '90px');
-    folderButton.style('height', '60px');
+    menuButton.mousePressed(() => {
+      screen = Screen.SOCIALS;
+    });
+
+    gameButton.mousePressed(() => {
+      screen = Screen.GAME;
+    });
+
     folderButton.style('background-image', `url(${folder})`);
-    folderButton.style('background-size', 'cover');
-    folderButton.style('background-repeat', 'no-repeat');
-    folderButton.style('background-color', 'transparent');
-    folderButton.style('outline', 'none');
-    folderButton.style('border', 'none');
-    folderButton.style('cursor', 'pointer');
     folderButton.position(
       innerWidth / 2 - folderButton.width / 2,
       innerHeight / 2 - folderButton.height / 2 + 100
@@ -69,7 +80,6 @@ export const sketch = (
       }
       isFolderOpen = !isFolderOpen;
     });
-    folderButton.hide();
 
     trackContainer = p5.select('.track-container');
     trackContainer.position(
@@ -108,18 +118,15 @@ export const sketch = (
 
     trackContainer.child(tracksSection);
 
-    colourPowerUpInstructions = p5.createP(
-      isProbablyWeb ? 'Click to power up ->' : 'Press to power up ->'
-    );
-
+    const buttons = p5.selectAll('.hide-button');
     for (const [index, powerUp] of colourPowerUps.entries()) {
-      const button = p5.createButton('');
+      const button = buttons[index];
       const height = 40;
       button.style('width', `${height}px`);
       button.style('height', `${height}px`);
       button.position(innerWidth - height, index * height);
       button.style('background-color', powerUp.color);
-      button.addClass('hide-button');
+      button.style('z-index', '9999');
       button.mousePressed(() => {
         star.updateColour(powerUp.color);
       });
@@ -142,7 +149,6 @@ export const sketch = (
       await onStart();
       start = true;
       button.hide();
-      instructionsButton = _addInstructions(isProbablyWeb, p5);
     });
 
     p5.imageMode(p5.CENTER);
@@ -151,6 +157,7 @@ export const sketch = (
   p5.keyPressed = (event: { key: string }) => {
     if (isProbablyWeb) {
       if (instructionsButton) {
+        instructionsButton.removeClass('show');
         instructionsButton.addClass('hide');
       }
       pressedKeys[event.key] = true;
@@ -167,6 +174,8 @@ export const sketch = (
     p5.resizeCanvas(innerWidth, innerHeight, p5.WEBGL);
   };
 
+  let startingX = 0;
+
   p5.draw = () => {
     p5.background(102);
 
@@ -180,6 +189,49 @@ export const sketch = (
     const starVertices = star.draw(p5, !start);
 
     if (!start) return;
+
+    const hiddenElements = p5.selectAll('.hidden');
+    for (const hidden of hiddenElements) {
+      hidden.removeClass('hidden');
+      hidden.addClass('show');
+    }
+
+    if (screen === Screen.SOCIALS) {
+      let x = (startingX += 50);
+      if (x >= innerWidth) {
+        startingX = innerWidth;
+        x = innerWidth;
+      }
+      p5.translate(x, 0);
+
+      if (!socialScreen.elt.classList.contains('show-menu')) {
+        socialScreen.removeClass('hide-menu');
+        socialScreen.addClass('show-menu');
+      }
+
+      if (!gameScreen.elt.classList.contains('slide-out-right')) {
+        gameScreen.removeClass('slide-in-left');
+        gameScreen.addClass('slide-out-right');
+      }
+    }
+
+    if (screen === Screen.GAME) {
+      let x = (startingX -= 50);
+      if (x <= 0) {
+        startingX = 0;
+        x = 0;
+      }
+      p5.translate(x, 0);
+      if (!socialScreen.elt.classList.contains('hide-menu')) {
+        socialScreen.removeClass('show-menu');
+        socialScreen.addClass('hide-menu');
+      }
+
+      if (!gameScreen.elt.classList.contains('slide-in-left')) {
+        gameScreen.removeClass('slide-out-right');
+        gameScreen.addClass('slide-in-left');
+      }
+    }
 
     for (const track of trackPowerUps) {
       track.draw();
@@ -197,12 +249,11 @@ export const sketch = (
       (track) => track.hasBeenCollected
     );
 
-    folderButton.show();
-    p5.push();
-    p5.textSize(16);
-    p5.textAlign(p5.CENTER, p5.CENTER);
-    p5.text(`Tracks (${collectedTracks.length})`, 0, 150);
-    p5.pop();
+    tracksText.position(
+      innerWidth / 2 - folderButton.width / 2,
+      innerHeight / 2 - folderButton.height / 2 + 170
+    );
+    tracksText.html(`Tracks (${collectedTracks.length})`);
 
     if (isFolderOpen) {
       trackContainer.show();
@@ -238,32 +289,12 @@ export const sketch = (
       }
     }
 
-    colourPowerUpInstructions.position(
-      innerWidth - 240,
-      100 - colourPowerUpInstructions.height / 2
-    );
-    colourPowerUpInstructions.addClass('hidden');
-
-    // draw compact disk if all powerups have been collected
-    const collectedPowerUps = colourPowerUps.filter(
-      (powerUp) => powerUp.hasBeenCollected
-    );
-    if (collectedPowerUps.length === colourPowerUps.length) {
-      if (!colourPowerUpInstructions.elt.classList.contains('hide')) {
-        colourPowerUpInstructions.addClass('show');
-        setTimeout(() => {
-          colourPowerUpInstructions.removeClass('show');
-          colourPowerUpInstructions.addClass('hide');
-        }, 2500);
-      }
-    }
-
     if (selectedTrack) {
       p5.push();
 
       // draw image
       p5.imageMode(p5.CENTER);
-      const xCenterOfDisk = -p5.width / 2 + 30;
+      const xCenterOfDisk = -p5.width / 4 + 30;
       const yCenterOfDisk = -p5.height / 2 + 30;
       p5.image(cd, xCenterOfDisk, yCenterOfDisk, 30, 30);
 
@@ -362,20 +393,4 @@ const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
   });
 
   return speedPowerUps;
-};
-
-const _addInstructions = (isProbablyWeb: boolean, p5: p.P5CanvasInstance) => {
-  const instructionText = isProbablyWeb
-    ? 'Collect the powerups using the arrow keys :)'
-    : 'Collect the powerups by tilting your device :)';
-
-  const instructions = p5.createP(instructionText);
-  instructions.addClass('centered-text');
-
-  if (!isProbablyWeb) {
-    setTimeout(() => {
-      instructions.addClass('hide');
-    }, 2000);
-  }
-  return instructions;
 };
