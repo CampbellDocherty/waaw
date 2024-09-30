@@ -151,6 +151,12 @@ export const sketch = (
       await onStart();
       start = true;
       button.hide();
+      if (!isProbablyWeb) {
+        setTimeout(() => {
+          instructionsButton.removeClass('show');
+          instructionsButton.addClass('hide');
+        }, 2000);
+      }
     });
 
     p5.imageMode(p5.CENTER);
