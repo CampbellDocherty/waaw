@@ -45,9 +45,27 @@ export const sketch = (
 
   let isFolderOpen = false;
 
+  let menuButton: any;
+
   p5.setup = () => {
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
     p5.textFont(font.font);
+
+    menuButton = p5.createButton('menu');
+    menuButton.position(10, 10);
+    menuButton.style('cursor', 'pointer');
+    menuButton.style('z-index', '3');
+    menuButton.mousePressed(() => {
+      const menu = p5.select('.menu');
+      if (menu.elt.classList.contains('show-menu')) {
+        menu.removeClass('show-menu');
+        menu.addClass('hide-menu');
+        return;
+      }
+      menu.removeClass('hide-menu');
+      menu.addClass('show-menu');
+    });
+    menuButton.hide();
 
     folderButton = p5.createButton('');
     folderButton.style('width', '90px');
@@ -181,6 +199,8 @@ export const sketch = (
 
     if (!start) return;
 
+    menuButton.show();
+
     for (const track of trackPowerUps) {
       track.draw();
       const isCollidingWithTrack = starVertices.some((vertex) => {
@@ -244,7 +264,6 @@ export const sketch = (
     );
     colourPowerUpInstructions.addClass('hidden');
 
-    // draw compact disk if all powerups have been collected
     const collectedPowerUps = colourPowerUps.filter(
       (powerUp) => powerUp.hasBeenCollected
     );

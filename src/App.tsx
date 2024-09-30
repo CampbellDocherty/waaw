@@ -24,9 +24,39 @@ const App = () => {
       <Draggable bounds="parent">
         <div className="track-container" style={{ display: 'none' }}></div>
       </Draggable>
-      <ReactP5Wrapper
-        sketch={(p5) => sketch(p5, star, onStart, isProbablyWeb)}
-      />
+      <ReactP5Wrapper sketch={(p5) => sketch(p5, star, onStart, isProbablyWeb)}>
+        <div className="menu">
+          <ul>
+            <li>
+              <a
+                href="https://soundcloud.com/waawdj"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Soundcloud
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.mixcloud.com/waawtwins/stream/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Mixcloud
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.instagram.com/waawdj/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Instagram
+              </a>
+            </li>
+          </ul>
+        </div>
+      </ReactP5Wrapper>
     </>
   );
 };
