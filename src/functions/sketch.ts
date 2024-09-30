@@ -101,6 +101,7 @@ export const sketch = (
       track.createButton();
       tracksSection.child(track.button);
       track.button.mousePressed(() => {
+        trackPowerUps.forEach((track) => track.audio.stop());
         selectedTrack = track;
         track.audio.stop();
         track.audio.time = 0;
@@ -109,6 +110,7 @@ export const sketch = (
         isFolderOpen = false;
       });
       track.button.touchStarted(() => {
+        trackPowerUps.forEach((track) => track.audio.stop());
         selectedTrack = track;
         track.audio.stop();
         track.audio.time = 0;
@@ -303,7 +305,7 @@ export const sketch = (
       // draw image
       p5.imageMode(p5.CENTER);
       const xCenterOfDisk = -p5.width / 4 + 30;
-      const yCenterOfDisk = -p5.height / 2 + 30;
+      const yCenterOfDisk = p5.height / 2 - 30;
       p5.image(cd, xCenterOfDisk, yCenterOfDisk, 30, 30);
 
       // draw song title
