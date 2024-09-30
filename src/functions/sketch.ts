@@ -49,21 +49,6 @@ export const sketch = (
     p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
     p5.textFont(font.font);
 
-    const menuBackground = p5.createDiv('');
-    menuBackground.addClass('hidden-menu');
-    menuBackground.style('width', `${innerWidth}px`);
-    menuBackground.style('height', `${innerHeight * 2}px`);
-    menuBackground.style('background-color', 'pink');
-    menuBackground.style('z-index', '9999');
-    menuBackground.position(0, 0);
-
-    const menu = p5.createButton('menu');
-    menu.style('z-index', '999');
-    menu.position(0, 0);
-    menu.mousePressed(() => {
-      menuBackground.addClass('shown-menu');
-    });
-
     folderButton = p5.createButton('');
     folderButton.style('width', '90px');
     folderButton.style('height', '60px');
