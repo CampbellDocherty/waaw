@@ -24,9 +24,6 @@ const App = () => {
       <Draggable bounds="parent">
         <div className="track-container" style={{ display: 'none' }}></div>
       </Draggable>
-      <ReactP5Wrapper
-        sketch={(p5) => sketch(p5, star, onStart, isProbablyWeb)}
-      />
       <div className="social-screen">
         <button className="top-right">game {'->'}</button>
         <ul>
@@ -68,8 +65,14 @@ const App = () => {
             : 'Collect the powerups by tilting your device :)'}
         </p>
         <button className="folder-button hidden" />
+        {Array.from('abcde').map((_, index) => {
+          return <button key={index} className="hide-button" />;
+        })}
         <p className="hidden tracks">Tracks (0)</p>
       </div>
+      <ReactP5Wrapper
+        sketch={(p5) => sketch(p5, star, onStart, isProbablyWeb)}
+      />
     </>
   );
 };

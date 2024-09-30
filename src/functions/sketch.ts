@@ -118,14 +118,15 @@ export const sketch = (
 
     trackContainer.child(tracksSection);
 
+    const buttons = p5.selectAll('.hide-button');
     for (const [index, powerUp] of colourPowerUps.entries()) {
-      const button = p5.createButton('');
+      const button = buttons[index];
       const height = 40;
       button.style('width', `${height}px`);
       button.style('height', `${height}px`);
       button.position(innerWidth - height, index * height);
       button.style('background-color', powerUp.color);
-      button.addClass('hide-button');
+      button.style('z-index', '9999');
       button.mousePressed(() => {
         star.updateColour(powerUp.color);
       });
