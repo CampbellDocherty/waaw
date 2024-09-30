@@ -7,6 +7,13 @@ import theTwins from '../images/the-twins.jpg';
 import { Font } from './Font';
 import { ColourPowerUp, SpeedPowerUp, TrackPowerUp } from './PowerUp';
 import { Star } from './Star';
+import { Link } from './Link';
+
+enum Screen {
+  INITIAL = 'initial',
+  GAME = 'game',
+  SOCIALS = 'socials',
+}
 
 export const sketch = (
   p5: p.P5CanvasInstance,
@@ -36,6 +43,7 @@ export const sketch = (
 
   const colourPowerUps = createColourPowerUps(p5);
   const speedPowerUps = createSpeedPowerUps(p5);
+  const links = createLinks(p5);
 
   let instructionsButton: any;
   let colourPowerUpInstructions: any;
@@ -44,28 +52,30 @@ export const sketch = (
   let selectedTrack: TrackPowerUp | null = null;
 
   let isFolderOpen = false;
+  let screen: Screen = Screen.INITIAL;
 
   let menuButton: any;
 
   p5.setup = () => {
-    p5.createCanvas(innerWidth, innerHeight, p5.WEBGL);
+    p5.createCanvas(innerWidth * 2, innerHeight, p5.WEBGL);
     p5.textFont(font.font);
 
-    menuButton = p5.createButton('menu');
-    menuButton.position(10, 10);
-    menuButton.style('cursor', 'pointer');
+    menuButton = p5.createButton('<- socials');
+    menuButton.position(20, 20);
     menuButton.style('z-index', '3');
     menuButton.mousePressed(() => {
-      const menu = p5.select('.menu');
-      if (menu.elt.classList.contains('show-menu')) {
-        menu.removeClass('show-menu');
-        menu.addClass('hide-menu');
-        return;
-      }
-      menu.removeClass('hide-menu');
-      menu.addClass('show-menu');
+      screen = Screen.SOCIALS;
     });
     menuButton.hide();
+
+    const gameButton = p5.select('.game-menu-item');
+    gameButton.mousePressed(() => {
+      screen = Screen.GAME;
+    });
+
+    // for (const link of links) {
+    //   link.create();
+    // }
 
     folderButton = p5.createButton('');
     folderButton.style('width', '90px');
@@ -185,6 +195,8 @@ export const sketch = (
     p5.resizeCanvas(innerWidth, innerHeight, p5.WEBGL);
   };
 
+  let startingX = 0;
+
   p5.draw = () => {
     p5.background(102);
 
@@ -198,6 +210,38 @@ export const sketch = (
     const starVertices = star.draw(p5, !start);
 
     if (!start) return;
+
+    console.log(startingX);
+
+    if (screen === Screen.SOCIALS) {
+      let x = (startingX += 50);
+      if (x >= innerWidth) {
+        startingX = innerWidth;
+        x = innerWidth;
+      }
+      p5.translate(x, 0);
+      folderButton.addClass('slide-right');
+      instructionsButton.addClass('slide-right');
+      const menu = p5.select('.social-screen');
+      if (!menu.elt.classList.contains('show-menu')) {
+        menu.removeClass('hide-menu');
+        menu.addClass('show-menu');
+      }
+    }
+
+    if (screen === Screen.GAME) {
+      let x = (startingX -= 50);
+      if (x <= 0) {
+        startingX = 0;
+        x = 0;
+      }
+      p5.translate(x, 0);
+      const menu = p5.select('.social-screen');
+      if (!menu.elt.classList.contains('hide-menu')) {
+        menu.removeClass('show-menu');
+        menu.addClass('hide-menu');
+      }
+    }
 
     menuButton.show();
 
@@ -381,6 +425,35 @@ const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
   });
 
   return speedPowerUps;
+};
+
+const createLinks = (p5: p.P5CanvasInstance): Link[] => {
+  const links = [
+    {
+      href: 'https://www.instagram.com/waawdj/',
+      text: 'instagram',
+    },
+
+    {
+      href: 'https://www.mixcloud.com/waawtwins/stream/',
+      text: 'mixcloud',
+    },
+
+    {
+      href: 'https://soundcloud.com/waawdj',
+      text: 'soundcloud',
+    },
+  ];
+  const builtLinks = links.map(({ href, text }, index) => {
+    const link = new Link({
+      p5,
+      yOffset: index * 40,
+      href,
+      text,
+    });
+    return link;
+  });
+  return builtLinks;
 };
 
 const _addInstructions = (isProbablyWeb: boolean, p5: p.P5CanvasInstance) => {

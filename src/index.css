@@ -16,6 +16,16 @@ body {
   align-items: center;
 }
 
+button {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+  color: white;
+  font-size: 15px;
+}
+
 p,
 li {
   font-family: 'MonoRegular';
@@ -47,11 +57,24 @@ a:hover {
   text-decoration: underline;
 }
 
-.menu {
+@keyframes slideRight {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(1000%);
+  }
+}
+
+.slide-right {
+  transform: translateX(1000%);
+  animation: slideRight 0.4s linear;
+}
+
+.social-screen {
   width: 100vw;
   height: 100vh;
   transform: translateX(-100%);
-  background-color: #666666;
   position: absolute;
   top: 0;
   left: 0;
@@ -60,6 +83,12 @@ a:hover {
   align-items: center;
   color: white;
   z-index: 2;
+}
+
+.game-menu-item {
+  position: absolute;
+  top: 20px;
+  right: 20px;
 }
 
 @keyframes slideInFromLeft {
