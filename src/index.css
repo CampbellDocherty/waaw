@@ -91,7 +91,7 @@ a:hover {
 
 .top-right {
   position: absolute;
-  bottom: 20px;
+  bottom: 60px;
   right: 20px;
   background-color: transparent;
   border: none;
@@ -104,7 +104,7 @@ a:hover {
 
 .top-left {
   position: absolute;
-  bottom: 20px;
+  bottom: 60px;
   right: 20px;
   background-color: transparent;
   border: none;
@@ -264,6 +264,7 @@ a {
 
 .instructions {
   max-width: 70%;
+  text-align: center;
 }
 
 .tracks {
