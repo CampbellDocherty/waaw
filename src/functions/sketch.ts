@@ -156,6 +156,7 @@ export const sketch = (
   p5.keyPressed = (event: { key: string }) => {
     if (isProbablyWeb) {
       if (instructionsButton) {
+        instructionsButton.removeClass('show');
         instructionsButton.addClass('hide');
       }
       pressedKeys[event.key] = true;
@@ -220,13 +221,11 @@ export const sketch = (
         x = 0;
       }
       p5.translate(x, 0);
-      const menu = p5.select('.social-screen');
-      if (!menu.elt.classList.contains('hide-menu')) {
-        menu.removeClass('show-menu');
-        menu.addClass('hide-menu');
+      if (!socialScreen.elt.classList.contains('hide-menu')) {
+        socialScreen.removeClass('show-menu');
+        socialScreen.addClass('hide-menu');
       }
 
-      const gameScreen = p5.select('.game-screen');
       if (!gameScreen.elt.classList.contains('slide-in-left')) {
         gameScreen.removeClass('slide-out-right');
         gameScreen.addClass('slide-in-left');
@@ -294,7 +293,7 @@ export const sketch = (
 
       // draw image
       p5.imageMode(p5.CENTER);
-      const xCenterOfDisk = -p5.width / 2 + 30;
+      const xCenterOfDisk = -p5.width / 4 + 30;
       const yCenterOfDisk = -p5.height / 2 + 30;
       p5.image(cd, xCenterOfDisk, yCenterOfDisk, 30, 30);
 

@@ -16,16 +16,6 @@ body {
   align-items: center;
 }
 
-button {
-  background-color: transparent;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 0;
-  color: white;
-  font-size: 15px;
-}
-
 p,
 li {
   font-family: 'MonoRegular';
@@ -96,19 +86,33 @@ a:hover {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  background-color: transparent;
 }
 
 .top-right {
   position: absolute;
-  top: 20px;
+  bottom: 20px;
   right: 20px;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+  color: white;
+  font-size: 15px;
 }
 
 .top-left {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 4;
+  bottom: 20px;
+  right: 20px;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+  color: white;
+  font-size: 15px;
 }
 
 @keyframes slideInFromLeft {
