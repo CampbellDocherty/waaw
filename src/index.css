@@ -314,12 +314,13 @@ a {
   max-height: 75%;
   overflow-y: scroll;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 4px;
   padding: 10px;
 }
 
 .track-button {
-  width: 100%;
   outline: none;
   border: none;
   cursor: pointer;
@@ -330,7 +331,8 @@ a {
   justify-content: center;
   background-color: transparent;
   padding: 0;
-  width: 50%;
+  margin: 4px;
+  width: 47%;
 }
 
 .track-button:hover {
