@@ -91,7 +91,7 @@ a:hover {
 
 .top-right {
   position: absolute;
-  bottom: 60px;
+  top: 10px;
   right: 20px;
   background-color: transparent;
   border: none;
@@ -104,8 +104,8 @@ a:hover {
 
 .top-left {
   position: absolute;
-  bottom: 60px;
-  right: 20px;
+  top: 10px;
+  left: 20px;
   background-color: transparent;
   border: none;
   outline: none;
@@ -319,8 +319,7 @@ a {
   max-height: 75%;
   overflow-y: scroll;
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 4px;
   padding: 10px;
 }
@@ -336,8 +335,8 @@ a {
   justify-content: center;
   background-color: transparent;
   padding: 0;
-  margin: 4px;
-  width: 47%;
+  width: 100%;
+  margin: 8px 0px;
 }
 
 .track-button:hover {
