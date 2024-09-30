@@ -28,7 +28,7 @@ const App = () => {
         sketch={(p5) => sketch(p5, star, onStart, isProbablyWeb)}
       />
       <div className="social-screen">
-        <button className="game-menu-item">game {'->'}</button>
+        <button className="top-right">game {'->'}</button>
         <ul>
           <li>
             <a
@@ -58,6 +58,16 @@ const App = () => {
             </a>
           </li>
         </ul>
+      </div>
+      <div className="game-screen">
+        <button className="top-left hidden">{'<-'} socials</button>
+        <p className="instructions hidden">
+          {isProbablyWeb
+            ? 'Collect the powerups using the arrow keys :)'
+            : 'Collect the powerups by tilting your device :)'}
+        </p>
+        <button className="folder-button hidden" />
+        <p className="hidden tracks">Tracks (0)</p>
       </div>
     </>
   );
