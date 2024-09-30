@@ -58,7 +58,6 @@ const App = () => {
       </div>
       <div className="game-screen">
         <button className="top-left hidden">{'<-'} socials</button>
-
         <p className="instructions hidden">
           {isProbablyWeb
             ? 'Collect the powerups using the arrow keys :)'

@@ -1,5 +1,7 @@
 import * as p from '@p5-wrapper/react';
 import lastKissAudioSrc from '../audio/last-kiss.mp3';
+import sativaAudioSrc from '../audio/sativa.mp3';
+import loveAudioSrc from '../audio/love.mp3';
 import monoRegular from '../fonts/Mono-Regular.ttf';
 import cdImage from '../images/cd.png';
 import folder from '../images/folder.png';
@@ -149,6 +151,12 @@ export const sketch = (
       await onStart();
       start = true;
       button.hide();
+      if (!isProbablyWeb) {
+        setTimeout(() => {
+          instructionsButton.removeClass('show');
+          instructionsButton.addClass('hide');
+        }, 2000);
+      }
     });
 
     p5.imageMode(p5.CENTER);
@@ -365,6 +373,16 @@ const createTrackPowerUps = (p5: p.P5CanvasInstance): TrackPowerUp[] => {
       title: 'Last Kiss',
       artist: 'James Massiah',
       audioSrc: lastKissAudioSrc,
+    },
+    {
+      title: 'Sativa (Waaw blend)',
+      artist: 'Jhene Aiko x Waaw',
+      audioSrc: sativaAudioSrc,
+    },
+    {
+      title: 'Loveeeeeee Song (Waaw blend)',
+      artist: 'Rihanna feat. Future x Waaw',
+      audioSrc: loveAudioSrc,
     },
   ];
   const trackPowerUps = tracks.map(({ title, artist, audioSrc }, index) => {
