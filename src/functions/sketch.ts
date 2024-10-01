@@ -176,7 +176,15 @@ export const sketch = (
     p5.image(mainImage, 0, -120, 140, 170);
     const starVertices = star.draw(p5, !start);
 
-    if (!start) return;
+    if (!start) {
+      const hiddenElements = p5.selectAll('.show');
+      for (const hidden of hiddenElements) {
+        hidden.removeClass('show');
+        hidden.addClass('hide');
+        hidden.addClass('hidden');
+      }
+      return;
+    }
 
     const hiddenElements = p5.selectAll('.hidden');
     for (const hidden of hiddenElements) {
@@ -277,14 +285,23 @@ export const sketch = (
       p5.imageMode(p5.CENTER);
       const xCenterOfDisk = -p5.width / 4 + 30;
       const yCenterOfDisk = p5.height / 2 - 30;
-      p5.image(cd, xCenterOfDisk, yCenterOfDisk, 40, 40);
+      const dimension = 40;
+      p5.image(cd, xCenterOfDisk, yCenterOfDisk, dimension, dimension);
 
       p5.fill('white');
       p5.textSize(16);
-      p5.text(selectedTrack.title, xCenterOfDisk + 30, yCenterOfDisk - 4);
+      p5.text(
+        selectedTrack.title,
+        xCenterOfDisk + dimension * 0.75,
+        yCenterOfDisk - dimension / 10
+      );
 
       p5.textSize(12);
-      p5.text(selectedTrack.artist, xCenterOfDisk + 30, yCenterOfDisk + 10);
+      p5.text(
+        selectedTrack.artist,
+        xCenterOfDisk + dimension * 0.75,
+        yCenterOfDisk + dimension / 4
+      );
 
       p5.pop();
     }
