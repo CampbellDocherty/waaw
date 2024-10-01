@@ -26,10 +26,10 @@ export class PowerUp {
   };
 
   setPositionWithinBounds = () => {
-    const left = -innerWidth / 2 + 80;
-    const right = innerWidth / 2 - 80;
-    const top = -innerHeight / 2 + 80;
-    const bottom = innerHeight / 2 - 80;
+    const left = -innerWidth / 2 + 40;
+    const right = innerWidth / 2 - 40;
+    const top = -innerHeight / 2 + 40;
+    const bottom = innerHeight / 2 - 40;
     this.xPosition = this.p5.random(left, right);
     this.yPosition = this.p5.random(top, bottom);
   };
@@ -98,7 +98,7 @@ export class TrackPowerUp extends PowerUp {
   artist: string;
   audioSrc: string;
   tint: string | null;
-  rotationSpeed = getRandomNumber(0.01, 0.1);
+  rotationSpeed = getRandomNumber(0.03, 0.1);
 
   constructor({
     p5,
