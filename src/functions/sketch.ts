@@ -7,6 +7,7 @@ import theTwins from '../images/the-twins.jpg';
 import { Font } from './Font';
 import { ColourPowerUp, SpeedPowerUp, TrackPowerUp } from './PowerUp';
 import { Star } from './Star';
+import { FallingRectangle } from './Rectangle';
 
 enum Screen {
   INITIAL = 'initial',
@@ -168,9 +169,17 @@ export const sketch = (
   };
 
   let startingX = 0;
+  const rectangle = new FallingRectangle({
+    width: innerWidth,
+    height: 20,
+    colour: 'white',
+    p5: p5,
+    innerHeight,
+  });
 
   p5.draw = () => {
     p5.background(102);
+    rectangle.draw();
 
     if (isProbablyWeb) {
       _drawByKeyPress(pressedKeys, star);
