@@ -277,14 +277,14 @@ export const sketch = (
       p5.imageMode(p5.CENTER);
       const xCenterOfDisk = -p5.width / 4 + 30;
       const yCenterOfDisk = p5.height / 2 - 30;
-      p5.image(cd, xCenterOfDisk, yCenterOfDisk, 30, 30);
+      p5.image(cd, xCenterOfDisk, yCenterOfDisk, 40, 40);
 
       p5.fill('white');
-      p5.textSize(12);
-      p5.text(selectedTrack.title, xCenterOfDisk + 20, yCenterOfDisk - 4);
+      p5.textSize(16);
+      p5.text(selectedTrack.title, xCenterOfDisk + 30, yCenterOfDisk - 4);
 
-      p5.textSize(10);
-      p5.text(selectedTrack.artist, xCenterOfDisk + 20, yCenterOfDisk + 10);
+      p5.textSize(12);
+      p5.text(selectedTrack.artist, xCenterOfDisk + 30, yCenterOfDisk + 10);
 
       p5.pop();
     }
