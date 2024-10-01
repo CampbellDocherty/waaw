@@ -52,9 +52,9 @@ export const sketch = (
   const gameButton = p5.select('.top-right');
   const trackContainer = p5.select('.track-container');
   const tracksSection = p5.select('.tracks-section');
+  const trackContainerClose = p5.select('.track-container-close');
 
   let selectedTrack: TrackPowerUp | null = null;
-  let isFolderOpen = false;
   let screen: Screen = Screen.INITIAL;
 
   p5.setup = () => {
@@ -75,12 +75,15 @@ export const sketch = (
       innerHeight / 2 - folderButton.height / 2 + 100
     );
     folderButton.mousePressed(() => {
-      if (isFolderOpen) {
+      if (trackContainer.style('display') !== 'none') {
         trackContainer.hide();
       } else {
         trackContainer.show();
       }
-      isFolderOpen = !isFolderOpen;
+    });
+
+    trackContainerClose.mousePressed(() => {
+      trackContainer.hide();
     });
 
     for (const track of trackPowerUps) {
@@ -94,7 +97,6 @@ export const sketch = (
         track.audio.time = 0;
         track.audio.play();
         trackContainer.hide();
-        isFolderOpen = false;
       };
       track.button.mousePressed(onTrackSelect);
       track.button.touchStarted(onTrackSelect);

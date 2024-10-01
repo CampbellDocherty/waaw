@@ -15,7 +15,7 @@ export const Game = ({ isProbablyWeb }: { isProbablyWeb: boolean }) => (
     <p className="hidden tracks">Tracks (0)</p>
     <Draggable bounds="parent">
       <div className="track-container" style={{ display: 'none' }}>
-        <div className="track-container-title">Tracks</div>
+        <button className="track-container-close">x</button>
         <div className="tracks-section"></div>
       </div>
     </Draggable>
