@@ -1,5 +1,4 @@
 import * as p from '@p5-wrapper/react';
-import cd from '../images/cd.png';
 
 export class PowerUp {
   color: string;
@@ -86,6 +85,10 @@ export class ColourPowerUp extends PowerUp {
   }
 }
 
+const getRandomNumber = (min: number, max: number) => {
+  return Math.random() * (max - min) + min;
+};
+
 export class TrackPowerUp extends PowerUp {
   image: any;
   audio: any;
@@ -94,19 +97,30 @@ export class TrackPowerUp extends PowerUp {
   title: string;
   artist: string;
   audioSrc: string;
+  tint: string | null;
+  rotationSpeed = getRandomNumber(0.01, 0.1);
 
-  constructor(
-    p5: p.P5CanvasInstance,
-    src: string,
-    title: string,
-    artist: string,
-    audioSrc: string
-  ) {
+  constructor({
+    p5,
+    src,
+    title,
+    artist,
+    audioSrc,
+    tint,
+  }: {
+    p5: p.P5CanvasInstance;
+    src: string;
+    title: string;
+    artist: string;
+    audioSrc: string;
+    tint: string | null;
+  }) {
     super('#000', 0, 0, p5);
     this.src = src;
     this.title = title;
     this.artist = artist;
     this.audioSrc = audioSrc;
+    this.tint = tint;
   }
 
   loadImage() {
@@ -122,7 +136,7 @@ export class TrackPowerUp extends PowerUp {
     this.button.addClass('track-button');
     const imageSpan = this.p5.createSpan();
     imageSpan.addClass('track-button-image');
-    imageSpan.style('background-image', `url(${cd})`);
+    imageSpan.style('background-image', `url(${this.src})`);
     this.button.child(imageSpan);
     const title = `${this.title.toLowerCase().replace(/\s+/g, '-')}.mp3`;
     const titleSpan = this.p5.createSpan(title);
@@ -148,13 +162,15 @@ export class TrackPowerUp extends PowerUp {
       this.xPosition -= m.x * 10;
       this.yPosition -= m.y * 10;
       this.p5.push();
+      if (this.tint) this.p5.tint(this.tint);
       this.p5.image(this.image, this.xPosition, this.yPosition, 24, 30);
       this.p5.pop();
       return;
     }
     this.p5.push();
     this.p5.translate(this.xPosition, this.yPosition);
-    this.p5.rotateY(this.p5.frameCount * 0.03);
+    this.p5.rotateY(this.p5.frameCount * this.rotationSpeed);
+    if (this.tint) this.p5.tint(this.tint);
     this.p5.image(this.image, 0, 0, 24, 30);
     this.p5.pop();
   }
