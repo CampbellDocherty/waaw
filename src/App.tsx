@@ -22,7 +22,10 @@ const App = () => {
   return (
     <>
       <Draggable bounds="parent">
-        <div className="track-container" style={{ display: 'none' }}></div>
+        <div className="track-container" style={{ display: 'none' }}>
+          <div className="track-container-title">Tracks</div>
+          <div className="tracks-section"></div>
+        </div>
       </Draggable>
       <div className="social-screen">
         <button className="top-right">game {'->'}</button>

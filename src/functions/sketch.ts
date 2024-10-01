@@ -48,12 +48,12 @@ export const sketch = (
   const socialScreen = p5.select('.social-screen');
   const folderButton = p5.select('.folder-button');
   const tracksText = p5.select('.tracks');
-  const menuButton = p5.select('.top-left');
+  const socialsButton = p5.select('.top-left');
   const gameButton = p5.select('.top-right');
+  const trackContainer = p5.select('.track-container');
+  const tracksSection = p5.select('.tracks-section');
 
-  let trackContainer: any;
   let selectedTrack: TrackPowerUp | null = null;
-
   let isFolderOpen = false;
   let screen: Screen = Screen.INITIAL;
 
@@ -61,7 +61,7 @@ export const sketch = (
     p5.createCanvas(innerWidth * 2, innerHeight, p5.WEBGL);
     p5.textFont(font.font);
 
-    menuButton.mousePressed(() => {
+    socialsButton.mousePressed(() => {
       screen = Screen.SOCIALS;
     });
 
@@ -77,28 +77,17 @@ export const sketch = (
     folderButton.mousePressed(() => {
       if (isFolderOpen) {
         trackContainer.hide();
+      } else {
+        trackContainer.show();
       }
       isFolderOpen = !isFolderOpen;
     });
 
-    trackContainer = p5.select('.track-container');
-    trackContainer.position(
-      innerWidth / 2 - trackContainer.size().width / 2,
-      innerHeight / 2 - trackContainer.size().height / 2 - 60
-    );
-    trackContainer.hide();
-
-    const trackContainerTitle = p5.createDiv('Tracks');
-    trackContainerTitle.addClass('track-container-title');
-    trackContainer.child(trackContainerTitle);
-
-    const tracksSection = p5.createDiv();
-    tracksSection.addClass('tracks-section');
     for (const track of trackPowerUps) {
       track.createAudio();
       track.createButton();
       tracksSection.child(track.button);
-      track.button.mousePressed(() => {
+      const onTrackSelect = () => {
         trackPowerUps.forEach((track) => track.audio.stop());
         selectedTrack = track;
         track.audio.stop();
@@ -106,19 +95,10 @@ export const sketch = (
         track.audio.play();
         trackContainer.hide();
         isFolderOpen = false;
-      });
-      track.button.touchStarted(() => {
-        trackPowerUps.forEach((track) => track.audio.stop());
-        selectedTrack = track;
-        track.audio.stop();
-        track.audio.time = 0;
-        track.audio.play();
-        trackContainer.hide();
-        isFolderOpen = false;
-      });
+      };
+      track.button.mousePressed(onTrackSelect);
+      track.button.touchStarted(onTrackSelect);
     }
-
-    trackContainer.child(tracksSection);
 
     const buttons = p5.selectAll('.hide-button');
     for (const [index, powerUp] of colourPowerUps.entries()) {
@@ -260,10 +240,6 @@ export const sketch = (
       innerHeight / 2 - folderButton.height / 2 + 170
     );
     tracksText.html(`Tracks (${collectedTracks.length})`);
-
-    if (isFolderOpen) {
-      trackContainer.show();
-    }
 
     for (const colourPowerUp of colourPowerUps) {
       colourPowerUp.draw();
