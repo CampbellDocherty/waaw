@@ -156,9 +156,9 @@ export class TrackPowerUp extends PowerUp {
     }
     if (this.hasBeenCollected) {
       const m = this.p5.createVector(this.xPosition - 0, this.yPosition - 100);
-      //This sets the magnitude so that it moves in a constant rate but in the right direction.
+
       m.normalize();
-      //Set d equal to the speed
+
       this.xPosition -= m.x * 10;
       this.yPosition -= m.y * 10;
       this.p5.push();
