@@ -21,6 +21,7 @@ export const sketch = (
   isProbablyWeb: boolean
 ): void => {
   let start = false;
+  let allPowerUpsCollected = false;
   let mainImage: any;
   let cd: any;
 
@@ -97,6 +98,8 @@ export const sketch = (
         track.audio.time = 0;
         track.audio.play();
         trackContainer.hide();
+        instructionsButton.removeClass('show');
+        instructionsButton.addClass('hide');
       };
       track.button.mousePressed(onTrackSelect);
       track.button.touchStarted(onTrackSelect);
@@ -146,7 +149,7 @@ export const sketch = (
 
   p5.keyPressed = (event: { key: string }) => {
     if (isProbablyWeb) {
-      if (instructionsButton) {
+      if (instructionsButton && !allPowerUpsCollected) {
         instructionsButton.removeClass('show');
         instructionsButton.addClass('hide');
       }
@@ -177,12 +180,6 @@ export const sketch = (
     const starVertices = star.draw(p5, !start);
 
     if (!start) {
-      const hiddenElements = p5.selectAll('.show');
-      for (const hidden of hiddenElements) {
-        hidden.removeClass('show');
-        hidden.addClass('hide');
-        hidden.addClass('hidden');
-      }
       return;
     }
 
@@ -277,6 +274,23 @@ export const sketch = (
         star.updateSpeed(powerUpSpeed);
         speedPowerUp.remove();
       }
+    }
+
+    const collectedColours = colourPowerUps.filter(
+      (powerUp) => powerUp.hasBeenCollected
+    );
+
+    const allPowerUps = [...trackPowerUps, ...colourPowerUps];
+    const allCollectedPowerUps = [...collectedColours, ...collectedTracks];
+    if (
+      allCollectedPowerUps.length === allPowerUps.length &&
+      !allPowerUpsCollected &&
+      !selectedTrack
+    ) {
+      instructionsButton.html('Select a track to play');
+      instructionsButton.removeClass('hide');
+      instructionsButton.addClass('show');
+      allPowerUpsCollected = true;
     }
 
     if (selectedTrack) {
