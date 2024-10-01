@@ -1,7 +1,5 @@
 import * as p from '@p5-wrapper/react';
-import lastKissAudioSrc from '../audio/last-kiss.mp3';
-import sativaAudioSrc from '../audio/sativa.mp3';
-import loveAudioSrc from '../audio/love.mp3';
+import { audioFiles } from '../audio/audio';
 import monoRegular from '../fonts/Mono-Regular.ttf';
 import cdImage from '../images/cd.png';
 import folder from '../images/folder.png';
@@ -189,12 +187,10 @@ export const sketch = (
   p5.draw = () => {
     p5.background(102);
 
-    // key presses for web
     if (isProbablyWeb) {
       _drawByKeyPress(pressedKeys, star);
     }
 
-    // draw star
     p5.image(mainImage, 0, -120, 140, 170);
     const starVertices = star.draw(p5, !start);
 
@@ -269,7 +265,6 @@ export const sketch = (
       trackContainer.show();
     }
 
-    // check for colour powerup collisions
     for (const colourPowerUp of colourPowerUps) {
       colourPowerUp.draw();
       const isColliding = starVertices.some((vertex) => {
@@ -284,7 +279,6 @@ export const sketch = (
       }
     }
 
-    // check for speed powerup collisions
     for (const speedPowerUp of speedPowerUps) {
       speedPowerUp.draw();
       const isColliding = starVertices.some((vertex) => {
@@ -302,18 +296,15 @@ export const sketch = (
     if (selectedTrack) {
       p5.push();
 
-      // draw image
       p5.imageMode(p5.CENTER);
       const xCenterOfDisk = -p5.width / 4 + 30;
       const yCenterOfDisk = p5.height / 2 - 30;
       p5.image(cd, xCenterOfDisk, yCenterOfDisk, 30, 30);
 
-      // draw song title
       p5.fill('white');
       p5.textSize(12);
       p5.text(selectedTrack.title, xCenterOfDisk + 20, yCenterOfDisk - 4);
 
-      // draw song artist
       p5.textSize(10);
       p5.text(selectedTrack.artist, xCenterOfDisk + 20, yCenterOfDisk + 10);
 
@@ -370,31 +361,24 @@ const createColourPowerUps = (p5: p.P5CanvasInstance): ColourPowerUp[] => {
 
 const createTrackPowerUps = (p5: p.P5CanvasInstance): TrackPowerUp[] => {
   const timeBetweenPowerUps = 500;
-  const tracks = [
-    {
-      title: 'Last Kiss',
-      artist: 'James Massiah',
-      audioSrc: lastKissAudioSrc,
-    },
-    {
-      title: 'Sativa (Waaw blend)',
-      artist: 'Jhene Aiko x Waaw',
-      audioSrc: sativaAudioSrc,
-    },
-    {
-      title: 'Loveeeeeee Song (Waaw blend)',
-      artist: 'Rihanna feat. Future x Waaw',
-      audioSrc: loveAudioSrc,
-    },
-  ];
-  const trackPowerUps = tracks.map(({ title, artist, audioSrc }, index) => {
-    const powerUp = new TrackPowerUp(p5, cdImage, title, artist, audioSrc);
-    setTimeout(() => {
-      powerUp.setPositionWithinBounds();
-      powerUp.shouldDraw = true;
-    }, timeBetweenPowerUps * (index + 1));
-    return powerUp;
-  });
+
+  const trackPowerUps = audioFiles.map(
+    ({ title, artist, audioSrc, tint }, index) => {
+      const powerUp = new TrackPowerUp({
+        p5,
+        src: cdImage,
+        title,
+        artist,
+        audioSrc,
+        tint,
+      });
+      setTimeout(() => {
+        powerUp.setPositionWithinBounds();
+        powerUp.shouldDraw = true;
+      }, timeBetweenPowerUps * (index + 1));
+      return powerUp;
+    }
+  );
 
   return trackPowerUps;
 };
