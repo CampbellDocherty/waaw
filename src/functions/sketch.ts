@@ -27,6 +27,10 @@ export const sketch = (
   let mainImage: any;
   let cd: any;
 
+  let startingX = 0;
+  let score = 0;
+  let diedInGame = false;
+
   const pressedKeys: { [key: string]: boolean } = {};
 
   const font = new Font(p5);
@@ -50,6 +54,7 @@ export const sketch = (
   const instructionsButton = p5.select('.instructions');
   const gameScreen = p5.select('.game-screen');
   const socialScreen = p5.select('.social-screen');
+  const gameOverScreen = p5.select('.game-over-screen');
   const folderButton = p5.select('.folder-button');
   const tracksText = p5.select('.tracks');
   const socialsButton = p5.select('.top-left');
@@ -57,6 +62,8 @@ export const sketch = (
   const trackContainer = p5.select('.track-container');
   const tracksSection = p5.select('.tracks-section');
   const trackContainerClose = p5.select('.track-container-close');
+  const playAgainButton = p5.select('.play-again-button');
+  const finalScore = p5.select('.final-score');
 
   let selectedTrack: TrackPowerUp | null = null;
   let screen: Screen = Screen.INITIAL;
@@ -71,6 +78,17 @@ export const sketch = (
 
     gameButton.mousePressed(() => {
       screen = Screen.GAME;
+    });
+
+    playAgainButton.mousePressed(() => {
+      selectedTrack = null;
+      rectangles.forEach((rectangle) => rectangle.reset());
+      gameOverScreen.removeClass('show');
+      gameOverScreen.addClass('hide');
+      gameOverScreen.style('display', 'none');
+      diedInGame = false;
+      instructionsButton.removeClass('hide');
+      instructionsButton.addClass('show');
     });
 
     folderButton.style('background-image', `url(${folder})`);
@@ -102,7 +120,10 @@ export const sketch = (
         track.audio.time = 0;
         track.audio.play();
         if (allPowerUpsCollected) {
-          rectangles.forEach((rectangle) => (rectangle.shouldDraw = true));
+          rectangles.forEach((rectangle) => {
+            rectangle.shouldDraw = true;
+            rectangle.shouldAnimate = true;
+          });
         }
         trackContainer.hide();
         instructionsButton.removeClass('show');
@@ -175,9 +196,9 @@ export const sketch = (
     p5.resizeCanvas(innerWidth, innerHeight, p5.WEBGL);
   };
 
-  let startingX = 0;
-
   p5.draw = () => {
+    const isPlayingTheGame = allPowerUpsCollected && selectedTrack;
+
     p5.background(102);
 
     if (isProbablyWeb) {
@@ -234,6 +255,7 @@ export const sketch = (
         gameScreen.addClass('slide-in-left');
       }
     }
+
     const starVertices = star.draw(p5, false);
 
     for (const track of trackPowerUps) {
@@ -286,6 +308,16 @@ export const sketch = (
       }
     }
 
+    if (isPlayingTheGame) {
+      p5.push();
+      p5.textAlign(p5.CENTER);
+      p5.textSize(14);
+      p5.text('Score', 0, -innerHeight / 2 + 30);
+      p5.textSize(18);
+      p5.text(!diedInGame ? (score += 10) : score, 0, -innerHeight / 2 + 50);
+      p5.pop();
+    }
+
     for (const rectangle of rectangles) {
       rectangle.draw();
 
@@ -295,8 +327,16 @@ export const sketch = (
       });
 
       if (isColliding) {
-        console.log('yep colliding');
+        if (star.colour !== rectangle.colour) diedInGame = true;
       }
+    }
+
+    if (diedInGame) {
+      rectangles.forEach((rectangle) => (rectangle.shouldAnimate = false));
+      finalScore.html(score);
+      gameOverScreen.style('display', 'flex');
+      gameOverScreen.addClass('show');
+      selectedTrack?.audio.stop();
     }
 
     const collectedColours = colourPowerUps.filter(
@@ -344,7 +384,7 @@ export const sketch = (
     }
 
     // update star position
-    if (screen === Screen.GAME || screen === Screen.INITIAL) {
+    if (screen === Screen.GAME || (screen === Screen.INITIAL && !diedInGame)) {
       star.updatePosition();
     }
   };
