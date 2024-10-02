@@ -8,6 +8,7 @@ import { sketch } from './functions/sketch';
 import { Star } from './functions/Star';
 import { Socials } from './Socials';
 import { Game } from './Game';
+import { GameOver } from './GameOver';
 
 const App = () => {
   const isProbablyWeb =
@@ -24,6 +25,7 @@ const App = () => {
     <>
       <Socials />
       <Game isProbablyWeb={isProbablyWeb} />
+      <GameOver />
       <ReactP5Wrapper
         sketch={(p5) => sketch(p5, star, onStart, isProbablyWeb)}
       />

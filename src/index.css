@@ -25,6 +25,11 @@ li {
   margin: 0;
 }
 
+h3,
+h4 {
+  margin: 0;
+}
+
 ul {
   list-style: none;
   padding: 0;
@@ -354,4 +359,28 @@ a {
   outline: none;
   border: none;
   cursor: pointer;
+}
+
+.game-over-screen {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  background-color: #222222;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  z-index: 999999;
+}
+
+.play-again-button {
+  outline: none;
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+  color: white;
+  margin-top: 24px;
 }
