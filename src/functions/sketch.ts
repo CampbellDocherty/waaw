@@ -44,6 +44,7 @@ export const sketch = (
 
   const colourPowerUps = createColourPowerUps(p5);
   const speedPowerUps = createSpeedPowerUps(p5);
+  const rectangles = createRectangles(p5);
 
   const instructionsButton = p5.select('.instructions');
   const gameScreen = p5.select('.game-screen');
@@ -87,6 +88,7 @@ export const sketch = (
     trackContainerClose.mousePressed(() => {
       trackContainer.hide();
     });
+    trackContainer.position(40, 40);
 
     for (const track of trackPowerUps) {
       track.createAudio();
@@ -98,12 +100,15 @@ export const sketch = (
         track.audio.stop();
         track.audio.time = 0;
         track.audio.play();
+        if (allPowerUpsCollected) {
+          rectangles.forEach((rectangle) => (rectangle.shouldDraw = true));
+        }
         trackContainer.hide();
         instructionsButton.removeClass('show');
         instructionsButton.addClass('hide');
       };
       track.button.mousePressed(onTrackSelect);
-      track.button.touchStarted(onTrackSelect);
+      track.button.touchEnded(onTrackSelect);
     }
 
     const buttons = p5.selectAll('.hide-button');
@@ -149,6 +154,7 @@ export const sketch = (
   };
 
   p5.keyPressed = (event: { key: string }) => {
+    if (!start) return;
     if (isProbablyWeb) {
       if (instructionsButton && !allPowerUpsCollected) {
         instructionsButton.removeClass('show');
@@ -169,26 +175,21 @@ export const sketch = (
   };
 
   let startingX = 0;
-  const rectangle = new FallingRectangle({
-    width: innerWidth,
-    height: 20,
-    colour: 'white',
-    p5: p5,
-    innerHeight,
-  });
 
   p5.draw = () => {
     p5.background(102);
-    rectangle.draw();
+    for (const rectangle of rectangles) {
+      rectangle.draw();
+    }
 
     if (isProbablyWeb) {
       _drawByKeyPress(pressedKeys, star);
     }
 
     p5.image(mainImage, 0, -120, 140, 170);
-    const starVertices = star.draw(p5, !start);
 
     if (!start) {
+      star.draw(p5, true);
       return;
     }
 
@@ -234,6 +235,7 @@ export const sketch = (
         gameScreen.addClass('slide-in-left');
       }
     }
+    const starVertices = star.draw(p5, false);
 
     for (const track of trackPowerUps) {
       track.draw();
@@ -316,7 +318,7 @@ export const sketch = (
       p5.text(
         selectedTrack.title,
         xCenterOfDisk + dimension * 0.75,
-        yCenterOfDisk - dimension / 10
+        yCenterOfDisk - dimension / 8
       );
 
       p5.textSize(12);
@@ -330,7 +332,9 @@ export const sketch = (
     }
 
     // update star position
-    star.updatePosition();
+    if (screen === Screen.GAME || screen === Screen.INITIAL) {
+      star.updatePosition();
+    }
   };
 };
 
@@ -415,4 +419,22 @@ const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
   });
 
   return speedPowerUps;
+};
+
+const createRectangles = (p5: p.P5CanvasInstance): FallingRectangle[] => {
+  const distanceBetweenRectangles = 200;
+  const widths = [0.5, 0.7, 0.8, 0.7, 0.8, 0.5];
+
+  const rectangles = widths.map((width, index) => {
+    return new FallingRectangle({
+      width: innerWidth * width,
+      height: 20,
+      colour: 'white',
+      p5: p5,
+      innerHeight,
+      yOffset: distanceBetweenRectangles * index,
+    });
+  });
+
+  return rectangles;
 };

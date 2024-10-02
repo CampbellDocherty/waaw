@@ -1,4 +1,5 @@
 import * as p from '@p5-wrapper/react';
+import { getRandomNumber } from './getRandomNumber';
 
 export class PowerUp {
   color: string;
@@ -90,10 +91,6 @@ export class ColourPowerUp extends PowerUp {
     this.p5.pop();
   }
 }
-
-const getRandomNumber = (min: number, max: number) => {
-  return Math.random() * (max - min) + min;
-};
 
 export class TrackPowerUp extends PowerUp {
   image: any;
