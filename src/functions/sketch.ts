@@ -179,17 +179,13 @@ export const sketch = (
 
   p5.draw = () => {
     p5.background(102);
-    for (const rectangle of rectangles) {
-      rectangle.draw();
-    }
 
     if (isProbablyWeb) {
       _drawByKeyPress(pressedKeys, star);
     }
 
-    p5.image(mainImage, 0, -120, 140, 170);
-
     if (!start) {
+      p5.image(mainImage, 0, -120, 140, 170);
       star.draw(p5, true);
       return;
     }
@@ -199,6 +195,8 @@ export const sketch = (
       hidden.removeClass('hidden');
       hidden.addClass('show');
     }
+
+    p5.image(mainImage, 0, -120, 140, 170);
 
     if (screen === Screen.SOCIALS) {
       let x = (startingX += 50);
@@ -285,6 +283,19 @@ export const sketch = (
         const powerUpSpeed = speedPowerUp.speed;
         star.updateSpeed(powerUpSpeed);
         speedPowerUp.remove();
+      }
+    }
+
+    for (const rectangle of rectangles) {
+      rectangle.draw();
+
+      const isColliding = starVertices.some((vertex) => {
+        const { x, y } = vertex;
+        return rectangle.checkIfColliding(x, y);
+      });
+
+      if (isColliding) {
+        console.log('yep colliding');
       }
     }
 
