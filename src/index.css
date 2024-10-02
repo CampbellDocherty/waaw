@@ -112,7 +112,7 @@ a:hover {
 
 .show-menu {
   transform: translateX(0%);
-  animation: slideInFromLeft 0.2s linear;
+  animation: slideInFromLeft 0.3s linear;
 }
 
 @keyframes slideOutLeft {
@@ -126,7 +126,7 @@ a:hover {
 
 .hide-menu {
   transform: translateX(-100%);
-  animation: slideOutLeft 0.2s linear;
+  animation: slideOutLeft 0.3s linear;
 }
 
 @keyframes slideOutRight {
@@ -140,7 +140,7 @@ a:hover {
 
 .slide-out-right {
   transform: translateX(100%);
-  animation: slideOutRight 0.2s linear;
+  animation: slideOutRight 0.3s linear;
 }
 
 @keyframes slideInLeft {
@@ -154,7 +154,7 @@ a:hover {
 
 .slide-in-left {
   transform: translateX(0%);
-  animation: slideInLeft 0.2s linear;
+  animation: slideInLeft 0.3s linear;
 }
 
 .centered-text {
