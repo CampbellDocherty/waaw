@@ -449,12 +449,13 @@ const createRectangles = (p5: p.P5CanvasInstance): FallingRectangle[] => {
         p5: p5,
         innerHeight,
         yOffset: distanceBetweenRectangles * index,
+        stroke: null,
       });
     }
     return new FallingRectangle({
       width: innerWidth * width,
       height: 20,
-      colour: 'white',
+      colour: 'black',
       p5: p5,
       innerHeight,
       yOffset: distanceBetweenRectangles * index,

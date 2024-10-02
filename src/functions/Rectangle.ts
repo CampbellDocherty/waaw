@@ -6,6 +6,7 @@ export class FallingRectangle {
   width: number;
   height: number;
   colour: string;
+  stroke: string | null;
   xPosition: number;
   yPosition: number;
   shouldDraw = false;
@@ -16,6 +17,7 @@ export class FallingRectangle {
     height,
     colour,
     yOffset,
+    stroke = 'white',
   }: {
     p5: p.P5CanvasInstance;
     width: number;
@@ -23,11 +25,13 @@ export class FallingRectangle {
     colour: string;
     innerHeight: number;
     yOffset: number;
+    stroke?: string | null;
   }) {
     this.p5 = p5;
     this.width = width;
     this.height = height;
     this.colour = colour;
+    this.stroke = stroke;
     const initialXPosition =
       width === innerWidth
         ? 0
@@ -40,6 +44,7 @@ export class FallingRectangle {
     if (!this.shouldDraw) return;
     this.p5.push();
     this.p5.fill(this.colour);
+    if (this.stroke) this.p5.stroke(this.stroke);
     this.p5.rectMode(this.p5.CENTER);
     this.p5.rect(this.xPosition, this.yPosition, this.width, this.height);
     this.yPosition = this.yPosition += 2;
