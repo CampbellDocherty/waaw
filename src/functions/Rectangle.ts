@@ -28,10 +28,10 @@ export class FallingRectangle {
     this.width = width;
     this.height = height;
     this.colour = colour;
-    const initialXPosition = getRandomNumber(
-      0 - innerWidth / 2,
-      innerWidth / 2
-    );
+    const initialXPosition =
+      width === innerWidth
+        ? 0
+        : getRandomNumber(0 - innerWidth / 2, innerWidth / 2);
     this.xPosition = initialXPosition;
     this.yPosition = 0 - innerHeight / 2 - height / 2 - yOffset;
   }
@@ -39,7 +39,7 @@ export class FallingRectangle {
   draw(): void {
     if (!this.shouldDraw) return;
     this.p5.push();
-    this.p5.color(this.colour);
+    this.p5.fill(this.colour);
     this.p5.rectMode(this.p5.CENTER);
     this.p5.rect(this.xPosition, this.yPosition, this.width, this.height);
     this.yPosition = this.yPosition += 2;

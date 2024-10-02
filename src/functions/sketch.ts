@@ -8,6 +8,7 @@ import { Font } from './Font';
 import { ColourPowerUp, SpeedPowerUp, TrackPowerUp } from './PowerUp';
 import { Star } from './Star';
 import { FallingRectangle } from './Rectangle';
+import { getRandomNumber } from './getRandomNumber';
 
 enum Screen {
   INITIAL = 'initial',
@@ -423,9 +424,22 @@ const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
 
 const createRectangles = (p5: p.P5CanvasInstance): FallingRectangle[] => {
   const distanceBetweenRectangles = 200;
-  const widths = [0.5, 0.7, 0.8, 0.7, 0.8, 0.5];
+  const widths = Array.from({ length: 20 }, () => getRandomNumber(0.5, 0.9));
 
   const rectangles = widths.map((width, index) => {
+    if ((index + 1) % 5 === 0) {
+      const colours = ['#edf67d', '#f896d8', '#ca7df9', '#724cf9', '#564592'];
+      const randomIndex = Math.floor(Math.random() * colours.length);
+      const randomColour = colours[randomIndex];
+      return new FallingRectangle({
+        width: innerWidth,
+        height: 80,
+        colour: randomColour,
+        p5: p5,
+        innerHeight,
+        yOffset: distanceBetweenRectangles * index,
+      });
+    }
     return new FallingRectangle({
       width: innerWidth * width,
       height: 20,
