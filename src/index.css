@@ -47,20 +47,6 @@ a:hover {
   text-decoration: underline;
 }
 
-@keyframes slideRight {
-  0% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(1000%);
-  }
-}
-
-.slide-right {
-  transform: translateX(1000%);
-  animation: slideRight 0.4s linear;
-}
-
 .social-screen {
   width: 100vw;
   height: 100vh;
@@ -126,7 +112,7 @@ a:hover {
 
 .show-menu {
   transform: translateX(0%);
-  animation: slideInFromLeft 0.4s linear;
+  animation: slideInFromLeft 0.3s linear;
 }
 
 @keyframes slideOutLeft {
@@ -140,7 +126,7 @@ a:hover {
 
 .hide-menu {
   transform: translateX(-100%);
-  animation: slideOutLeft 0.4s linear;
+  animation: slideOutLeft 0.3s linear;
 }
 
 @keyframes slideOutRight {
@@ -154,7 +140,7 @@ a:hover {
 
 .slide-out-right {
   transform: translateX(100%);
-  animation: slideOutRight 0.4s linear;
+  animation: slideOutRight 0.3s linear;
 }
 
 @keyframes slideInLeft {
@@ -168,7 +154,7 @@ a:hover {
 
 .slide-in-left {
   transform: translateX(0%);
-  animation: slideInLeft 0.4s linear;
+  animation: slideInLeft 0.3s linear;
 }
 
 .centered-text {

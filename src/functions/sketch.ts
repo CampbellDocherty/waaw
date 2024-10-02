@@ -7,6 +7,8 @@ import theTwins from '../images/the-twins.jpg';
 import { Font } from './Font';
 import { ColourPowerUp, SpeedPowerUp, TrackPowerUp } from './PowerUp';
 import { Star } from './Star';
+import { FallingRectangle } from './Rectangle';
+import { getRandomNumber } from './getRandomNumber';
 
 enum Screen {
   INITIAL = 'initial',
@@ -21,6 +23,7 @@ export const sketch = (
   isProbablyWeb: boolean
 ): void => {
   let start = false;
+  let allPowerUpsCollected = false;
   let mainImage: any;
   let cd: any;
 
@@ -42,6 +45,7 @@ export const sketch = (
 
   const colourPowerUps = createColourPowerUps(p5);
   const speedPowerUps = createSpeedPowerUps(p5);
+  const rectangles = createRectangles(p5);
 
   const instructionsButton = p5.select('.instructions');
   const gameScreen = p5.select('.game-screen');
@@ -85,6 +89,7 @@ export const sketch = (
     trackContainerClose.mousePressed(() => {
       trackContainer.hide();
     });
+    trackContainer.position(40, 40);
 
     for (const track of trackPowerUps) {
       track.createAudio();
@@ -96,10 +101,15 @@ export const sketch = (
         track.audio.stop();
         track.audio.time = 0;
         track.audio.play();
+        if (allPowerUpsCollected) {
+          rectangles.forEach((rectangle) => (rectangle.shouldDraw = true));
+        }
         trackContainer.hide();
+        instructionsButton.removeClass('show');
+        instructionsButton.addClass('hide');
       };
       track.button.mousePressed(onTrackSelect);
-      track.button.touchStarted(onTrackSelect);
+      track.button.touchEnded(onTrackSelect);
     }
 
     const buttons = p5.selectAll('.hide-button');
@@ -145,8 +155,9 @@ export const sketch = (
   };
 
   p5.keyPressed = (event: { key: string }) => {
+    if (!start) return;
     if (isProbablyWeb) {
-      if (instructionsButton) {
+      if (instructionsButton && !allPowerUpsCollected) {
         instructionsButton.removeClass('show');
         instructionsButton.addClass('hide');
       }
@@ -173,16 +184,19 @@ export const sketch = (
       _drawByKeyPress(pressedKeys, star);
     }
 
-    p5.image(mainImage, 0, -120, 140, 170);
-    const starVertices = star.draw(p5, !start);
-
-    if (!start) return;
+    if (!start) {
+      p5.image(mainImage, 0, -120, 140, 170);
+      star.draw(p5, true);
+      return;
+    }
 
     const hiddenElements = p5.selectAll('.hidden');
     for (const hidden of hiddenElements) {
       hidden.removeClass('hidden');
       hidden.addClass('show');
     }
+
+    p5.image(mainImage, 0, -120, 140, 170);
 
     if (screen === Screen.SOCIALS) {
       let x = (startingX += 50);
@@ -220,6 +234,7 @@ export const sketch = (
         gameScreen.addClass('slide-in-left');
       }
     }
+    const starVertices = star.draw(p5, false);
 
     for (const track of trackPowerUps) {
       track.draw();
@@ -271,26 +286,67 @@ export const sketch = (
       }
     }
 
+    for (const rectangle of rectangles) {
+      rectangle.draw();
+
+      const isColliding = starVertices.some((vertex) => {
+        const { x, y } = vertex;
+        return rectangle.checkIfColliding(x, y);
+      });
+
+      if (isColliding) {
+        console.log('yep colliding');
+      }
+    }
+
+    const collectedColours = colourPowerUps.filter(
+      (powerUp) => powerUp.hasBeenCollected
+    );
+
+    const allPowerUps = [...trackPowerUps, ...colourPowerUps];
+    const allCollectedPowerUps = [...collectedColours, ...collectedTracks];
+    if (
+      allCollectedPowerUps.length === allPowerUps.length &&
+      !allPowerUpsCollected &&
+      !selectedTrack
+    ) {
+      instructionsButton.html('Select a track to play');
+      instructionsButton.removeClass('hide');
+      instructionsButton.addClass('show');
+      allPowerUpsCollected = true;
+    }
+
     if (selectedTrack) {
       p5.push();
 
       p5.imageMode(p5.CENTER);
       const xCenterOfDisk = -p5.width / 4 + 30;
       const yCenterOfDisk = p5.height / 2 - 30;
-      p5.image(cd, xCenterOfDisk, yCenterOfDisk, 40, 40);
+      const dimension = 40;
+      p5.image(cd, xCenterOfDisk, yCenterOfDisk, dimension, dimension);
 
       p5.fill('white');
       p5.textSize(16);
-      p5.text(selectedTrack.title, xCenterOfDisk + 30, yCenterOfDisk - 4);
+      p5.text(
+        selectedTrack.title,
+        xCenterOfDisk + dimension * 0.75,
+        yCenterOfDisk - dimension / 8
+      );
 
       p5.textSize(12);
-      p5.text(selectedTrack.artist, xCenterOfDisk + 30, yCenterOfDisk + 10);
+      p5.text(
+        selectedTrack.artist,
+        xCenterOfDisk + dimension * 0.75,
+        yCenterOfDisk + dimension / 4
+      );
 
       p5.pop();
     }
 
     // update star position
-    star.updatePosition();
+    if (screen === Screen.GAME || screen === Screen.INITIAL) {
+      star.updatePosition();
+    }
   };
 };
 
@@ -375,4 +431,35 @@ const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
   });
 
   return speedPowerUps;
+};
+
+const createRectangles = (p5: p.P5CanvasInstance): FallingRectangle[] => {
+  const distanceBetweenRectangles = 200;
+  const widths = Array.from({ length: 20 }, () => getRandomNumber(0.5, 0.9));
+
+  const rectangles = widths.map((width, index) => {
+    if ((index + 1) % 5 === 0) {
+      const colours = ['#edf67d', '#f896d8', '#ca7df9', '#724cf9', '#564592'];
+      const randomIndex = Math.floor(Math.random() * colours.length);
+      const randomColour = colours[randomIndex];
+      return new FallingRectangle({
+        width: innerWidth,
+        height: 80,
+        colour: randomColour,
+        p5: p5,
+        innerHeight,
+        yOffset: distanceBetweenRectangles * index,
+      });
+    }
+    return new FallingRectangle({
+      width: innerWidth * width,
+      height: 20,
+      colour: 'white',
+      p5: p5,
+      innerHeight,
+      yOffset: distanceBetweenRectangles * index,
+    });
+  });
+
+  return rectangles;
 };

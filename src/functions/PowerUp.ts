@@ -1,4 +1,5 @@
 import * as p from '@p5-wrapper/react';
+import { getRandomNumber } from './getRandomNumber';
 
 export class PowerUp {
   color: string;
@@ -8,17 +9,23 @@ export class PowerUp {
   shouldDraw = false;
   hasBeenCollected = false;
   button: any;
+  width: number;
+  height: number;
 
   constructor(
     color: string,
     xPosition: number,
     yPosition: number,
-    p5: p.P5CanvasInstance
+    p5: p.P5CanvasInstance,
+    width: number,
+    height: number
   ) {
     this.color = color;
     this.xPosition = xPosition;
     this.yPosition = yPosition;
     this.p5 = p5;
+    this.width = width;
+    this.height = height;
   }
 
   bindToButton = (button: any): void => {
@@ -49,10 +56,10 @@ export class PowerUp {
   }
 
   private get boundingBox() {
-    const farLeftOfCircle = this.xPosition - 10;
-    const farRightOfCircle = this.xPosition + 10;
-    const topOfCircle = this.yPosition - 10;
-    const bottomOfCircle = this.yPosition + 10;
+    const farLeftOfCircle = this.xPosition - this.width / 2;
+    const farRightOfCircle = this.xPosition + this.width / 2;
+    const topOfCircle = this.yPosition - this.height / 2;
+    const bottomOfCircle = this.yPosition + this.height / 2;
 
     return {
       left: farLeftOfCircle,
@@ -70,7 +77,8 @@ export class ColourPowerUp extends PowerUp {
     yPosition: number,
     p5: p.P5CanvasInstance
   ) {
-    super(color, xPosition, yPosition, p5);
+    const width = 20;
+    super(color, xPosition, yPosition, p5, width, width);
   }
 
   draw(): void {
@@ -79,15 +87,10 @@ export class ColourPowerUp extends PowerUp {
     }
     this.p5.push();
     this.p5.fill(this.color);
-
-    this.p5.circle(this.xPosition, this.yPosition, 20);
+    this.p5.circle(this.xPosition, this.yPosition, this.width);
     this.p5.pop();
   }
 }
-
-const getRandomNumber = (min: number, max: number) => {
-  return Math.random() * (max - min) + min;
-};
 
 export class TrackPowerUp extends PowerUp {
   image: any;
@@ -115,7 +118,9 @@ export class TrackPowerUp extends PowerUp {
     audioSrc: string;
     tint: string | null;
   }) {
-    super('#000', 0, 0, p5);
+    const width = 24;
+    const height = 30;
+    super('#000', 0, 0, p5, width, height);
     this.src = src;
     this.title = title;
     this.artist = artist;
@@ -163,7 +168,13 @@ export class TrackPowerUp extends PowerUp {
       this.yPosition -= m.y * 10;
       this.p5.push();
       if (this.tint) this.p5.tint(this.tint);
-      this.p5.image(this.image, this.xPosition, this.yPosition, 24, 30);
+      this.p5.image(
+        this.image,
+        this.xPosition,
+        this.yPosition,
+        this.width,
+        this.height
+      );
       this.p5.pop();
       return;
     }
@@ -171,7 +182,7 @@ export class TrackPowerUp extends PowerUp {
     this.p5.translate(this.xPosition, this.yPosition);
     this.p5.rotateY(this.p5.frameCount * this.rotationSpeed);
     if (this.tint) this.p5.tint(this.tint);
-    this.p5.image(this.image, 0, 0, 24, 30);
+    this.p5.image(this.image, 0, 0, this.width, this.height);
     this.p5.pop();
   }
 }
@@ -186,7 +197,8 @@ export class SpeedPowerUp extends PowerUp {
     yPosition: number,
     p5: p.P5CanvasInstance
   ) {
-    super(color, xPosition, yPosition, p5);
+    const width = 30;
+    super(color, xPosition, yPosition, p5, width, width);
     this.speed = speed;
   }
 
@@ -197,6 +209,7 @@ export class SpeedPowerUp extends PowerUp {
     this.p5.push();
     this.p5.fill(this.color);
     this.p5.textSize(20);
+    this.p5.textAlign(this.p5.CENTER, this.p5.CENTER);
     this.p5.text(`x${this.speed * 2}`, this.xPosition, this.yPosition);
     this.p5.pop();
   }
