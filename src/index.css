@@ -283,7 +283,7 @@ a {
   padding: 4px;
   color: #212529;
   border-radius: 0px;
-  width: 20%;
+  width: 40%;
   height: 300px;
   z-index: 999;
   display: flex;
@@ -345,6 +345,7 @@ a {
   padding: 0;
   width: 100%;
   margin: 8px 0px;
+  color: black;
 }
 
 .track-button:hover {
