@@ -163,9 +163,14 @@ export class TrackPowerUp extends PowerUp {
       const m = this.p5.createVector(this.xPosition - 0, this.yPosition - 100);
 
       m.normalize();
-
       this.xPosition -= m.x * 10;
       this.yPosition -= m.y * 10;
+
+      if (this.xPosition > -10 && this.xPosition < 1 && this.yPosition < 120) {
+        this.shouldDraw = false;
+        return;
+      }
+
       this.p5.push();
       if (this.tint) this.p5.tint(this.tint);
       this.p5.image(
