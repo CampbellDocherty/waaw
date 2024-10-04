@@ -55,9 +55,9 @@ export const sketch = (
   const gameScreen = p5.select('.game-screen');
   const socialScreen = p5.select('.social-screen');
   const gameOverScreen = p5.select('.game-over-screen');
-  const folderButton = p5.select('.folder-button');
   const tracksText = p5.select('.tracks');
   const socialsButton = p5.select('.top-left');
+  const folderButton = p5.select('.folder-button');
   const gameButton = p5.select('.top-right');
   const trackContainer = p5.select('.track-container');
   const tracksSection = p5.select('.tracks-section');
@@ -89,6 +89,12 @@ export const sketch = (
       diedInGame = false;
       instructionsButton.removeClass('hide');
       instructionsButton.addClass('show');
+      folderButton.removeClass('hide');
+      folderButton.addClass('show');
+      tracksText.removeClass('hide');
+      tracksText.addClass('show');
+      socialsButton.removeClass('hide');
+      socialsButton.addClass('show');
     });
 
     folderButton.style('background-image', `url(${folder})`);
@@ -310,6 +316,13 @@ export const sketch = (
     }
 
     if (isPlayingTheGame) {
+      folderButton.removeClass('show');
+      folderButton.addClass('hide');
+      tracksText.removeClass('show');
+      tracksText.addClass('hide');
+      socialsButton.removeClass('show');
+      socialsButton.addClass('hide');
+
       p5.push();
       p5.textAlign(p5.CENTER);
       p5.textSize(14);
@@ -317,18 +330,18 @@ export const sketch = (
       p5.textSize(18);
       p5.text(!diedInGame ? (score += 10) : score, 0, -innerHeight / 2 + 50);
       p5.pop();
-    }
 
-    for (const rectangle of rectangles) {
-      rectangle.draw();
+      for (const rectangle of rectangles) {
+        rectangle.draw();
 
-      const isColliding = starVertices.some((vertex) => {
-        const { x, y } = vertex;
-        return rectangle.checkIfColliding(x, y);
-      });
+        const isColliding = starVertices.some((vertex) => {
+          const { x, y } = vertex;
+          return rectangle.checkIfColliding(x, y);
+        });
 
-      if (isColliding) {
-        if (star.colour !== rectangle.colour) diedInGame = true;
+        if (isColliding) {
+          if (star.colour !== rectangle.colour) diedInGame = true;
+        }
       }
     }
 
