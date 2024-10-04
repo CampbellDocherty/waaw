@@ -207,9 +207,19 @@ a {
   }
 }
 
+@keyframes remove {
+  0% {
+    visibility: visible;
+  }
+  100% {
+    visibility: hidden;
+  }
+}
+
 .hide {
   opacity: 0;
-  animation: fadeOut 0.5s linear;
+  visibility: hidden;
+  animation: fadeOut 0.5s linear, remove 0.5s linear;
 }
 
 .hidden {
