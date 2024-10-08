@@ -100,7 +100,6 @@ export class TrackPowerUp extends PowerUp {
   title: string;
   artist: string;
   audioSrc: string;
-  tint: string | null;
   rotationSpeed = getRandomNumber(0.03, 0.1);
 
   constructor({
@@ -109,14 +108,12 @@ export class TrackPowerUp extends PowerUp {
     title,
     artist,
     audioSrc,
-    tint,
   }: {
     p5: p.P5CanvasInstance;
     src: string;
     title: string;
     artist: string;
     audioSrc: string;
-    tint: string | null;
   }) {
     const width = 24;
     const height = 30;
@@ -125,7 +122,6 @@ export class TrackPowerUp extends PowerUp {
     this.title = title;
     this.artist = artist;
     this.audioSrc = audioSrc;
-    this.tint = tint;
   }
 
   loadImage() {
@@ -172,7 +168,6 @@ export class TrackPowerUp extends PowerUp {
       }
 
       this.p5.push();
-      if (this.tint) this.p5.tint(this.tint);
       this.p5.image(
         this.image,
         this.xPosition,
@@ -186,7 +181,6 @@ export class TrackPowerUp extends PowerUp {
     this.p5.push();
     this.p5.translate(this.xPosition, this.yPosition);
     this.p5.rotateY(this.p5.frameCount * this.rotationSpeed);
-    if (this.tint) this.p5.tint(this.tint);
     this.p5.image(this.image, 0, 0, this.width, this.height);
     this.p5.pop();
   }
