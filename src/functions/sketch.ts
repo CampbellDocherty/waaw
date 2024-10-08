@@ -5,10 +5,11 @@ import cdImage from '../images/cd.png';
 import folder from '../images/folder.png';
 import theTwins from '../images/the-twins.jpg';
 import { Font } from './Font';
-import { ColourPowerUp, SpeedPowerUp, TrackPowerUp } from './PowerUp';
+import { ColourPowerUp, PowerUp, SpeedPowerUp, TrackPowerUp } from './PowerUp';
 import { Star } from './Star';
 import { FallingRectangle } from './Rectangle';
 import { getRandomNumber } from './getRandomNumber';
+import { EvilPowerUp, EvilStar } from './EvilStar';
 
 enum Screen {
   INITIAL = 'initial',
@@ -50,6 +51,8 @@ export const sketch = (
   const colourPowerUps = createColourPowerUps(p5);
   const speedPowerUps = createSpeedPowerUps(p5);
   const rectangles = createRectangles(p5);
+  const evilPowerUps = createEvilPowerUps(p5);
+  const evilStar = new EvilStar(0, -innerHeight / 2 - 100, p5, evilPowerUps);
 
   const instructionsButton = p5.select('.instructions');
   const gameScreen = p5.select('.game-screen');
@@ -343,6 +346,21 @@ export const sketch = (
           if (star.colour !== rectangle.colour) diedInGame = true;
         }
       }
+
+      if (score > 23000) {
+        evilPowerUps.forEach((powerUp) => {
+          powerUp.draw();
+          const isColliding = starVertices.some((vertex) => {
+            const { x, y } = vertex;
+            return powerUp.checkIfColliding(x, y);
+          });
+
+          if (isColliding) {
+            diedInGame = true;
+          }
+        });
+        evilStar.draw();
+      }
     }
 
     if (diedInGame) {
@@ -351,6 +369,8 @@ export const sketch = (
       gameOverScreen.style('display', 'flex');
       gameOverScreen.addClass('show');
       selectedTrack?.audio.stop();
+      evilPowerUps.forEach((powerUp) => (powerUp.shouldAnimate = false));
+      evilStar.shouldAnimate = false;
     }
 
     const collectedColours = colourPowerUps.filter(
@@ -450,23 +470,20 @@ const createColourPowerUps = (p5: p.P5CanvasInstance): ColourPowerUp[] => {
 const createTrackPowerUps = (p5: p.P5CanvasInstance): TrackPowerUp[] => {
   const timeBetweenPowerUps = 500;
 
-  const trackPowerUps = audioFiles.map(
-    ({ title, artist, audioSrc, tint }, index) => {
-      const powerUp = new TrackPowerUp({
-        p5,
-        src: cdImage,
-        title,
-        artist,
-        audioSrc,
-        tint,
-      });
-      setTimeout(() => {
-        powerUp.setPositionWithinBounds();
-        powerUp.shouldDraw = true;
-      }, timeBetweenPowerUps * (index + 1));
-      return powerUp;
-    }
-  );
+  const trackPowerUps = audioFiles.map(({ title, artist, audioSrc }, index) => {
+    const powerUp = new TrackPowerUp({
+      p5,
+      src: cdImage,
+      title,
+      artist,
+      audioSrc,
+    });
+    setTimeout(() => {
+      powerUp.setPositionWithinBounds();
+      powerUp.shouldDraw = true;
+    }, timeBetweenPowerUps * (index + 1));
+    return powerUp;
+  });
 
   return trackPowerUps;
 };
@@ -517,4 +534,13 @@ const createRectangles = (p5: p.P5CanvasInstance): FallingRectangle[] => {
   });
 
   return rectangles;
+};
+
+const createEvilPowerUps = (p5: p.P5CanvasInstance): EvilPowerUp[] => {
+  const timeBetweenEachPowerUp = 60;
+  const evilPowerUps = Array.from({ length: 10 }, (_, index) => {
+    return new EvilPowerUp(0, 0, p5, timeBetweenEachPowerUp * index);
+  });
+
+  return evilPowerUps;
 };
