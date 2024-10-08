@@ -4,12 +4,12 @@ import monoRegular from '../fonts/Mono-Regular.ttf';
 import cdImage from '../images/cd.png';
 import folder from '../images/folder.png';
 import theTwins from '../images/the-twins.jpg';
-import { Font } from './Font';
-import { ColourPowerUp, PowerUp, SpeedPowerUp, TrackPowerUp } from './PowerUp';
-import { Star } from './Star';
-import { FallingRectangle } from './Rectangle';
-import { getRandomNumber } from './getRandomNumber';
 import { EvilPowerUp, EvilStar } from './EvilStar';
+import { Font } from './Font';
+import { ColourPowerUp, SpeedPowerUp, TrackPowerUp } from './PowerUp';
+import { FallingRectangle } from './Rectangle';
+import { Star } from './Star';
+import { getRandomNumber } from './getRandomNumber';
 
 enum Screen {
   INITIAL = 'initial',
@@ -90,6 +90,8 @@ export const sketch = (
       gameOverScreen.addClass('hide');
       gameOverScreen.style('display', 'none');
       diedInGame = false;
+      evilStar.reset();
+      score = 0;
       instructionsButton.removeClass('hide');
       instructionsButton.addClass('show');
       folderButton.removeClass('hide');
@@ -366,6 +368,7 @@ export const sketch = (
     if (diedInGame) {
       rectangles.forEach((rectangle) => (rectangle.shouldAnimate = false));
       finalScore.html(score);
+      gameOverScreen.removeClass('hide');
       gameOverScreen.style('display', 'flex');
       gameOverScreen.addClass('show');
       selectedTrack?.audio.stop();

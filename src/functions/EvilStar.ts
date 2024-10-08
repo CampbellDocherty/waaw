@@ -3,6 +3,8 @@ import { getRandomNumber } from './getRandomNumber';
 
 export class EvilStar {
   xPos: number;
+  initialX: number;
+  initialY: number;
   yPos: number;
   p5: p.P5CanvasInstance;
   shouldAnimate = true;
@@ -19,9 +21,21 @@ export class EvilStar {
     powerUps: EvilPowerUp[]
   ) {
     this.xPos = xPos;
+    this.initialX = xPos;
     this.yPos = yPos;
+    this.initialY = yPos;
     this.p5 = p5;
     this.powerUps = powerUps;
+  }
+
+  reset() {
+    this.xPos = this.initialX;
+    this.yPos = this.initialY;
+    this.shouldAnimate = true;
+    this.powerUps.forEach((powerUp) => {
+      powerUp.shouldAnimate = true;
+      powerUp.shouldDraw = false;
+    });
   }
 
   draw = (): {
@@ -29,9 +43,12 @@ export class EvilStar {
     y: number;
   }[] => {
     this.p5.push();
-    this.p5.translate(this.xPos, this.yPos);
-    this.p5.rotate(this.p5.frameCount / 50.0);
-    this.p5.translate(-this.xPos, -this.yPos);
+
+    if (this.shouldAnimate) {
+      this.p5.translate(this.xPos, this.yPos);
+      this.p5.rotate(this.p5.frameCount / 50.0);
+      this.p5.translate(-this.xPos, -this.yPos);
+    }
 
     this.p5.stroke('white');
     this.p5.fill('black');
