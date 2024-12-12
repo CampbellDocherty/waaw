@@ -1,7 +1,6 @@
 import p5Type from 'p5';
 import monoRegular from '../fonts/Mono-Regular.ttf';
 import { EvilStar } from '../functions/EvilStar';
-import { Font } from '../functions/Font';
 import { TrackPowerUp } from '../functions/PowerUp';
 import { Star } from '../functions/Star';
 import cdImage from '../images/cd.png';
@@ -10,7 +9,6 @@ import theTwins from '../images/the-twins.jpg';
 import { createColourPowerUps } from './createColourPowerUps';
 import { createEvilPowerUps } from './createEvilPowerUps';
 import { createFallingRectangles } from './createFallingRectangles';
-import { createSpeedPowerUps } from './createSpeedPowerUps';
 import { createTrackPowerUps } from './createTrackPowerUps';
 
 enum Screen {
@@ -36,10 +34,10 @@ export const sketch = (
 
   const pressedKeys: { [key: string]: boolean } = {};
 
-  const font = new Font(p5);
+  let font: p5Type.Font;
 
   p5.preload = () => {
-    font.loadFont(monoRegular);
+    font = p5.loadFont(monoRegular);
     star.bindToP5Instance(p5);
     cd = p5.loadImage(cdImage);
     mainImage = p5.loadImage(theTwins);
@@ -47,7 +45,6 @@ export const sketch = (
 
   const trackPowerUps = createTrackPowerUps(p5);
   const colourPowerUps = createColourPowerUps(p5);
-  const speedPowerUps = createSpeedPowerUps(p5);
   const rectangles = createFallingRectangles(p5);
   const evilPowerUps = createEvilPowerUps(p5);
   const evilStar = new EvilStar(0, -innerHeight / 2 - 100, p5, evilPowerUps);
@@ -71,7 +68,7 @@ export const sketch = (
 
   p5.setup = () => {
     p5.createCanvas(innerWidth * 2, innerHeight, p5.WEBGL);
-    p5.textFont(`${font.font}`);
+    p5.textFont(font);
 
     socialsButton?.mousePressed(() => {
       screen = Screen.SOCIALS;
@@ -184,27 +181,6 @@ export const sketch = (
     p5.imageMode(p5.CENTER);
   };
 
-  p5.keyPressed = (event: { key: string }) => {
-    if (!start) return;
-    if (isProbablyWeb) {
-      if (instructionsButton && !allPowerUpsCollected) {
-        instructionsButton.removeClass('show');
-        instructionsButton.addClass('hide');
-      }
-      pressedKeys[event.key] = true;
-    }
-  };
-
-  p5.keyReleased = (event: { key: string }) => {
-    if (isProbablyWeb) {
-      pressedKeys[event.key] = false;
-    }
-  };
-
-  p5.windowResized = () => {
-    p5.resizeCanvas(innerWidth, innerHeight);
-  };
-
   const isPlayingTheGame = allPowerUpsCollected && selectedTrack;
   const hiddenElements = p5.selectAll('.hidden');
   p5.draw = () => {
@@ -298,20 +274,6 @@ export const sketch = (
         const powerUpColour = colourPowerUp.color;
         star.updateColour(powerUpColour);
         colourPowerUp.remove();
-      }
-    }
-
-    for (const speedPowerUp of speedPowerUps) {
-      speedPowerUp.draw();
-      const isColliding = starVertices.some((vertex) => {
-        const { x, y } = vertex;
-        return speedPowerUp.checkIfColliding(x, y);
-      });
-
-      if (isColliding) {
-        const powerUpSpeed = speedPowerUp.speed;
-        star.updateSpeed(powerUpSpeed);
-        speedPowerUp.remove();
       }
     }
 
@@ -419,6 +381,23 @@ export const sketch = (
     if (screen === Screen.GAME || (screen === Screen.INITIAL && !diedInGame)) {
       star.updatePosition();
     }
+  };
+
+  p5.keyPressed = (event: { key: string }) => {
+    if (!start) return;
+    if (isProbablyWeb) {
+      pressedKeys[event.key] = true;
+    }
+  };
+
+  p5.keyReleased = (event: { key: string }) => {
+    if (isProbablyWeb) {
+      pressedKeys[event.key] = false;
+    }
+  };
+
+  p5.windowResized = () => {
+    p5.resizeCanvas(innerWidth, innerHeight);
   };
 };
 

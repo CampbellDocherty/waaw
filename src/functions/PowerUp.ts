@@ -172,31 +172,3 @@ export class TrackPowerUp extends PowerUp {
     this.p5.pop();
   }
 }
-
-export class SpeedPowerUp extends PowerUp {
-  speed: number;
-
-  constructor(
-    color: string,
-    speed: number,
-    xPosition: number,
-    yPosition: number,
-    p5: p5Type
-  ) {
-    const width = 30;
-    super(color, xPosition, yPosition, p5, width, width);
-    this.speed = speed;
-  }
-
-  draw(): void {
-    if (!this.shouldDraw) {
-      return;
-    }
-    this.p5.push();
-    this.p5.fill(this.color);
-    this.p5.textSize(20);
-    this.p5.textAlign(this.p5.CENTER, this.p5.CENTER);
-    this.p5.text(`x${this.speed * 2}`, this.xPosition, this.yPosition);
-    this.p5.pop();
-  }
-}
