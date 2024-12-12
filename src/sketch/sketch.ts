@@ -43,8 +43,10 @@ export const sketch = (
     mainImage = p5.loadImage(theTwins);
   };
 
-  const trackPowerUps = createTrackPowerUps(p5);
-  const colourPowerUps = createColourPowerUps(p5);
+  const hasReachedCheckpoint = Boolean(localStorage.getItem('checkpoint'));
+
+  const trackPowerUps = createTrackPowerUps(p5, hasReachedCheckpoint);
+  const colourPowerUps = createColourPowerUps(p5, hasReachedCheckpoint);
   const rectangles = createFallingRectangles(p5);
   const evilPowerUps = createEvilPowerUps(p5);
   const evilStar = new EvilStar(0, -innerHeight / 2 - 100, p5, evilPowerUps);
@@ -95,6 +97,7 @@ export const sketch = (
       tracksText?.addClass('show');
       socialsButton?.removeClass('hide');
       socialsButton?.addClass('show');
+      localStorage.setItem('checkpoint', 'true');
     });
 
     folderButton?.style('background-image', `url(${folder})`);
@@ -136,6 +139,11 @@ export const sketch = (
       };
       track.button?.mousePressed(onTrackSelect);
       track.button?.touchEnded(onTrackSelect);
+
+      if (hasReachedCheckpoint) {
+        track.remove();
+        track.showButton();
+      }
     }
 
     const buttons = p5.selectAll('.hide-button');
@@ -154,6 +162,10 @@ export const sketch = (
         star.updateColour(powerUp.color);
       });
       powerUp.bindToButton(button);
+
+      if (hasReachedCheckpoint) {
+        powerUp.remove();
+      }
     }
 
     const button = p5.createButton(

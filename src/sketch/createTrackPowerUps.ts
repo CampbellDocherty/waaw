@@ -3,7 +3,10 @@ import { TrackPowerUp } from '../functions/PowerUp';
 import cdImage from '../images/cd.png';
 import p5Type from 'p5';
 
-export const createTrackPowerUps = (p5: p5Type): TrackPowerUp[] => {
+export const createTrackPowerUps = (
+  p5: p5Type,
+  hasReachedCheckpoint: boolean
+): TrackPowerUp[] => {
   const timeBetweenPowerUps = 500;
 
   const trackPowerUps = audioFiles.map(({ title, artist, audioSrc }, index) => {
@@ -14,10 +17,12 @@ export const createTrackPowerUps = (p5: p5Type): TrackPowerUp[] => {
       artist,
       audioSrc,
     });
-    setTimeout(() => {
-      powerUp.setPositionWithinBounds();
-      powerUp.shouldDraw = true;
-    }, timeBetweenPowerUps * (index + 1));
+    if (!hasReachedCheckpoint) {
+      setTimeout(() => {
+        powerUp.setPositionWithinBounds();
+        powerUp.shouldDraw = true;
+      }, timeBetweenPowerUps * (index + 1));
+    }
     return powerUp;
   });
 
