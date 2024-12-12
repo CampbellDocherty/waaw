@@ -85,7 +85,7 @@ export class FallingRectangle {
   }
 
   private get randomX() {
-    return this.width === innerWidth / 2
+    return this.width === innerWidth
       ? 0
       : getRandomNumber(-innerWidth / 2, innerWidth / 2);
   }

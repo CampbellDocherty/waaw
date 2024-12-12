@@ -54,9 +54,9 @@ export const sketch = (
   const socialScreen = p5.select('.social-screen');
   const gameOverScreen = p5.select('.game-over-screen');
   const tracksText = p5.select('.tracks');
-  const socialsButton = p5.select('.top-left');
+  const socialsButton = p5.select('.bottom-left');
   const folderButton = p5.select('.folder-button');
-  const gameButton = p5.select('.top-right');
+  const gameButton = p5.select('.bottom-right');
   const trackContainer = p5.select('.track-container');
   const tracksSection = p5.select('.tracks-section');
   const trackContainerClose = p5.select('.track-container-close');
@@ -98,10 +98,6 @@ export const sketch = (
     });
 
     folderButton?.style('background-image', `url(${folder})`);
-    folderButton?.position(
-      p5.width / 4 - folderButton.width / 2,
-      p5.height / 2 - folderButton.height / 2 + 100
-    );
     folderButton?.mousePressed(() => {
       if (trackContainer?.style('display') !== 'none') {
         trackContainer?.hide();
@@ -148,7 +144,10 @@ export const sketch = (
       const height = 40;
       button.style('width', `${height}px`);
       button.style('height', `${height}px`);
-      button.position(p5.width - height, index * height);
+      button.position(
+        innerWidth - height,
+        innerHeight - height - index * height
+      );
       button.style('background-color', powerUp.color);
       button.style('z-index', '9999');
       button.mousePressed(() => {
@@ -183,7 +182,6 @@ export const sketch = (
     p5.imageMode(p5.CENTER);
   };
 
-  const hiddenElements = p5.selectAll('.hidden');
   p5.draw = () => {
     const isPlayingTheGame = allPowerUpsCollected && selectedTrack;
     p5.background(102);
@@ -198,10 +196,16 @@ export const sketch = (
       return;
     }
 
+    const hiddenElements = p5.selectAll('.hidden');
     for (const hidden of hiddenElements) {
       hidden.removeClass('hidden');
       hidden.addClass('show');
     }
+
+    folderButton?.position(
+      p5.width / 4 - folderButton.width / 2,
+      p5.height / 2 - folderButton.height / 2 + 100
+    );
 
     if (screen === Screen.SOCIALS) {
       let x = (startingX += 50);
