@@ -12,6 +12,7 @@ export class FallingRectangle {
   initialY: number;
   shouldDraw = false;
   shouldAnimate = true;
+  instructions: string | null = null;
 
   constructor({
     p5,
@@ -20,6 +21,7 @@ export class FallingRectangle {
     colour,
     yOffset,
     stroke = 'white',
+    instructions = null,
   }: {
     p5: p5Type;
     width: number;
@@ -27,6 +29,7 @@ export class FallingRectangle {
     colour: string;
     yOffset: number;
     stroke?: string | null;
+    instructions?: string | null;
   }) {
     this.p5 = p5;
     this.width = width;
@@ -37,6 +40,7 @@ export class FallingRectangle {
     const y = -innerHeight / 2 - height / 2 - yOffset;
     this.yPosition = y;
     this.initialY = y;
+    this.instructions = instructions;
   }
 
   draw(): void {
@@ -46,6 +50,14 @@ export class FallingRectangle {
     if (this.stroke) this.p5.stroke(this.stroke);
     this.p5.rectMode(this.p5.CENTER);
     this.p5.rect(this.xPosition, this.yPosition, this.width, this.height);
+    if (this.instructions) {
+      this.p5.strokeWeight(2);
+      this.p5.stroke('black');
+      this.p5.fill('black');
+      this.p5.textSize(16);
+      this.p5.textAlign(this.p5.CENTER);
+      this.p5.text(this.instructions, 0, this.yPosition + 8);
+    }
     this.yPosition = this.shouldAnimate
       ? (this.yPosition += 2)
       : this.yPosition;

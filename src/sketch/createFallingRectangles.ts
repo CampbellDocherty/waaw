@@ -19,6 +19,7 @@ export const createFallingRectangles = (p5: p5Type): FallingRectangle[] => {
         p5: p5,
         yOffset: distanceBetweenRectangles * index,
         stroke: null,
+        instructions: index + 1 === 5 ? 'Switch colour to pass through!' : null,
       });
     }
     return new FallingRectangle({

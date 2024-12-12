@@ -82,7 +82,7 @@ a:hover {
 
 .bottom-right {
   position: absolute;
-  bottom: 10px;
+  bottom: env(safe-area-inset-bottom, 10px);
   right: 20px;
   background-color: transparent;
   border: none;
@@ -91,11 +91,12 @@ a:hover {
   padding: 0;
   color: white;
   font-size: 18px;
+  padding-bottom: 10px;
 }
 
 .bottom-left {
   position: absolute;
-  bottom: 10px;
+  bottom: env(safe-area-inset-bottom, 10px);
   left: 20px;
   background-color: transparent;
   border: none;
@@ -104,6 +105,7 @@ a:hover {
   padding: 0;
   color: white;
   font-size: 18px;
+  padding-bottom: 10px;
 }
 
 @keyframes slideInFromLeft {
