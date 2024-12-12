@@ -54,9 +54,9 @@ export const sketch = (
   const socialScreen = p5.select('.social-screen');
   const gameOverScreen = p5.select('.game-over-screen');
   const tracksText = p5.select('.tracks');
-  const socialsButton = p5.select('.top-left');
+  const socialsButton = p5.select('.bottom-left');
   const folderButton = p5.select('.folder-button');
-  const gameButton = p5.select('.top-right');
+  const gameButton = p5.select('.bottom-right');
   const trackContainer = p5.select('.track-container');
   const tracksSection = p5.select('.tracks-section');
   const trackContainerClose = p5.select('.track-container-close');
@@ -98,10 +98,6 @@ export const sketch = (
     });
 
     folderButton?.style('background-image', `url(${folder})`);
-    folderButton?.position(
-      innerWidth / 2 - folderButton.width / 2,
-      innerHeight / 2 - folderButton.height / 2 + 100
-    );
     folderButton?.mousePressed(() => {
       if (trackContainer?.style('display') !== 'none') {
         trackContainer?.hide();
@@ -110,6 +106,9 @@ export const sketch = (
       }
     });
 
+    trackContainerClose?.mousePressed(() => {
+      trackContainer?.hide();
+    });
     trackContainerClose?.mousePressed(() => {
       trackContainer?.hide();
     });
@@ -145,7 +144,10 @@ export const sketch = (
       const height = 40;
       button.style('width', `${height}px`);
       button.style('height', `${height}px`);
-      button.position(innerWidth - height, index * height);
+      button.position(
+        innerWidth - height,
+        innerHeight - height - index * height
+      );
       button.style('background-color', powerUp.color);
       button.style('z-index', '9999');
       button.mousePressed(() => {
@@ -163,29 +165,27 @@ export const sketch = (
     button.style('height', `${buttonHeight}px`);
     button.addClass('start-button');
     button.position(
-      innerWidth / 2 - buttonWidth / 2,
-      innerHeight / 2 - button.height / 2
+      p5.width / 4 - buttonWidth / 2,
+      p5.height / 2 - button.height / 2
     );
     button.mousePressed(async () => {
       await onStart();
       start = true;
       button.hide();
-      if (!isProbablyWeb) {
-        setTimeout(() => {
-          instructionsButton?.removeClass('show');
-          instructionsButton?.addClass('hide');
-        }, 2000);
-      }
+
+      setTimeout(() => {
+        instructionsButton?.removeClass('show');
+        instructionsButton?.addClass('hide');
+      }, 4000);
     });
 
     p5.imageMode(p5.CENTER);
   };
 
-  const isPlayingTheGame = allPowerUpsCollected && selectedTrack;
-  const hiddenElements = p5.selectAll('.hidden');
   p5.draw = () => {
-    p5.background(102);
+    const isPlayingTheGame = allPowerUpsCollected && selectedTrack;
 
+    p5.background(102);
     if (isProbablyWeb) {
       _drawByKeyPress(pressedKeys, star);
     }
@@ -197,16 +197,22 @@ export const sketch = (
       return;
     }
 
+    const hiddenElements = p5.selectAll('.hidden');
     for (const hidden of hiddenElements) {
       hidden.removeClass('hidden');
       hidden.addClass('show');
     }
 
+    folderButton?.position(
+      p5.width / 4 - folderButton.width / 2,
+      p5.height / 2 - folderButton.height / 2 + 100
+    );
+
     if (screen === Screen.SOCIALS) {
       let x = (startingX += 50);
-      if (x >= innerWidth) {
-        startingX = innerWidth;
-        x = innerWidth;
+      if (x >= p5.width / 2) {
+        startingX = p5.width / 2;
+        x = p5.width / 2;
       }
       p5.translate(x, 0);
 
@@ -258,8 +264,8 @@ export const sketch = (
     );
 
     tracksText?.position(
-      innerWidth / 2 - folderButton?.width / 2,
-      innerHeight / 2 - folderButton?.height / 2 + 170
+      p5.width / 4 - folderButton?.width / 2,
+      p5.height / 2 - folderButton?.height / 2 + 170
     );
     tracksText?.html(`Tracks (${collectedTracks.length})`);
 
@@ -294,6 +300,9 @@ export const sketch = (
       p5.pop();
 
       for (const rectangle of rectangles) {
+        rectangle.shouldDraw = true;
+        rectangle.shouldAnimate = true;
+
         rectangle.draw();
 
         const isColliding = starVertices.some((vertex) => {
@@ -341,40 +350,19 @@ export const sketch = (
     const allCollectedPowerUps = [...collectedColours, ...collectedTracks];
     if (
       allCollectedPowerUps.length === allPowerUps.length &&
-      !allPowerUpsCollected &&
-      !selectedTrack
+      !allPowerUpsCollected
     ) {
-      instructionsButton?.html('Select a track to play');
-      instructionsButton?.removeClass('hide');
-      instructionsButton?.addClass('show');
       allPowerUpsCollected = true;
     }
 
+    if (allPowerUpsCollected && !selectedTrack) {
+      instructionsButton?.html('Select a track to play');
+      instructionsButton?.removeClass('hide');
+      instructionsButton?.addClass('show');
+    }
+
     if (selectedTrack) {
-      p5.push();
-
-      p5.imageMode(p5.CENTER);
-      const xCenterOfDisk = -p5.width / 4 + 30;
-      const yCenterOfDisk = p5.height / 2 - 30;
-      const dimension = 40;
-      p5.image(cd, xCenterOfDisk, yCenterOfDisk, dimension, dimension);
-
-      p5.fill('white');
-      p5.textSize(16);
-      p5.text(
-        selectedTrack.title,
-        xCenterOfDisk + dimension * 0.75,
-        yCenterOfDisk - dimension / 8
-      );
-
-      p5.textSize(12);
-      p5.text(
-        selectedTrack.artist,
-        xCenterOfDisk + dimension * 0.75,
-        yCenterOfDisk + dimension / 4
-      );
-
-      p5.pop();
+      drawTrackDetails(selectedTrack);
     }
 
     // update star position
@@ -382,6 +370,33 @@ export const sketch = (
       star.updatePosition();
     }
   };
+
+  function drawTrackDetails(track: TrackPowerUp) {
+    p5.push();
+
+    p5.imageMode(p5.CENTER);
+    const xCenterOfDisk = -p5.width / 4 + 30;
+    const yCenterOfDisk = -p5.height / 2 + 30;
+    const dimension = 40;
+    p5.image(cd, xCenterOfDisk, yCenterOfDisk, dimension, dimension);
+
+    p5.fill('white');
+    p5.textSize(16);
+    p5.text(
+      track.title,
+      xCenterOfDisk + dimension * 0.75,
+      yCenterOfDisk - dimension / 8
+    );
+
+    p5.textSize(12);
+    p5.text(
+      track.artist,
+      xCenterOfDisk + dimension * 0.75,
+      yCenterOfDisk + dimension / 4
+    );
+
+    p5.pop();
+  }
 
   p5.keyPressed = (event: { key: string }) => {
     if (!start) return;
@@ -397,7 +412,7 @@ export const sketch = (
   };
 
   p5.windowResized = () => {
-    p5.resizeCanvas(innerWidth, innerHeight);
+    p5.resizeCanvas(innerWidth * 2, innerHeight);
   };
 };
 
@@ -406,16 +421,16 @@ const _drawByKeyPress = (
   star: Star
 ) => {
   if (pressedKeys['ArrowLeft']) {
-    star.updateVelocity(-15, 0);
+    star.updateVelocity(-20, 0);
   }
   if (pressedKeys['ArrowRight']) {
-    star.updateVelocity(15, 0);
+    star.updateVelocity(20, 0);
   }
   if (pressedKeys['ArrowUp']) {
-    star.updateVelocity(0, -15);
+    star.updateVelocity(0, -20);
   }
   if (pressedKeys['ArrowDown']) {
-    star.updateVelocity(0, 15);
+    star.updateVelocity(0, 20);
   }
 
   if (!Object.values(pressedKeys).some((value) => value)) {

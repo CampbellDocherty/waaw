@@ -30,9 +30,7 @@ export class Star {
   updatePosition(): void {
     this.xPos = this.xPos + this.xVel * this.speed;
     this.yPos = this.yPos + this.yVel * this.speed;
-    if (this.p5) {
-      this.constrain(innerWidth, innerHeight, this.farRadius, this.p5);
-    }
+    this.constrain(this.farRadius);
   }
 
   updateSpeed(newSpeed: number): void {
@@ -57,18 +55,16 @@ export class Star {
     this.yPos = -120;
   }
 
-  constrain(
-    containerWidth: number,
-    containerHeight: number,
-    shapeWidth: number,
-    p5: p5Type
-  ): void {
-    const minX = -containerWidth / 2 + shapeWidth;
-    const maxX = containerWidth / 2 - shapeWidth;
-    const minY = -containerHeight / 2 + shapeWidth;
-    const maxY = containerHeight / 2 - shapeWidth;
-    this.xPos = p5.constrain(this.xPos, minX, maxX);
-    this.yPos = p5.constrain(this.yPos, minY, maxY);
+  private constrain(shapeWidth: number): void {
+    if (!this.p5) {
+      return;
+    }
+    const minX = -this.p5.width / 4 + shapeWidth;
+    const maxX = this.p5.width / 4 - shapeWidth;
+    const minY = -this.p5.height / 2 + shapeWidth;
+    const maxY = this.p5.height / 2 - shapeWidth;
+    this.xPos = this.p5.constrain(this.xPos, minX, maxX);
+    this.yPos = this.p5.constrain(this.yPos, minY, maxY);
   }
 
   draw = (

@@ -1,6 +1,6 @@
 export const Socials = () => (
   <div className="social-screen">
-    <button className="top-right">game {'->'}</button>
+    <button className="bottom-right">game {'->'}</button>
     <ul>
       <li>
         <a

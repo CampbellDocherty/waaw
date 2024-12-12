@@ -2,7 +2,7 @@ import Draggable from 'react-draggable';
 
 export const Game = ({ isProbablyWeb }: { isProbablyWeb: boolean }) => (
   <div className="game-screen">
-    <button className="top-left hidden">{'<-'} socials</button>
+    <button className="bottom-left hidden">{'<-'} socials</button>
     <p className="instructions hidden">
       {isProbablyWeb
         ? 'Collect the powerups using the arrow keys :)'
