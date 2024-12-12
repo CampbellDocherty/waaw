@@ -306,11 +306,11 @@ export const sketch = (
       p5.push();
       p5.textAlign(p5.RIGHT);
       p5.textSize(14);
-      p5.text('Score', innerWidth - 30, -innerHeight / 2 + 30);
+      p5.text('Score', innerWidth / 2 - 30, -innerHeight / 2 + 30);
       p5.textSize(18);
       p5.text(
         !diedInGame ? (score += 10) : score,
-        innerWidth - 30,
+        innerWidth / 2 - 30,
         -innerHeight / 2 + 50
       );
       p5.pop();
