@@ -1,10 +1,10 @@
-import * as p from '@p5-wrapper/react';
+import p5Type from 'p5';
 
 export class Font {
-  p5: p.P5CanvasInstance;
-  font: any | null = null;
+  p5: p5Type;
+  font: p5Type.Font | null = null;
 
-  constructor(p5: p.P5CanvasInstance) {
+  constructor(p5: p5Type) {
     this.p5 = p5;
   }
 

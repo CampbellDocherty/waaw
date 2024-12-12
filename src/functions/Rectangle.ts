@@ -1,8 +1,8 @@
-import * as p from '@p5-wrapper/react';
+import p5Type from 'p5';
 import { getRandomNumber } from './getRandomNumber';
 
 export class FallingRectangle {
-  p5: p.P5CanvasInstance;
+  p5: p5Type;
   width: number;
   height: number;
   colour: string;
@@ -21,7 +21,7 @@ export class FallingRectangle {
     yOffset,
     stroke = 'white',
   }: {
-    p5: p.P5CanvasInstance;
+    p5: p5Type;
     width: number;
     height: number;
     colour: string;

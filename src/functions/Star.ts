@@ -1,11 +1,11 @@
-import * as p from '@p5-wrapper/react';
+import p5Type from 'p5';
 
 export class Star {
   xVel: number;
   yVel: number;
   xPos: number;
   yPos: number;
-  p5: p.P5CanvasInstance;
+  p5: p5Type | null = null;
   closeRadius = 15;
   farRadius = 30;
   colour = 'white';
@@ -18,7 +18,7 @@ export class Star {
     this.yVel = yVel;
   }
 
-  bindToP5Instance(p5: p.P5CanvasInstance): void {
+  bindToP5Instance(p5: p5Type): void {
     this.p5 = p5;
   }
 
@@ -30,7 +30,9 @@ export class Star {
   updatePosition(): void {
     this.xPos = this.xPos + this.xVel * this.speed;
     this.yPos = this.yPos + this.yVel * this.speed;
-    this.constrain(innerWidth, innerHeight, this.farRadius, this.p5);
+    if (this.p5) {
+      this.constrain(innerWidth, innerHeight, this.farRadius, this.p5);
+    }
   }
 
   updateSpeed(newSpeed: number): void {
@@ -59,7 +61,7 @@ export class Star {
     containerWidth: number,
     containerHeight: number,
     shapeWidth: number,
-    p5: p.P5CanvasInstance
+    p5: p5Type
   ): void {
     const minX = -containerWidth / 2 + shapeWidth;
     const maxX = containerWidth / 2 - shapeWidth;
@@ -70,7 +72,7 @@ export class Star {
   }
 
   draw = (
-    p5: p.P5CanvasInstance,
+    p5: p5Type,
     shouldRotate: boolean
   ): {
     x: number;
