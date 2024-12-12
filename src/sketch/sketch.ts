@@ -316,8 +316,10 @@ export const sketch = (
       p5.pop();
 
       for (const rectangle of rectangles) {
-        rectangle.shouldDraw = true;
-        rectangle.shouldAnimate = true;
+        if (!diedInGame) {
+          rectangle.shouldDraw = true;
+          rectangle.shouldAnimate = true;
+        }
 
         rectangle.draw();
 
