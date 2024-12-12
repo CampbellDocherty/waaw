@@ -1,14 +1,14 @@
-import * as p from '@p5-wrapper/react';
+import p5Type from 'p5';
 import { getRandomNumber } from './getRandomNumber';
 
 export class PowerUp {
   color: string;
   xPosition: number;
   yPosition: number;
-  p5: p.P5CanvasInstance;
+  p5: p5Type;
   shouldDraw = false;
   hasBeenCollected = false;
-  button: any;
+  button: p5Type.Element | null = null;
   width: number;
   height: number;
 
@@ -16,7 +16,7 @@ export class PowerUp {
     color: string,
     xPosition: number,
     yPosition: number,
-    p5: p.P5CanvasInstance,
+    p5: p5Type,
     width: number,
     height: number
   ) {
@@ -28,7 +28,7 @@ export class PowerUp {
     this.height = height;
   }
 
-  bindToButton = (button: any): void => {
+  bindToButton = (button: p5Type.Element): void => {
     this.button = button;
   };
 
@@ -71,12 +71,7 @@ export class PowerUp {
 }
 
 export class ColourPowerUp extends PowerUp {
-  constructor(
-    color: string,
-    xPosition: number,
-    yPosition: number,
-    p5: p.P5CanvasInstance
-  ) {
+  constructor(color: string, xPosition: number, yPosition: number, p5: p5Type) {
     const width = 20;
     super(color, xPosition, yPosition, p5, width, width);
   }
@@ -93,9 +88,9 @@ export class ColourPowerUp extends PowerUp {
 }
 
 export class TrackPowerUp extends PowerUp {
-  image: any;
-  audio: any;
-  declare button: any;
+  image: p5Type.Image | null = null;
+  audio: p5Type.MediaElement | null = null;
+  button: p5Type.Element | null = null;
   src: string;
   title: string;
   artist: string;
@@ -109,7 +104,7 @@ export class TrackPowerUp extends PowerUp {
     artist,
     audioSrc,
   }: {
-    p5: p.P5CanvasInstance;
+    p5: p5Type;
     src: string;
     title: string;
     artist: string;
@@ -147,12 +142,14 @@ export class TrackPowerUp extends PowerUp {
   }
 
   showButton() {
-    this.button.show();
-    this.button.style('display', 'flex');
+    if (this.button) {
+      this.button.show();
+      this.button.style('display', 'flex');
+    }
   }
 
   draw(): void {
-    if (!this.shouldDraw) {
+    if (!this.shouldDraw || !this.image) {
       return;
     }
     if (this.hasBeenCollected) {
@@ -194,7 +191,7 @@ export class SpeedPowerUp extends PowerUp {
     speed: number,
     xPosition: number,
     yPosition: number,
-    p5: p.P5CanvasInstance
+    p5: p5Type
   ) {
     const width = 30;
     super(color, xPosition, yPosition, p5, width, width);

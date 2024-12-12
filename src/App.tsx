@@ -4,7 +4,7 @@ import {
   DeviceMotionEventiOS,
   requestDeviceMotionPermission,
 } from './functions/requestDeviceMotionPermission';
-import { sketch } from './functions/sketch';
+import { sketch } from './sketch/sketch';
 import { Star } from './functions/Star';
 import { Socials } from './Socials';
 import { Game } from './Game';

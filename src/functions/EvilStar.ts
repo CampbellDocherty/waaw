@@ -1,12 +1,12 @@
-import * as p from '@p5-wrapper/react';
 import { getRandomNumber } from './getRandomNumber';
+import p5Type from 'p5';
 
 export class EvilStar {
   xPos: number;
   initialX: number;
   initialY: number;
   yPos: number;
-  p5: p.P5CanvasInstance;
+  p5: p5Type;
   shouldAnimate = true;
   closeRadius = 10;
   farRadius = 33;
@@ -14,12 +14,7 @@ export class EvilStar {
   ySpeed = 3;
   powerUps: EvilPowerUp[];
 
-  constructor(
-    xPos: number,
-    yPos: number,
-    p5: p.P5CanvasInstance,
-    powerUps: EvilPowerUp[]
-  ) {
+  constructor(xPos: number, yPos: number, p5: p5Type, powerUps: EvilPowerUp[]) {
     this.xPos = xPos;
     this.initialX = xPos;
     this.yPos = yPos;
@@ -100,7 +95,7 @@ export class EvilStar {
 }
 
 export class EvilPowerUp {
-  p5: p.P5CanvasInstance;
+  p5: p5Type;
   xPosition: number;
   yPosition: number;
   shouldDraw = false;
@@ -110,12 +105,7 @@ export class EvilPowerUp {
   xSpeed = getRandomNumber(0.5, 3);
   delay: number;
 
-  constructor(
-    xPosition: number,
-    yPosition: number,
-    p5: p.P5CanvasInstance,
-    delay: number
-  ) {
+  constructor(xPosition: number, yPosition: number, p5: p5Type, delay: number) {
     this.p5 = p5;
     this.xPosition = xPosition;
     this.yPosition = yPosition;

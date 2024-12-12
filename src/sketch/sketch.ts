@@ -1,15 +1,20 @@
 import * as p from '@p5-wrapper/react';
+import p5Type from 'p5';
 import { audioFiles } from '../audio/audio';
 import monoRegular from '../fonts/Mono-Regular.ttf';
 import cdImage from '../images/cd.png';
 import folder from '../images/folder.png';
 import theTwins from '../images/the-twins.jpg';
-import { EvilPowerUp, EvilStar } from './EvilStar';
-import { Font } from './Font';
-import { ColourPowerUp, SpeedPowerUp, TrackPowerUp } from './PowerUp';
-import { FallingRectangle } from './Rectangle';
-import { Star } from './Star';
-import { getRandomNumber } from './getRandomNumber';
+import { EvilPowerUp, EvilStar } from '../functions/EvilStar';
+import { Font } from '../functions/Font';
+import {
+  ColourPowerUp,
+  SpeedPowerUp,
+  TrackPowerUp,
+} from '../functions/PowerUp';
+import { FallingRectangle } from '../functions/Rectangle';
+import { Star } from '../functions/Star';
+import { getRandomNumber } from '../functions/getRandomNumber';
 
 enum Screen {
   INITIAL = 'initial',
@@ -18,15 +23,15 @@ enum Screen {
 }
 
 export const sketch = (
-  p5: p.P5CanvasInstance,
+  p5: p5Type,
   star: Star,
   onStart: () => Promise<void>,
   isProbablyWeb: boolean
 ): void => {
   let start = false;
   let allPowerUpsCollected = false;
-  let mainImage: any;
-  let cd: any;
+  let mainImage: p5Type.Image;
+  let cd: p5Type.Image;
 
   let startingX = 0;
   let score = 0;
@@ -73,75 +78,77 @@ export const sketch = (
 
   p5.setup = () => {
     p5.createCanvas(innerWidth * 2, innerHeight, p5.WEBGL);
-    p5.textFont(font.font);
+    p5.textFont(`${font.font}`);
 
-    socialsButton.mousePressed(() => {
+    socialsButton?.mousePressed(() => {
       screen = Screen.SOCIALS;
     });
 
-    gameButton.mousePressed(() => {
+    gameButton?.mousePressed(() => {
       screen = Screen.GAME;
     });
 
-    playAgainButton.mousePressed(() => {
+    playAgainButton?.mousePressed(() => {
       selectedTrack = null;
       rectangles.forEach((rectangle) => rectangle.reset());
-      gameOverScreen.removeClass('show');
-      gameOverScreen.addClass('hide');
-      gameOverScreen.style('display', 'none');
+      gameOverScreen?.removeClass('show');
+      gameOverScreen?.addClass('hide');
+      gameOverScreen?.style('display', 'none');
       diedInGame = false;
       evilStar.reset();
       score = 0;
-      instructionsButton.removeClass('hide');
-      instructionsButton.addClass('show');
-      folderButton.removeClass('hide');
-      folderButton.addClass('show');
-      tracksText.removeClass('hide');
-      tracksText.addClass('show');
-      socialsButton.removeClass('hide');
-      socialsButton.addClass('show');
+      instructionsButton?.removeClass('hide');
+      instructionsButton?.addClass('show');
+      folderButton?.removeClass('hide');
+      folderButton?.addClass('show');
+      tracksText?.removeClass('hide');
+      tracksText?.addClass('show');
+      socialsButton?.removeClass('hide');
+      socialsButton?.addClass('show');
     });
 
-    folderButton.style('background-image', `url(${folder})`);
-    folderButton.position(
+    folderButton?.style('background-image', `url(${folder})`);
+    folderButton?.position(
       innerWidth / 2 - folderButton.width / 2,
       innerHeight / 2 - folderButton.height / 2 + 100
     );
-    folderButton.mousePressed(() => {
-      if (trackContainer.style('display') !== 'none') {
-        trackContainer.hide();
+    folderButton?.mousePressed(() => {
+      if (trackContainer?.style('display') !== 'none') {
+        trackContainer?.hide();
       } else {
         trackContainer.show();
       }
     });
 
-    trackContainerClose.mousePressed(() => {
-      trackContainer.hide();
+    trackContainerClose?.mousePressed(() => {
+      trackContainer?.hide();
     });
-    trackContainer.position(40, 40);
+    trackContainer?.position(40, 40);
 
     for (const track of trackPowerUps) {
       track.createAudio();
       track.createButton();
-      tracksSection.child(track.button);
+      tracksSection?.child(track.button ? track.button : undefined);
       const onTrackSelect = () => {
-        trackPowerUps.forEach((track) => track.audio.stop());
+        trackPowerUps.forEach((track) => track.audio?.stop());
         selectedTrack = track;
-        track.audio.stop();
-        track.audio.time = 0;
-        track.audio.play();
+        if (track.audio) {
+          track.audio.stop();
+          track.audio.time(0);
+          track.audio.play();
+        }
         if (allPowerUpsCollected) {
           rectangles.forEach((rectangle) => {
             rectangle.shouldDraw = true;
             rectangle.shouldAnimate = true;
           });
         }
-        trackContainer.hide();
-        instructionsButton.removeClass('show');
-        instructionsButton.addClass('hide');
+        trackContainer?.hide();
+        instructionsButton?.removeClass('show');
+        instructionsButton?.addClass('hide');
       };
-      track.button.mousePressed(onTrackSelect);
-      track.button.touchEnded(onTrackSelect);
+      track.button?.mousePressed(onTrackSelect);
+      track.button?.touchEnded(onTrackSelect);
     }
 
     const buttons = p5.selectAll('.hide-button');
@@ -177,8 +184,8 @@ export const sketch = (
       button.hide();
       if (!isProbablyWeb) {
         setTimeout(() => {
-          instructionsButton.removeClass('show');
-          instructionsButton.addClass('hide');
+          instructionsButton?.removeClass('show');
+          instructionsButton?.addClass('hide');
         }, 2000);
       }
     });
@@ -204,13 +211,12 @@ export const sketch = (
   };
 
   p5.windowResized = () => {
-    p5.resizeCanvas(innerWidth, innerHeight, p5.WEBGL);
+    p5.resizeCanvas(innerWidth, innerHeight);
   };
 
   p5.draw = () => {
     const isPlayingTheGame = allPowerUpsCollected && selectedTrack;
 
-    p5.frameRate(60);
     p5.background(102);
 
     if (isProbablyWeb) {
@@ -239,14 +245,14 @@ export const sketch = (
       }
       p5.translate(x, 0);
 
-      if (!socialScreen.elt.classList.contains('show-menu')) {
-        socialScreen.removeClass('hide-menu');
-        socialScreen.addClass('show-menu');
+      if (!socialScreen?.elt.classList.contains('show-menu')) {
+        socialScreen?.removeClass('hide-menu');
+        socialScreen?.addClass('show-menu');
       }
 
-      if (!gameScreen.elt.classList.contains('slide-out-right')) {
-        gameScreen.removeClass('slide-in-left');
-        gameScreen.addClass('slide-out-right');
+      if (!gameScreen?.elt.classList.contains('slide-out-right')) {
+        gameScreen?.removeClass('slide-in-left');
+        gameScreen?.addClass('slide-out-right');
       }
     }
 
@@ -257,14 +263,14 @@ export const sketch = (
         x = 0;
       }
       p5.translate(x, 0);
-      if (!socialScreen.elt.classList.contains('hide-menu')) {
-        socialScreen.removeClass('show-menu');
-        socialScreen.addClass('hide-menu');
+      if (!socialScreen?.elt.classList.contains('hide-menu')) {
+        socialScreen?.removeClass('show-menu');
+        socialScreen?.addClass('hide-menu');
       }
 
-      if (!gameScreen.elt.classList.contains('slide-in-left')) {
-        gameScreen.removeClass('slide-out-right');
-        gameScreen.addClass('slide-in-left');
+      if (!gameScreen?.elt.classList.contains('slide-in-left')) {
+        gameScreen?.removeClass('slide-out-right');
+        gameScreen?.addClass('slide-in-left');
       }
     }
 
@@ -286,11 +292,11 @@ export const sketch = (
       (track) => track.hasBeenCollected
     );
 
-    tracksText.position(
-      innerWidth / 2 - folderButton.width / 2,
-      innerHeight / 2 - folderButton.height / 2 + 170
+    tracksText?.position(
+      innerWidth / 2 - folderButton?.width / 2,
+      innerHeight / 2 - folderButton?.height / 2 + 170
     );
-    tracksText.html(`Tracks (${collectedTracks.length})`);
+    tracksText?.html(`Tracks (${collectedTracks.length})`);
 
     for (const colourPowerUp of colourPowerUps) {
       colourPowerUp.draw();
@@ -321,12 +327,12 @@ export const sketch = (
     }
 
     if (isPlayingTheGame) {
-      folderButton.removeClass('show');
-      folderButton.addClass('hide');
-      tracksText.removeClass('show');
-      tracksText.addClass('hide');
-      socialsButton.removeClass('show');
-      socialsButton.addClass('hide');
+      folderButton?.removeClass('show');
+      folderButton?.addClass('hide');
+      tracksText?.removeClass('show');
+      tracksText?.addClass('hide');
+      socialsButton?.removeClass('show');
+      socialsButton?.addClass('hide');
 
       p5.push();
       p5.textAlign(p5.CENTER);
@@ -367,11 +373,11 @@ export const sketch = (
 
     if (diedInGame) {
       rectangles.forEach((rectangle) => (rectangle.shouldAnimate = false));
-      finalScore.html(score);
-      gameOverScreen.removeClass('hide');
-      gameOverScreen.style('display', 'flex');
-      gameOverScreen.addClass('show');
-      selectedTrack?.audio.stop();
+      finalScore?.html(score.toString());
+      gameOverScreen?.removeClass('hide');
+      gameOverScreen?.style('display', 'flex');
+      gameOverScreen?.addClass('show');
+      selectedTrack?.audio?.stop();
       evilPowerUps.forEach((powerUp) => (powerUp.shouldAnimate = false));
       evilStar.shouldAnimate = false;
     }
@@ -387,9 +393,9 @@ export const sketch = (
       !allPowerUpsCollected &&
       !selectedTrack
     ) {
-      instructionsButton.html('Select a track to play');
-      instructionsButton.removeClass('hide');
-      instructionsButton.addClass('show');
+      instructionsButton?.html('Select a track to play');
+      instructionsButton?.removeClass('hide');
+      instructionsButton?.addClass('show');
       allPowerUpsCollected = true;
     }
 
@@ -449,7 +455,7 @@ const _drawByKeyPress = (
   }
 };
 
-const createColourPowerUps = (p5: p.P5CanvasInstance): ColourPowerUp[] => {
+const createColourPowerUps = (p5: p5Type): ColourPowerUp[] => {
   const timeBetweenPowerUps = 1200;
   const colours: string[] = [
     '#edf67d',
@@ -470,7 +476,7 @@ const createColourPowerUps = (p5: p.P5CanvasInstance): ColourPowerUp[] => {
   return colourPowerUps;
 };
 
-const createTrackPowerUps = (p5: p.P5CanvasInstance): TrackPowerUp[] => {
+const createTrackPowerUps = (p5: p5Type): TrackPowerUp[] => {
   const timeBetweenPowerUps = 500;
 
   const trackPowerUps = audioFiles.map(({ title, artist, audioSrc }, index) => {
@@ -491,7 +497,7 @@ const createTrackPowerUps = (p5: p.P5CanvasInstance): TrackPowerUp[] => {
   return trackPowerUps;
 };
 
-const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
+const createSpeedPowerUps = (p5: p5Type): SpeedPowerUp[] => {
   const timeBetweenPowerUps = 2000;
   const speeds: number[] = [1, 0.25];
 
@@ -507,7 +513,7 @@ const createSpeedPowerUps = (p5: p.P5CanvasInstance): SpeedPowerUp[] => {
   return speedPowerUps;
 };
 
-const createRectangles = (p5: p.P5CanvasInstance): FallingRectangle[] => {
+const createRectangles = (p5: p5Type): FallingRectangle[] => {
   const distanceBetweenRectangles = 200;
   const widths = Array.from({ length: 20 }, () => getRandomNumber(0.5, 0.9));
 
@@ -539,7 +545,7 @@ const createRectangles = (p5: p.P5CanvasInstance): FallingRectangle[] => {
   return rectangles;
 };
 
-const createEvilPowerUps = (p5: p.P5CanvasInstance): EvilPowerUp[] => {
+const createEvilPowerUps = (p5: p5Type): EvilPowerUp[] => {
   const timeBetweenEachPowerUp = 60;
   const evilPowerUps = Array.from({ length: 10 }, (_, index) => {
     return new EvilPowerUp(0, 0, p5, timeBetweenEachPowerUp * index);
