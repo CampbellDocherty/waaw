@@ -184,6 +184,7 @@ export const sketch = (
 
   p5.draw = () => {
     const isPlayingTheGame = allPowerUpsCollected && selectedTrack;
+
     p5.background(102);
     if (isProbablyWeb) {
       _drawByKeyPress(pressedKeys, star);
@@ -299,6 +300,9 @@ export const sketch = (
       p5.pop();
 
       for (const rectangle of rectangles) {
+        rectangle.shouldDraw = true;
+        rectangle.shouldAnimate = true;
+
         rectangle.draw();
 
         const isColliding = starVertices.some((vertex) => {
@@ -346,40 +350,19 @@ export const sketch = (
     const allCollectedPowerUps = [...collectedColours, ...collectedTracks];
     if (
       allCollectedPowerUps.length === allPowerUps.length &&
-      !allPowerUpsCollected &&
-      !selectedTrack
+      !allPowerUpsCollected
     ) {
-      instructionsButton?.html('Select a track to play');
-      instructionsButton?.removeClass('hide');
-      instructionsButton?.addClass('show');
       allPowerUpsCollected = true;
     }
 
+    if (allPowerUpsCollected && !selectedTrack) {
+      instructionsButton?.html('Select a track to play');
+      instructionsButton?.removeClass('hide');
+      instructionsButton?.addClass('show');
+    }
+
     if (selectedTrack) {
-      p5.push();
-
-      p5.imageMode(p5.CENTER);
-      const xCenterOfDisk = -p5.width / 4 + 30;
-      const yCenterOfDisk = p5.height / 2 - 30;
-      const dimension = 40;
-      p5.image(cd, xCenterOfDisk, yCenterOfDisk, dimension, dimension);
-
-      p5.fill('white');
-      p5.textSize(16);
-      p5.text(
-        selectedTrack.title,
-        xCenterOfDisk + dimension * 0.75,
-        yCenterOfDisk - dimension / 8
-      );
-
-      p5.textSize(12);
-      p5.text(
-        selectedTrack.artist,
-        xCenterOfDisk + dimension * 0.75,
-        yCenterOfDisk + dimension / 4
-      );
-
-      p5.pop();
+      drawTrackDetails(selectedTrack);
     }
 
     // update star position
@@ -387,6 +370,33 @@ export const sketch = (
       star.updatePosition();
     }
   };
+
+  function drawTrackDetails(track: TrackPowerUp) {
+    p5.push();
+
+    p5.imageMode(p5.CENTER);
+    const xCenterOfDisk = -p5.width / 4 + 30;
+    const yCenterOfDisk = -p5.height / 2 + 30;
+    const dimension = 40;
+    p5.image(cd, xCenterOfDisk, yCenterOfDisk, dimension, dimension);
+
+    p5.fill('white');
+    p5.textSize(16);
+    p5.text(
+      track.title,
+      xCenterOfDisk + dimension * 0.75,
+      yCenterOfDisk - dimension / 8
+    );
+
+    p5.textSize(12);
+    p5.text(
+      track.artist,
+      xCenterOfDisk + dimension * 0.75,
+      yCenterOfDisk + dimension / 4
+    );
+
+    p5.pop();
+  }
 
   p5.keyPressed = (event: { key: string }) => {
     if (!start) return;

@@ -51,7 +51,6 @@ export class PowerUp {
 
   remove(): void {
     this.hasBeenCollected = true;
-    console.log(this.button, innerWidth);
     if (this.button) this.button.addClass('show-button');
     this.shouldDraw = false;
   }
