@@ -99,8 +99,8 @@ export const sketch = (
 
     folderButton?.style('background-image', `url(${folder})`);
     folderButton?.position(
-      innerWidth / 2 - folderButton.width / 2,
-      innerHeight / 2 - folderButton.height / 2 + 100
+      p5.width / 4 - folderButton.width / 2,
+      p5.height / 2 - folderButton.height / 2 + 100
     );
     folderButton?.mousePressed(() => {
       if (trackContainer?.style('display') !== 'none') {
@@ -145,7 +145,7 @@ export const sketch = (
       const height = 40;
       button.style('width', `${height}px`);
       button.style('height', `${height}px`);
-      button.position(innerWidth - height, index * height);
+      button.position(p5.width - height, index * height);
       button.style('background-color', powerUp.color);
       button.style('z-index', '9999');
       button.mousePressed(() => {
@@ -163,8 +163,8 @@ export const sketch = (
     button.style('height', `${buttonHeight}px`);
     button.addClass('start-button');
     button.position(
-      innerWidth / 2 - buttonWidth / 2,
-      innerHeight / 2 - button.height / 2
+      p5.width / 4 - buttonWidth / 2,
+      p5.height / 2 - button.height / 2
     );
     button.mousePressed(async () => {
       await onStart();
@@ -185,7 +185,6 @@ export const sketch = (
   const hiddenElements = p5.selectAll('.hidden');
   p5.draw = () => {
     p5.background(102);
-
     if (isProbablyWeb) {
       _drawByKeyPress(pressedKeys, star);
     }
@@ -204,9 +203,9 @@ export const sketch = (
 
     if (screen === Screen.SOCIALS) {
       let x = (startingX += 50);
-      if (x >= innerWidth) {
-        startingX = innerWidth;
-        x = innerWidth;
+      if (x >= p5.width / 2) {
+        startingX = p5.width / 2;
+        x = p5.width / 2;
       }
       p5.translate(x, 0);
 
@@ -258,8 +257,8 @@ export const sketch = (
     );
 
     tracksText?.position(
-      innerWidth / 2 - folderButton?.width / 2,
-      innerHeight / 2 - folderButton?.height / 2 + 170
+      p5.width / 4 - folderButton?.width / 2,
+      p5.height / 2 - folderButton?.height / 2 + 170
     );
     tracksText?.html(`Tracks (${collectedTracks.length})`);
 
@@ -397,7 +396,7 @@ export const sketch = (
   };
 
   p5.windowResized = () => {
-    p5.resizeCanvas(innerWidth, innerHeight);
+    p5.resizeCanvas(innerWidth * 2, innerHeight);
   };
 };
 

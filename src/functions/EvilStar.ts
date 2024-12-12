@@ -71,10 +71,10 @@ export class EvilStar {
     this.p5.endShape(this.p5.CLOSE);
     this.p5.pop();
 
-    if (this.xPos <= 0 - innerWidth / 3) {
+    if (this.xPos <= 0 - this.p5.width / 6) {
       this.xSpeed = this.xSpeed * -1;
     }
-    if (this.xPos >= 0 + innerWidth / 3) {
+    if (this.xPos >= 0 + this.p5.width / 6) {
       this.xSpeed = this.xSpeed * -1;
     }
 
@@ -164,17 +164,17 @@ export class EvilPowerUp {
     }
 
     if (
-      this.xPosition + this.width / 2 >= innerWidth / 2 ||
-      this.xPosition - this.width / 2 <= -innerWidth / 2
+      this.xPosition + this.width / 2 >= this.p5.width / 4 ||
+      this.xPosition - this.width / 2 <= -this.p5.width / 4
     ) {
       this.xSpeed = this.xSpeed * -1;
     }
 
-    if (this.yPosition - this.width / 2 <= -innerHeight / 2) {
+    if (this.yPosition - this.width / 2 <= -this.p5.height / 2) {
       this.ySpeed = this.ySpeed * -1;
     }
 
-    if (this.yPosition - this.width > innerHeight / 2) {
+    if (this.yPosition - this.width > this.p5.height / 2) {
       this.shouldDraw = false;
     }
     this.p5.pop();

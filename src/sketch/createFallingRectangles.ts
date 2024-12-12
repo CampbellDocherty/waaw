@@ -12,21 +12,19 @@ export const createFallingRectangles = (p5: p5Type): FallingRectangle[] => {
       const randomIndex = Math.floor(Math.random() * colours.length);
       const randomColour = colours[randomIndex];
       return new FallingRectangle({
-        width: innerWidth,
+        width: p5.width / 2,
         height: 80,
         colour: randomColour,
         p5: p5,
-        innerHeight,
         yOffset: distanceBetweenRectangles * index,
         stroke: null,
       });
     }
     return new FallingRectangle({
-      width: innerWidth * width,
+      width: (p5.width / 2) * width,
       height: 20,
       colour: 'black',
       p5: p5,
-      innerHeight,
       yOffset: distanceBetweenRectangles * index,
     });
   });

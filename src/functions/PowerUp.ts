@@ -33,10 +33,10 @@ export class PowerUp {
   };
 
   setPositionWithinBounds = () => {
-    const left = -innerWidth / 2 + 40;
-    const right = innerWidth / 2 - 40;
-    const top = -innerHeight / 2 + 40;
-    const bottom = innerHeight / 2 - 40;
+    const left = -this.p5.width / 4 + 40;
+    const right = this.p5.width / 4 - 40;
+    const top = -this.p5.height / 2 + 40;
+    const bottom = this.p5.height / 2 - 40;
     this.xPosition = this.p5.random(left, right);
     this.yPosition = this.p5.random(top, bottom);
   };

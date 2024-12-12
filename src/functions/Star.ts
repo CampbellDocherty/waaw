@@ -31,7 +31,7 @@ export class Star {
     this.xPos = this.xPos + this.xVel * this.speed;
     this.yPos = this.yPos + this.yVel * this.speed;
     if (this.p5) {
-      this.constrain(innerWidth, innerHeight, this.farRadius, this.p5);
+      this.constrain(this.farRadius, this.p5);
     }
   }
 
@@ -57,16 +57,11 @@ export class Star {
     this.yPos = -120;
   }
 
-  constrain(
-    containerWidth: number,
-    containerHeight: number,
-    shapeWidth: number,
-    p5: p5Type
-  ): void {
-    const minX = -containerWidth / 2 + shapeWidth;
-    const maxX = containerWidth / 2 - shapeWidth;
-    const minY = -containerHeight / 2 + shapeWidth;
-    const maxY = containerHeight / 2 - shapeWidth;
+  constrain(shapeWidth: number, p5: p5Type): void {
+    const minX = -p5.width / 2 + shapeWidth;
+    const maxX = p5.width / 2 - shapeWidth;
+    const minY = -p5.height / 2 + shapeWidth;
+    const maxY = p5.height / 2 - shapeWidth;
     this.xPos = p5.constrain(this.xPos, minX, maxX);
     this.yPos = p5.constrain(this.yPos, minY, maxY);
   }

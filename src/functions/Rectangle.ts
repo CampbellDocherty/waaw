@@ -25,7 +25,6 @@ export class FallingRectangle {
     width: number;
     height: number;
     colour: string;
-    innerHeight: number;
     yOffset: number;
     stroke?: string | null;
   }) {
@@ -35,7 +34,7 @@ export class FallingRectangle {
     this.colour = colour;
     this.stroke = stroke;
     this.xPosition = this.randomX;
-    const y = 0 - innerHeight / 2 - height / 2 - yOffset;
+    const y = 0 - p5.height / 2 - height / 2 - yOffset;
     this.yPosition = y;
     this.initialY = y;
   }
@@ -50,7 +49,7 @@ export class FallingRectangle {
     this.yPosition = this.shouldAnimate
       ? (this.yPosition += 2)
       : this.yPosition;
-    if (this.yPosition - this.height / 2 > innerHeight) {
+    if (this.yPosition - this.height / 2 > this.p5.height) {
       this.shouldDraw = false;
     }
     this.p5.pop();
@@ -86,8 +85,8 @@ export class FallingRectangle {
   }
 
   private get randomX() {
-    return this.width === innerWidth
+    return this.width === this.p5.width / 2
       ? 0
-      : getRandomNumber(0 - innerWidth / 2, innerWidth / 2);
+      : getRandomNumber(0 - this.p5.width / 4, this.p5.width / 4);
   }
 }
