@@ -12,7 +12,7 @@ export const createFallingRectangles = (p5: p5Type): FallingRectangle[] => {
       const randomIndex = Math.floor(Math.random() * colours.length);
       const randomColour = colours[randomIndex];
       return new FallingRectangle({
-        width: p5.width / 2,
+        width: innerWidth,
         height: 80,
         colour: randomColour,
         p5: p5,
@@ -21,7 +21,7 @@ export const createFallingRectangles = (p5: p5Type): FallingRectangle[] => {
       });
     }
     return new FallingRectangle({
-      width: (p5.width / 2) * width,
+      width: innerWidth * width,
       height: 20,
       colour: 'black',
       p5: p5,

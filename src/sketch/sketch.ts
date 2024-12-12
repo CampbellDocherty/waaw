@@ -113,6 +113,9 @@ export const sketch = (
     trackContainerClose?.mousePressed(() => {
       trackContainer?.hide();
     });
+    trackContainerClose?.mousePressed(() => {
+      trackContainer?.hide();
+    });
     trackContainer?.position(40, 40);
 
     for (const track of trackPowerUps) {
@@ -170,20 +173,19 @@ export const sketch = (
       await onStart();
       start = true;
       button.hide();
-      if (!isProbablyWeb) {
-        setTimeout(() => {
-          instructionsButton?.removeClass('show');
-          instructionsButton?.addClass('hide');
-        }, 2000);
-      }
+
+      setTimeout(() => {
+        instructionsButton?.removeClass('show');
+        instructionsButton?.addClass('hide');
+      }, 4000);
     });
 
     p5.imageMode(p5.CENTER);
   };
 
-  const isPlayingTheGame = allPowerUpsCollected && selectedTrack;
   const hiddenElements = p5.selectAll('.hidden');
   p5.draw = () => {
+    const isPlayingTheGame = allPowerUpsCollected && selectedTrack;
     p5.background(102);
     if (isProbablyWeb) {
       _drawByKeyPress(pressedKeys, star);
@@ -405,16 +407,16 @@ const _drawByKeyPress = (
   star: Star
 ) => {
   if (pressedKeys['ArrowLeft']) {
-    star.updateVelocity(-15, 0);
+    star.updateVelocity(-20, 0);
   }
   if (pressedKeys['ArrowRight']) {
-    star.updateVelocity(15, 0);
+    star.updateVelocity(20, 0);
   }
   if (pressedKeys['ArrowUp']) {
-    star.updateVelocity(0, -15);
+    star.updateVelocity(0, -20);
   }
   if (pressedKeys['ArrowDown']) {
-    star.updateVelocity(0, 15);
+    star.updateVelocity(0, 20);
   }
 
   if (!Object.values(pressedKeys).some((value) => value)) {
