@@ -88,13 +88,11 @@ export class ColourPowerUp extends PowerUp {
 }
 
 export class TrackPowerUp extends PowerUp {
-  image: p5Type.Image | null = null;
-  audio: p5Type.MediaElement | null = null;
-  button: p5Type.Element | null = null;
-  src: string;
+  image: p5Type.Image;
+  audio: p5Type.MediaElement;
+  button: p5Type.Element;
   title: string;
   artist: string;
-  audioSrc: string;
   rotationSpeed = getRandomNumber(0.03, 0.1);
 
   constructor({
@@ -113,43 +111,35 @@ export class TrackPowerUp extends PowerUp {
     const width = 24;
     const height = 30;
     super('#000', 0, 0, p5, width, height);
-    this.src = src;
+    this.image = this.p5.loadImage(src);
     this.title = title;
     this.artist = artist;
-    this.audioSrc = audioSrc;
+    this.audio = this.p5.createAudio(audioSrc);
+    this.button = this.createButton(src);
   }
 
-  loadImage() {
-    this.image = this.p5.loadImage(this.src);
-  }
-
-  createAudio() {
-    this.audio = this.p5.createAudio(this.audioSrc);
-  }
-
-  createButton() {
-    this.button = this.p5.createButton('');
-    this.button.addClass('track-button');
+  createButton(src: string) {
+    const button = this.p5.createButton('');
+    button.addClass('track-button');
     const imageSpan = this.p5.createSpan();
     imageSpan.addClass('track-button-image');
-    imageSpan.style('background-image', `url(${this.src})`);
-    this.button.child(imageSpan);
+    imageSpan.style('background-image', `url(${src})`);
+    button.child(imageSpan);
     const title = `${this.title.toLowerCase().replace(/\s+/g, '-')}.mp3`;
     const titleSpan = this.p5.createSpan(title);
     imageSpan.addClass('track-button-title');
-    this.button.child(titleSpan);
-    this.button.hide();
+    button.child(titleSpan);
+    button.hide();
+    return button;
   }
 
   showButton() {
-    if (this.button) {
-      this.button.show();
-      this.button.style('display', 'flex');
-    }
+    this.button.show();
+    this.button.style('display', 'flex');
   }
 
   draw(): void {
-    if (!this.shouldDraw || !this.image) {
+    if (!this.shouldDraw) {
       return;
     }
     if (this.hasBeenCollected) {
