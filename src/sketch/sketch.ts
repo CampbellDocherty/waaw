@@ -112,7 +112,7 @@ export const sketch = (
     trackContainerClose?.mousePressed(() => {
       trackContainer?.hide();
     });
-    trackContainerClose?.mousePressed(() => {
+    trackContainerClose?.touchEnded(() => {
       trackContainer?.hide();
     });
     trackContainer?.position(40, 40);
