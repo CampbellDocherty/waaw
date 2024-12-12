@@ -1,20 +1,17 @@
-import * as p from '@p5-wrapper/react';
 import p5Type from 'p5';
-import { audioFiles } from '../audio/audio';
 import monoRegular from '../fonts/Mono-Regular.ttf';
+import { EvilStar } from '../functions/EvilStar';
+import { Font } from '../functions/Font';
+import { TrackPowerUp } from '../functions/PowerUp';
+import { Star } from '../functions/Star';
 import cdImage from '../images/cd.png';
 import folder from '../images/folder.png';
 import theTwins from '../images/the-twins.jpg';
-import { EvilPowerUp, EvilStar } from '../functions/EvilStar';
-import { Font } from '../functions/Font';
-import {
-  ColourPowerUp,
-  SpeedPowerUp,
-  TrackPowerUp,
-} from '../functions/PowerUp';
-import { FallingRectangle } from '../functions/Rectangle';
-import { Star } from '../functions/Star';
-import { getRandomNumber } from '../functions/getRandomNumber';
+import { createColourPowerUps } from './createColourPowerUps';
+import { createEvilPowerUps } from './createEvilPowerUps';
+import { createFallingRectangles } from './createFallingRectangles';
+import { createSpeedPowerUps } from './createSpeedPowerUps';
+import { createTrackPowerUps } from './createTrackPowerUps';
 
 enum Screen {
   INITIAL = 'initial',
@@ -40,22 +37,18 @@ export const sketch = (
   const pressedKeys: { [key: string]: boolean } = {};
 
   const font = new Font(p5);
-  const trackPowerUps = createTrackPowerUps(p5);
 
   p5.preload = () => {
     font.loadFont(monoRegular);
     star.bindToP5Instance(p5);
     cd = p5.loadImage(cdImage);
     mainImage = p5.loadImage(theTwins);
-
-    for (const track of trackPowerUps) {
-      track.loadImage();
-    }
   };
 
+  const trackPowerUps = createTrackPowerUps(p5);
   const colourPowerUps = createColourPowerUps(p5);
   const speedPowerUps = createSpeedPowerUps(p5);
-  const rectangles = createRectangles(p5);
+  const rectangles = createFallingRectangles(p5);
   const evilPowerUps = createEvilPowerUps(p5);
   const evilStar = new EvilStar(0, -innerHeight / 2 - 100, p5, evilPowerUps);
 
@@ -126,9 +119,7 @@ export const sketch = (
     trackContainer?.position(40, 40);
 
     for (const track of trackPowerUps) {
-      track.createAudio();
-      track.createButton();
-      tracksSection?.child(track.button ? track.button : undefined);
+      tracksSection?.child(track.button);
       const onTrackSelect = () => {
         trackPowerUps.forEach((track) => track.audio?.stop());
         selectedTrack = track;
@@ -214,28 +205,26 @@ export const sketch = (
     p5.resizeCanvas(innerWidth, innerHeight);
   };
 
+  const isPlayingTheGame = allPowerUpsCollected && selectedTrack;
+  const hiddenElements = p5.selectAll('.hidden');
   p5.draw = () => {
-    const isPlayingTheGame = allPowerUpsCollected && selectedTrack;
-
     p5.background(102);
 
     if (isProbablyWeb) {
       _drawByKeyPress(pressedKeys, star);
     }
 
+    p5.image(mainImage, 0, -120, 140, 170);
+
     if (!start) {
-      p5.image(mainImage, 0, -120, 140, 170);
       star.draw(p5, true);
       return;
     }
 
-    const hiddenElements = p5.selectAll('.hidden');
     for (const hidden of hiddenElements) {
       hidden.removeClass('hidden');
       hidden.addClass('show');
     }
-
-    p5.image(mainImage, 0, -120, 140, 170);
 
     if (screen === Screen.SOCIALS) {
       let x = (startingX += 50);
@@ -453,103 +442,4 @@ const _drawByKeyPress = (
   if (!Object.values(pressedKeys).some((value) => value)) {
     star.updateVelocity(0, 0);
   }
-};
-
-const createColourPowerUps = (p5: p5Type): ColourPowerUp[] => {
-  const timeBetweenPowerUps = 1200;
-  const colours: string[] = [
-    '#edf67d',
-    '#f896d8',
-    '#ca7df9',
-    '#724cf9',
-    '#564592',
-  ];
-  const colourPowerUps = colours.map((colour, index) => {
-    const powerUp = new ColourPowerUp(colour, 0, 0, p5);
-    setTimeout(() => {
-      powerUp.setPositionWithinBounds();
-      powerUp.shouldDraw = true;
-    }, timeBetweenPowerUps * (index + 1));
-    return powerUp;
-  });
-
-  return colourPowerUps;
-};
-
-const createTrackPowerUps = (p5: p5Type): TrackPowerUp[] => {
-  const timeBetweenPowerUps = 500;
-
-  const trackPowerUps = audioFiles.map(({ title, artist, audioSrc }, index) => {
-    const powerUp = new TrackPowerUp({
-      p5,
-      src: cdImage,
-      title,
-      artist,
-      audioSrc,
-    });
-    setTimeout(() => {
-      powerUp.setPositionWithinBounds();
-      powerUp.shouldDraw = true;
-    }, timeBetweenPowerUps * (index + 1));
-    return powerUp;
-  });
-
-  return trackPowerUps;
-};
-
-const createSpeedPowerUps = (p5: p5Type): SpeedPowerUp[] => {
-  const timeBetweenPowerUps = 2000;
-  const speeds: number[] = [1, 0.25];
-
-  const speedPowerUps = speeds.map((speed, index) => {
-    const powerUp = new SpeedPowerUp('#b2f602', speed, 0, 0, p5);
-    setTimeout(() => {
-      powerUp.setPositionWithinBounds();
-      powerUp.shouldDraw = true;
-    }, timeBetweenPowerUps * (index + 1));
-    return powerUp;
-  });
-
-  return speedPowerUps;
-};
-
-const createRectangles = (p5: p5Type): FallingRectangle[] => {
-  const distanceBetweenRectangles = 200;
-  const widths = Array.from({ length: 20 }, () => getRandomNumber(0.5, 0.9));
-
-  const rectangles = widths.map((width, index) => {
-    if ((index + 1) % 5 === 0) {
-      const colours = ['#edf67d', '#f896d8', '#ca7df9', '#724cf9', '#564592'];
-      const randomIndex = Math.floor(Math.random() * colours.length);
-      const randomColour = colours[randomIndex];
-      return new FallingRectangle({
-        width: innerWidth,
-        height: 80,
-        colour: randomColour,
-        p5: p5,
-        innerHeight,
-        yOffset: distanceBetweenRectangles * index,
-        stroke: null,
-      });
-    }
-    return new FallingRectangle({
-      width: innerWidth * width,
-      height: 20,
-      colour: 'black',
-      p5: p5,
-      innerHeight,
-      yOffset: distanceBetweenRectangles * index,
-    });
-  });
-
-  return rectangles;
-};
-
-const createEvilPowerUps = (p5: p5Type): EvilPowerUp[] => {
-  const timeBetweenEachPowerUp = 60;
-  const evilPowerUps = Array.from({ length: 10 }, (_, index) => {
-    return new EvilPowerUp(0, 0, p5, timeBetweenEachPowerUp * index);
-  });
-
-  return evilPowerUps;
 };
