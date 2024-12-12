@@ -49,15 +49,15 @@ export class FallingRectangle {
     this.p5.fill(this.colour);
     if (this.stroke) this.p5.stroke(this.stroke);
     this.p5.rectMode(this.p5.CENTER);
-    if (this.instructions) {
-      this.p5.textAlign(this.p5.CENTER);
-      this.p5.text(
-        this.instructions,
-        this.xPosition + this.width / 2,
-        this.yPosition + this.height / 2
-      );
-    }
     this.p5.rect(this.xPosition, this.yPosition, this.width, this.height);
+    if (this.instructions) {
+      this.p5.strokeWeight(2);
+      this.p5.stroke('black');
+      this.p5.fill('black');
+      this.p5.textSize(16);
+      this.p5.textAlign(this.p5.CENTER);
+      this.p5.text(this.instructions, 0, this.yPosition + 8);
+    }
     this.yPosition = this.shouldAnimate
       ? (this.yPosition += 2)
       : this.yPosition;
