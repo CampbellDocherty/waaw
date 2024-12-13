@@ -1,13 +1,15 @@
 import p5Type from 'p5';
 
+export const STAR_WIDTH = 60;
+
 export class Star {
   xVel: number;
   yVel: number;
   xPos: number;
   yPos: number;
   p5: p5Type | null = null;
-  closeRadius = 15;
-  farRadius = 30;
+  closeRadius = STAR_WIDTH / 4;
+  farRadius = STAR_WIDTH / 2;
   colour = 'white';
   speed = 0.5;
 
