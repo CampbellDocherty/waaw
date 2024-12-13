@@ -346,6 +346,15 @@ export const sketch = (
           }
         });
         evilStar.draw();
+        if (score > 35000) {
+          p5.push();
+          p5.tint('#FFD700');
+          instructionsButton?.html('Collect the CD!');
+          instructionsButton?.removeClass('hide');
+          instructionsButton?.addClass('show');
+          p5.image(cd, 0, 60, 40, 40);
+          p5.pop();
+        }
       }
     }
 
