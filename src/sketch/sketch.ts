@@ -35,17 +35,18 @@ export const sketch = (
   const pressedKeys: { [key: string]: boolean } = {};
 
   let font: p5Type.Font;
+  let trackPowerUps: TrackPowerUp[];
 
   p5.preload = () => {
     font = p5.loadFont(monoRegular);
     star.bindToP5Instance(p5);
     cd = p5.loadImage(cdImage);
     mainImage = p5.loadImage(theTwins);
+    trackPowerUps = createTrackPowerUps(p5, hasReachedCheckpoint);
   };
 
   const hasReachedCheckpoint = Boolean(localStorage.getItem('checkpoint'));
 
-  const trackPowerUps = createTrackPowerUps(p5, hasReachedCheckpoint);
   const colourPowerUps = createColourPowerUps(p5, hasReachedCheckpoint);
   const rectangles = createFallingRectangles(p5);
   const evilPowerUps = createEvilPowerUps(p5);
