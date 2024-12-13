@@ -197,7 +197,6 @@ export const sketch = (
 
   p5.draw = () => {
     const isPlayingTheGame = allPowerUpsCollected && selectedTrack;
-
     p5.background(102);
     if (isProbablyWeb) {
       _drawByKeyPress(pressedKeys, star);

@@ -1,5 +1,6 @@
 import p5Type from 'p5';
 import { getRandomNumber } from './getRandomNumber';
+import { STAR_WIDTH } from './Star';
 
 export class FallingRectangle {
   p5: p5Type;
@@ -97,8 +98,12 @@ export class FallingRectangle {
   }
 
   private get randomX() {
-    return this.width === innerWidth
-      ? 0
-      : getRandomNumber(-innerWidth / 2, innerWidth / 2);
+    if (this.width === innerWidth) {
+      return 0;
+    }
+    if (this.width >= innerWidth - STAR_WIDTH) {
+      return getRandomNumber(-innerWidth / 2, -STAR_WIDTH);
+    }
+    return getRandomNumber(-innerWidth / 2, innerWidth / 2);
   }
 }
