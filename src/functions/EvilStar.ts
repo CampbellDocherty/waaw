@@ -92,6 +92,15 @@ export class EvilStar {
 
     return vertices;
   };
+
+  retreat = () => {
+    this.yPos -= this.ySpeed;
+    this.xSpeed = 0;
+    this.shouldAnimate = false;
+    this.powerUps.forEach((pu) => {
+      pu.shouldDie = true;
+    });
+  };
 }
 
 export class EvilPowerUp {
@@ -104,6 +113,8 @@ export class EvilPowerUp {
   ySpeed = getRandomNumber(-3, 3);
   xSpeed = getRandomNumber(0.5, 3);
   delay: number;
+  shouldDie = false;
+  opacity = 255;
 
   constructor(xPosition: number, yPosition: number, p5: p5Type, delay: number) {
     this.p5 = p5;
@@ -113,7 +124,7 @@ export class EvilPowerUp {
   }
 
   checkIfColliding = (x: number, y: number): boolean => {
-    if (!this.shouldDraw) {
+    if (!this.shouldDraw || this.shouldDie) {
       return false;
     }
     const { left, right, top, bottom } = this.boundingBox;
@@ -153,14 +164,19 @@ export class EvilPowerUp {
     if (!this.shouldDraw) {
       return;
     }
+    console.log(this.shouldDie);
     this.p5.push();
-    this.p5.stroke('white');
-    this.p5.fill('black');
+    this.p5.stroke(255, 255, 255, this.opacity);
+    this.p5.fill(0, 0, 0, this.opacity);
     this.p5.circle(this.xPosition, this.yPosition, this.width);
 
     if (this.shouldAnimate) {
       this.yPosition += this.ySpeed;
       this.xPosition += this.xSpeed;
+    }
+
+    if (this.shouldDie) {
+      this.opacity -= 10;
     }
 
     if (
