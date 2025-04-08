@@ -13,11 +13,18 @@ export const Game = ({ isProbablyWeb }: { isProbablyWeb: boolean }) => (
       return <button key={index} className="hide-button" />;
     })}
     <p className="hidden tracks">Tracks (0)</p>
-    <Draggable bounds="parent">
+    {isProbablyWeb ? (
+      <Draggable bounds="parent">
+        <div className="track-container" style={{ display: 'none' }}>
+          <button className="track-container-close">x</button>
+          <div className="tracks-section"></div>
+        </div>
+      </Draggable>
+    ) : (
       <div className="track-container" style={{ display: 'none' }}>
         <button className="track-container-close">x</button>
         <div className="tracks-section"></div>
       </div>
-    </Draggable>
+    )}
   </div>
 );
