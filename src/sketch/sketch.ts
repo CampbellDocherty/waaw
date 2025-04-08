@@ -346,6 +346,9 @@ export const sketch = (
           }
         });
         evilStar.draw();
+        if (score > 35000) {
+          evilStar.retreat();
+        }
       }
     }
 
