@@ -333,6 +333,12 @@ a {
   flex-direction: column;
   gap: 4px;
   padding: 0px 10px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tracks-section::-webkit-scrollbar {
+  display: none;
 }
 
 .track-button {
