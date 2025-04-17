@@ -1,5 +1,4 @@
 import * as p5Type from 'p5';
-import 'p5/lib/addons/p5.sound';
 import monoRegular from '../fonts/Mono-Regular.ttf';
 import { EvilStar } from '../functions/EvilStar';
 import { TrackPowerUp } from '../functions/PowerUp';
