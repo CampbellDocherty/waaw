@@ -1,4 +1,5 @@
-import p5Type from 'p5';
+import * as p5Type from 'p5';
+import 'p5/lib/addons/p5.sound';
 import monoRegular from '../fonts/Mono-Regular.ttf';
 import { EvilStar } from '../functions/EvilStar';
 import { TrackPowerUp } from '../functions/PowerUp';
@@ -10,6 +11,8 @@ import { createColourPowerUps } from './createColourPowerUps';
 import { createEvilPowerUps } from './createEvilPowerUps';
 import { createFallingRectangles } from './createFallingRectangles';
 import { createTrackPowerUps } from './createTrackPowerUps';
+import { FinalMix } from '../functions/FinalMix';
+import secretMix from '../audio/waaw-secret-mix.mp3';
 
 enum Screen {
   INITIAL = 'initial',
@@ -27,10 +30,12 @@ export const sketch = (
   let allPowerUpsCollected = false;
   let mainImage: p5Type.Image;
   let cd: p5Type.Image;
+  let finalMix: FinalMix;
 
   let startingX = 0;
   let score = 0;
   let diedInGame = false;
+  let hasCompleted = false;
 
   const pressedKeys: { [key: string]: boolean } = {};
 
@@ -41,6 +46,7 @@ export const sketch = (
     font = p5.loadFont(monoRegular);
     star.bindToP5Instance(p5);
     cd = p5.loadImage(cdImage);
+    finalMix = new FinalMix(cdImage, secretMix, p5);
     mainImage = p5.loadImage(theTwins);
     trackPowerUps = createTrackPowerUps(p5, hasReachedCheckpoint);
   };
@@ -346,8 +352,26 @@ export const sketch = (
           }
         });
         evilStar.draw();
-        if (score > 35000) {
+        if (score >= 35000) {
+          score = 35000;
+          hasCompleted = true;
           evilStar.retreat();
+        }
+      }
+      if (hasCompleted) {
+        finalMix.draw();
+        const isCollidingWithFinalMix = starVertices.some((vertex) => {
+          const { x, y } = vertex;
+          return finalMix.checkIfColliding(x, y);
+        });
+
+        if (isCollidingWithFinalMix) {
+          finalMix.hasBeenCollected = true;
+        }
+        if (finalMix.hasBeenCollected && !finalMix.downloadTriggered) {
+          localStorage.setItem('hasCompleted', 'true');
+          downloadFinalMix();
+          finalMix.downloadTriggered = true;
         }
       }
     }
@@ -435,6 +459,15 @@ export const sketch = (
   p5.windowResized = () => {
     p5.resizeCanvas(innerWidth * 2, innerHeight);
   };
+
+  function downloadFinalMix() {
+    const downloadLink = p5.createA(finalMix.finalMixSrc, '');
+    downloadLink.attribute('download', 'waaw-secret-mix.mp3');
+    downloadLink.elt.addEventListener('click', function () {
+      finalMix.remove();
+    });
+    downloadLink.elt.click();
+  }
 };
 
 const _drawByKeyPress = (

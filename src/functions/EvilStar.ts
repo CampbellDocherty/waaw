@@ -164,7 +164,6 @@ export class EvilPowerUp {
     if (!this.shouldDraw) {
       return;
     }
-    console.log(this.shouldDie);
     this.p5.push();
     this.p5.stroke(255, 255, 255, this.opacity);
     this.p5.fill(0, 0, 0, this.opacity);
