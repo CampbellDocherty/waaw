@@ -474,16 +474,16 @@ const _drawByKeyPress = (
   star: Star
 ) => {
   if (pressedKeys['ArrowLeft']) {
-    star.updateVelocity(-20, 0);
+    star.updateVelocity(-15, 0);
   }
   if (pressedKeys['ArrowRight']) {
-    star.updateVelocity(20, 0);
+    star.updateVelocity(15, 0);
   }
   if (pressedKeys['ArrowUp']) {
-    star.updateVelocity(0, -20);
+    star.updateVelocity(0, -15);
   }
   if (pressedKeys['ArrowDown']) {
-    star.updateVelocity(0, 20);
+    star.updateVelocity(0, 15);
   }
 
   if (!Object.values(pressedKeys).some((value) => value)) {
