@@ -6,7 +6,6 @@ import { Star } from '../functions/Star';
 import cdImage from '../images/cd.png';
 import folder from '../images/folder.png';
 import theTwins from '../images/the-twins.jpg';
-import { createColourPowerUps } from './createColourPowerUps';
 import { createEvilPowerUps } from './createEvilPowerUps';
 import { createFallingRectangles } from './createFallingRectangles';
 import { createTrackPowerUps } from './createTrackPowerUps';
@@ -52,7 +51,6 @@ export const sketch = (
 
   const hasReachedCheckpoint = Boolean(localStorage.getItem('checkpoint'));
 
-  const colourPowerUps = createColourPowerUps(p5, hasReachedCheckpoint);
   const rectangles = createFallingRectangles(p5);
   const evilPowerUps = createEvilPowerUps(p5);
   const evilStar = new EvilStar(0, -innerHeight / 2 - 100, p5, evilPowerUps);
@@ -149,28 +147,6 @@ export const sketch = (
       if (hasReachedCheckpoint) {
         track.remove();
         track.showButton();
-      }
-    }
-
-    const buttons = p5.selectAll('.hide-button');
-    for (const [index, powerUp] of colourPowerUps.entries()) {
-      const button = buttons[index];
-      const height = 40;
-      button.style('width', `${height}px`);
-      button.style('height', `${height}px`);
-      button.position(
-        innerWidth - height,
-        innerHeight - height - index * height
-      );
-      button.style('background-color', powerUp.color);
-      button.style('z-index', '9999');
-      button.mousePressed(() => {
-        star.updateColour(powerUp.color);
-      });
-      powerUp.bindToButton(button);
-
-      if (hasReachedCheckpoint) {
-        powerUp.remove();
       }
     }
 
@@ -286,20 +262,6 @@ export const sketch = (
     );
     tracksText?.html(`Tracks (${collectedTracks.length})`);
 
-    for (const colourPowerUp of colourPowerUps) {
-      colourPowerUp.draw();
-      const isColliding = starVertices.some((vertex) => {
-        const { x, y } = vertex;
-        return colourPowerUp.checkIfColliding(x, y);
-      });
-
-      if (isColliding) {
-        const powerUpColour = colourPowerUp.color;
-        star.updateColour(powerUpColour);
-        colourPowerUp.remove();
-      }
-    }
-
     if (isPlayingTheGame) {
       folderButton?.removeClass('show');
       folderButton?.addClass('hide');
@@ -386,12 +348,8 @@ export const sketch = (
       evilStar.shouldAnimate = false;
     }
 
-    const collectedColours = colourPowerUps.filter(
-      (powerUp) => powerUp.hasBeenCollected
-    );
-
-    const allPowerUps = [...trackPowerUps, ...colourPowerUps];
-    const allCollectedPowerUps = [...collectedColours, ...collectedTracks];
+    const allPowerUps = [...trackPowerUps];
+    const allCollectedPowerUps = [...collectedTracks];
     if (
       allCollectedPowerUps.length === allPowerUps.length &&
       !allPowerUpsCollected
