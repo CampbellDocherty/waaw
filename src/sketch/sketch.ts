@@ -17,6 +17,7 @@ enum Screen {
   INITIAL = 'initial',
   GAME = 'game',
   SOCIALS = 'socials',
+  ABOUT = 'about',
 }
 
 export const sketch = (
@@ -63,6 +64,8 @@ export const sketch = (
   const gameOverScreen = p5.select('.game-over-screen');
   const tracksText = p5.select('.tracks');
   const socialsButton = p5.select('.bottom-left');
+  const aboutButton = p5.select('#about-btn');
+  const backFromAboutButton = p5.select('#back-from-about-btn');
   const folderButton = p5.select('.folder-button');
   const gameButton = p5.select('.bottom-right');
   const trackContainer = p5.select('.track-container');
@@ -70,6 +73,7 @@ export const sketch = (
   const trackContainerClose = p5.select('.track-container-close');
   const playAgainButton = p5.select('.play-again-button');
   const finalScore = p5.select('.final-score');
+  const aboutScreen = p5.select('.about-screen');
 
   let selectedTrack: TrackPowerUp | null = null;
   let screen: Screen = Screen.INITIAL;
@@ -83,6 +87,14 @@ export const sketch = (
     });
 
     gameButton?.mousePressed(() => {
+      screen = Screen.GAME;
+    });
+
+    aboutButton?.mousePressed(() => {
+      screen = Screen.ABOUT;
+    });
+
+    backFromAboutButton?.mousePressed(() => {
       screen = Screen.GAME;
     });
 
@@ -103,6 +115,8 @@ export const sketch = (
       tracksText?.addClass('show');
       socialsButton?.removeClass('hide');
       socialsButton?.addClass('show');
+      aboutButton?.removeClass('hide');
+      aboutButton?.addClass('show');
       localStorage.setItem('checkpoint', 'true');
     });
 
@@ -244,25 +258,73 @@ export const sketch = (
 
       if (!gameScreen?.elt.classList.contains('slide-out-right')) {
         gameScreen?.removeClass('slide-in-left');
+        gameScreen?.removeClass('slide-out-left');
+        gameScreen?.removeClass('slide-in-from-left');
         gameScreen?.addClass('slide-out-right');
+      }
+    }
+    console.log(screen);
+
+    if (screen === Screen.ABOUT) {
+      let x = (startingX -= 50);
+      if (x <= -p5.width / 2) {
+        startingX = -p5.width / 2;
+        x = -p5.width / 2;
+      }
+      p5.translate(x, 0);
+
+      if (!aboutScreen?.elt.classList.contains('show-about')) {
+        aboutScreen?.removeClass('hide-about');
+        aboutScreen?.addClass('show-about');
+      }
+
+      if (!gameScreen?.elt.classList.contains('slide-out-left')) {
+        gameScreen?.removeClass('slide-in-left');
+        gameScreen?.removeClass('slide-out-right');
+        gameScreen?.removeClass('slide-in-from-left');
+        gameScreen?.addClass('slide-out-left');
       }
     }
 
     if (screen === Screen.GAME) {
-      let x = (startingX -= 50);
-      if (x <= 0) {
-        startingX = 0;
-        x = 0;
-      }
-      p5.translate(x, 0);
-      if (!socialScreen?.elt.classList.contains('hide-menu')) {
-        socialScreen?.removeClass('show-menu');
-        socialScreen?.addClass('hide-menu');
-      }
+      if (startingX > 0) {
+        let x = (startingX -= 50);
+        if (x <= 0) {
+          startingX = 0;
+          x = 0;
+        }
+        p5.translate(x, 0);
 
-      if (!gameScreen?.elt.classList.contains('slide-in-left')) {
-        gameScreen?.removeClass('slide-out-right');
-        gameScreen?.addClass('slide-in-left');
+        if (!socialScreen?.elt.classList.contains('hide-menu')) {
+          socialScreen?.removeClass('show-menu');
+          socialScreen?.addClass('hide-menu');
+        }
+
+        if (!gameScreen?.elt.classList.contains('slide-in-left')) {
+          gameScreen?.removeClass('slide-out-right');
+          gameScreen?.removeClass('slide-out-left');
+          gameScreen?.removeClass('slide-in-from-left');
+          gameScreen?.addClass('slide-in-left');
+        }
+      } else if (startingX < 0) {
+        let x = (startingX += 50);
+        if (x >= 0) {
+          startingX = 0;
+          x = 0;
+        }
+        p5.translate(x, 0);
+
+        if (!aboutScreen?.elt.classList.contains('hide-about')) {
+          aboutScreen?.removeClass('show-about');
+          aboutScreen?.addClass('hide-about');
+        }
+
+        if (!gameScreen?.elt.classList.contains('slide-in-from-left')) {
+          gameScreen?.removeClass('slide-out-left');
+          gameScreen?.removeClass('slide-out-right');
+          gameScreen?.removeClass('slide-in-left');
+          gameScreen?.addClass('slide-in-from-left');
+        }
       }
     }
 
@@ -311,6 +373,8 @@ export const sketch = (
       tracksText?.addClass('hide');
       socialsButton?.removeClass('show');
       socialsButton?.addClass('hide');
+      aboutButton?.removeClass('show');
+      aboutButton?.addClass('hide');
 
       p5.push();
       p5.textAlign(p5.RIGHT);

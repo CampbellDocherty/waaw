@@ -39,7 +39,6 @@ ul {
 }
 
 li {
-  font-size: 18px;
   margin-bottom: 16px;
 }
 
@@ -48,8 +47,14 @@ a {
 }
 
 a:hover {
-  color: #f7b102;
+  color: black;
+  background-color: #f8ff6e;
   text-decoration: underline;
+}
+
+a::selection {
+  background-color: #f875fc;
+  color: black;
 }
 
 .social-screen {
@@ -64,6 +69,49 @@ a:hover {
   align-items: center;
   color: white;
   z-index: 2;
+}
+
+.about-screen {
+  width: 100vw;
+  height: 100dvh;
+  transform: translateX(100%);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  z-index: 2;
+}
+
+.about-content {
+  margin-top: 200px;
+  max-width: 50%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.show-about {
+  transform: translateX(0%);
+  animation: slideInLeft 0.3s linear;
+}
+
+.hide-about {
+  transform: translateX(100%);
+  animation: slideOutRight 0.3s linear;
+}
+
+.slide-out-left {
+  transform: translateX(-100%);
+  animation: slideOutLeft 0.3s linear;
+}
+
+.slide-in-from-left {
+  transform: translateX(0%);
+  animation: slideInFromLeft 0.3s linear;
 }
 
 .game-screen {
@@ -175,6 +223,16 @@ button {
   font-family: 'MonoRegular';
 }
 
+button::selection {
+  background-color: #4200aa;
+  color: white;
+}
+
+p::selection {
+  background-color: #f875fc;
+  color: black;
+}
+
 .start-button {
   font-family: 'MonoRegular';
   color: white;
@@ -192,11 +250,8 @@ button {
 }
 
 a {
-  color: #f7b102;
-  text-decoration: none;
-  text-decoration: underline;
+  color: white;
   font-family: 'MonoRegular';
-  font-size: 20px;
   font-weight: normal;
 }
 
