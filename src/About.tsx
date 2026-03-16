@@ -12,13 +12,13 @@ export const About = () => (
       <p>
         WAAW means yes in Wolof - a nod to their Gambian roots and their open
         and energetic approach to sound. Drawing influence from across the world
-        and different genres, their mixes are a celebration of dance, resistance,
-        and joy.
+        and different genres, their mixes are a celebration of dance,
+        resistance, and joy.
       </p>
       <p>
         They have a monthly residency on Foundation FM and have had guest shows
-        on NTS, Balamii, Subtle Radio and Reprezent. They have recently played at
-        Les Amis (Germany), We Out Here Festival (UK), and Boiler Room (UK).
+        on NTS, Balamii, Subtle Radio and Reprezent. They have recently played
+        at Les Amis (Germany), We Out Here Festival (UK), and Boiler Room (UK).
       </p>
     </div>
   </div>
