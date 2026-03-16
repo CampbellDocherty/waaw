@@ -26,5 +26,8 @@ export const Game = ({ isProbablyWeb }: { isProbablyWeb: boolean }) => (
         <div className="tracks-section"></div>
       </div>
     )}
+    <button id="about-btn" className="bottom-right hidden">
+      about {'->'}
+    </button>
   </div>
 );

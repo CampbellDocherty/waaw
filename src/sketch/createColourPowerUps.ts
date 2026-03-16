@@ -7,11 +7,11 @@ export const createColourPowerUps = (
 ): ColourPowerUp[] => {
   const timeBetweenPowerUps = 1200;
   const colours: string[] = [
-    '#edf67d',
-    '#f896d8',
-    '#ca7df9',
-    '#724cf9',
-    '#564592',
+    '#F8FF6E',
+    '#F875FC',
+    '#F927FF',
+    '#803EFF',
+    '#4200AA',
   ];
   const colourPowerUps = colours.map((colour, index) => {
     const powerUp = new ColourPowerUp(colour, 0, 0, p5);
