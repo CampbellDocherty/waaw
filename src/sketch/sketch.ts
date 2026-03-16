@@ -158,10 +158,14 @@ export const sketch = (
       const height = 40;
       button.style('width', `${height}px`);
       button.style('height', `${height}px`);
-      button.position(
-        innerWidth - height,
-        innerHeight - height - index * height
+      const buttonY = p5.map(
+        index,
+        0,
+        colourPowerUps.length,
+        innerHeight / 2 - height * 2.5,
+        innerHeight / 2 + height * 2.5
       );
+      button.position(innerWidth - height, buttonY);
       button.style('background-color', powerUp.color);
       button.style('z-index', '9999');
       button.mousePressed(() => {
