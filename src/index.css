@@ -94,6 +94,12 @@ a::selection {
   gap: 16px;
 }
 
+@media (max-width: 600px) {
+  .about-content {
+    max-width: 90%;
+  }
+}
+
 .show-about {
   transform: translateX(0%);
   animation: slideInLeft 0.3s linear;
