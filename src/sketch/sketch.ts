@@ -20,6 +20,12 @@ enum Screen {
   ABOUT = 'about',
 }
 
+const DESKTOP_BREAKPOINT = 1024;
+
+function isDesktop(): boolean {
+  return window.innerWidth >= DESKTOP_BREAKPOINT;
+}
+
 export const sketch = (
   p5: p5Type,
   star: Star,
@@ -79,7 +85,14 @@ export const sketch = (
   let screen: Screen = Screen.INITIAL;
 
   p5.setup = () => {
-    p5.createCanvas(innerWidth * 2, innerHeight, p5.WEBGL);
+    const gamePanel = document.querySelector('.panel-game');
+    const canvasWidth = isDesktop()
+      ? (gamePanel?.clientWidth ?? innerWidth)
+      : innerWidth * 2;
+    const canvasHeight = isDesktop()
+      ? (gamePanel?.clientHeight ?? innerHeight)
+      : innerHeight;
+    p5.createCanvas(canvasWidth, canvasHeight, p5.WEBGL);
     p5.textFont(font);
 
     socialsButton?.mousePressed(() => {
@@ -158,7 +171,17 @@ export const sketch = (
         instructionsButton?.addClass('hide');
       };
       track.button?.mousePressed(onTrackSelect);
-      track.button?.touchEnded(onTrackSelect);
+
+      let touchStartY = 0;
+      track.button?.elt.addEventListener('touchstart', (e: TouchEvent) => {
+        touchStartY = e.touches[0].clientY;
+      }, { passive: true });
+      track.button?.elt.addEventListener('touchend', (e: TouchEvent) => {
+        const touchEndY = e.changedTouches[0].clientY;
+        if (Math.abs(touchEndY - touchStartY) < 10) {
+          onTrackSelect();
+        }
+      });
 
       if (hasReachedCheckpoint) {
         track.remove();
@@ -179,9 +202,13 @@ export const sketch = (
         innerHeight / 2 - height * 2.5,
         innerHeight / 2 + height * 2.5
       );
-      button.position(innerWidth - height, buttonY);
+      const colourBtnX = isDesktop()
+        ? (document.querySelector('.panel-game')?.clientWidth ?? innerWidth) - height
+        : innerWidth - height;
+      button.position(colourBtnX, buttonY);
       button.style('background-color', powerUp.color);
       button.style('z-index', '9999');
+      button.style('visibility', 'hidden');
       button.mousePressed(() => {
         star.updateColour(powerUp.color);
       });
@@ -200,14 +227,19 @@ export const sketch = (
     button.style('width', `${buttonWidth}px`);
     button.style('height', `${buttonHeight}px`);
     button.addClass('start-button');
-    button.position(
-      p5.width / 4 - buttonWidth / 2,
-      p5.height / 2 - button.height / 2
-    );
+    const startBtnX = isDesktop()
+      ? p5.width / 2 - buttonWidth / 2
+      : p5.width / 4 - buttonWidth / 2;
+    button.position(startBtnX, p5.height / 2 - button.height / 2);
     button.mousePressed(async () => {
       await onStart();
       start = true;
       button.hide();
+
+      const colourButtons = p5.selectAll('.hide-button');
+      for (const btn of colourButtons) {
+        btn.style('visibility', 'visible');
+      }
 
       setTimeout(() => {
         instructionsButton?.removeClass('show');
@@ -225,7 +257,9 @@ export const sketch = (
       _drawByKeyPress(pressedKeys, star);
     }
 
-    p5.image(mainImage, 0, -120, 140, 170);
+    if (!isDesktop()) {
+      p5.image(mainImage, 0, -120, 140, 170);
+    }
 
     if (!start) {
       star.draw(p5, true);
@@ -238,92 +272,98 @@ export const sketch = (
       hidden.addClass('show');
     }
 
-    folderButton?.position(
-      p5.width / 4 - folderButton.width / 2,
-      p5.height / 2 - folderButton.height / 2 + 100
-    );
-
-    if (screen === Screen.SOCIALS) {
-      let x = (startingX += 50);
-      if (x >= p5.width / 2) {
-        startingX = p5.width / 2;
-        x = p5.width / 2;
-      }
-      p5.translate(x, 0);
-
-      if (!socialScreen?.elt.classList.contains('show-menu')) {
-        socialScreen?.removeClass('hide-menu');
-        socialScreen?.addClass('show-menu');
-      }
-
-      if (!gameScreen?.elt.classList.contains('slide-out-right')) {
-        gameScreen?.removeClass('slide-in-left');
-        gameScreen?.removeClass('slide-out-left');
-        gameScreen?.removeClass('slide-in-from-left');
-        gameScreen?.addClass('slide-out-right');
-      }
-    }
-    console.log(screen);
-
-    if (screen === Screen.ABOUT) {
-      let x = (startingX -= 50);
-      if (x <= -p5.width / 2) {
-        startingX = -p5.width / 2;
-        x = -p5.width / 2;
-      }
-      p5.translate(x, 0);
-
-      if (!aboutScreen?.elt.classList.contains('show-about')) {
-        aboutScreen?.removeClass('hide-about');
-        aboutScreen?.addClass('show-about');
-      }
-
-      if (!gameScreen?.elt.classList.contains('slide-out-left')) {
-        gameScreen?.removeClass('slide-in-left');
-        gameScreen?.removeClass('slide-out-right');
-        gameScreen?.removeClass('slide-in-from-left');
-        gameScreen?.addClass('slide-out-left');
-      }
+    if (folderButton) {
+      const folderX = isDesktop()
+        ? p5.width / 2 - folderButton.width / 2
+        : p5.width / 4 - folderButton.width / 2;
+      folderButton.position(
+        folderX,
+        p5.height / 2 - folderButton.height / 2 + 100
+      );
     }
 
-    if (screen === Screen.GAME) {
-      if (startingX > 0) {
-        let x = (startingX -= 50);
-        if (x <= 0) {
-          startingX = 0;
-          x = 0;
+    if (!isDesktop()) {
+      if (screen === Screen.SOCIALS) {
+        let x = (startingX += 50);
+        if (x >= p5.width / 2) {
+          startingX = p5.width / 2;
+          x = p5.width / 2;
         }
         p5.translate(x, 0);
 
-        if (!socialScreen?.elt.classList.contains('hide-menu')) {
-          socialScreen?.removeClass('show-menu');
-          socialScreen?.addClass('hide-menu');
+        if (!socialScreen?.elt.classList.contains('show-menu')) {
+          socialScreen?.removeClass('hide-menu');
+          socialScreen?.addClass('show-menu');
         }
 
-        if (!gameScreen?.elt.classList.contains('slide-in-left')) {
-          gameScreen?.removeClass('slide-out-right');
+        if (!gameScreen?.elt.classList.contains('slide-out-right')) {
+          gameScreen?.removeClass('slide-in-left');
           gameScreen?.removeClass('slide-out-left');
           gameScreen?.removeClass('slide-in-from-left');
-          gameScreen?.addClass('slide-in-left');
+          gameScreen?.addClass('slide-out-right');
         }
-      } else if (startingX < 0) {
-        let x = (startingX += 50);
-        if (x >= 0) {
-          startingX = 0;
-          x = 0;
+      }
+
+      if (screen === Screen.ABOUT) {
+        let x = (startingX -= 50);
+        if (x <= -p5.width / 2) {
+          startingX = -p5.width / 2;
+          x = -p5.width / 2;
         }
         p5.translate(x, 0);
 
-        if (!aboutScreen?.elt.classList.contains('hide-about')) {
-          aboutScreen?.removeClass('show-about');
-          aboutScreen?.addClass('hide-about');
+        if (!aboutScreen?.elt.classList.contains('show-about')) {
+          aboutScreen?.removeClass('hide-about');
+          aboutScreen?.addClass('show-about');
         }
 
-        if (!gameScreen?.elt.classList.contains('slide-in-from-left')) {
-          gameScreen?.removeClass('slide-out-left');
-          gameScreen?.removeClass('slide-out-right');
+        if (!gameScreen?.elt.classList.contains('slide-out-left')) {
           gameScreen?.removeClass('slide-in-left');
-          gameScreen?.addClass('slide-in-from-left');
+          gameScreen?.removeClass('slide-out-right');
+          gameScreen?.removeClass('slide-in-from-left');
+          gameScreen?.addClass('slide-out-left');
+        }
+      }
+
+      if (screen === Screen.GAME) {
+        if (startingX > 0) {
+          let x = (startingX -= 50);
+          if (x <= 0) {
+            startingX = 0;
+            x = 0;
+          }
+          p5.translate(x, 0);
+
+          if (!socialScreen?.elt.classList.contains('hide-menu')) {
+            socialScreen?.removeClass('show-menu');
+            socialScreen?.addClass('hide-menu');
+          }
+
+          if (!gameScreen?.elt.classList.contains('slide-in-left')) {
+            gameScreen?.removeClass('slide-out-right');
+            gameScreen?.removeClass('slide-out-left');
+            gameScreen?.removeClass('slide-in-from-left');
+            gameScreen?.addClass('slide-in-left');
+          }
+        } else if (startingX < 0) {
+          let x = (startingX += 50);
+          if (x >= 0) {
+            startingX = 0;
+            x = 0;
+          }
+          p5.translate(x, 0);
+
+          if (!aboutScreen?.elt.classList.contains('hide-about')) {
+            aboutScreen?.removeClass('show-about');
+            aboutScreen?.addClass('hide-about');
+          }
+
+          if (!gameScreen?.elt.classList.contains('slide-in-from-left')) {
+            gameScreen?.removeClass('slide-out-left');
+            gameScreen?.removeClass('slide-out-right');
+            gameScreen?.removeClass('slide-in-left');
+            gameScreen?.addClass('slide-in-from-left');
+          }
         }
       }
     }
@@ -346,9 +386,12 @@ export const sketch = (
       (track) => track.hasBeenCollected
     );
 
+    const tracksX = isDesktop()
+      ? p5.width / 2 - (folderButton?.width ?? 0) / 2
+      : p5.width / 4 - (folderButton?.width ?? 0) / 2;
     tracksText?.position(
-      p5.width / 4 - folderButton?.width / 2,
-      p5.height / 2 - folderButton?.height / 2 + 170
+      tracksX,
+      p5.height / 2 - (folderButton?.height ?? 0) / 2 + 170
     );
     tracksText?.html(`Tracks (${collectedTracks.length})`);
 
@@ -379,12 +422,14 @@ export const sketch = (
       p5.push();
       p5.textAlign(p5.RIGHT);
       p5.textSize(14);
-      p5.text('Score', innerWidth / 2 - 30, -innerHeight / 2 + 30);
+      const scoreX = isDesktop() ? p5.width / 2 - 30 : innerWidth / 2 - 30;
+      const scoreY = -p5.height / 2 + 30;
+      p5.text('Score', scoreX, scoreY);
       p5.textSize(18);
       p5.text(
         !diedInGame ? (score += 10) : score,
-        innerWidth / 2 - 30,
-        -innerHeight / 2 + 50
+        scoreX,
+        scoreY + 20
       );
       p5.pop();
 
@@ -487,7 +532,7 @@ export const sketch = (
     p5.push();
 
     p5.imageMode(p5.CENTER);
-    const xCenterOfDisk = -p5.width / 4 + 30;
+    const xCenterOfDisk = isDesktop() ? -p5.width / 2 + 30 : -p5.width / 4 + 30;
     const yCenterOfDisk = -p5.height / 2 + 30;
     const dimension = 40;
     p5.image(cd, xCenterOfDisk, yCenterOfDisk, dimension, dimension);
@@ -524,7 +569,14 @@ export const sketch = (
   };
 
   p5.windowResized = () => {
-    p5.resizeCanvas(innerWidth * 2, innerHeight);
+    const gamePanel = document.querySelector('.panel-game');
+    const w = isDesktop()
+      ? (gamePanel?.clientWidth ?? innerWidth)
+      : innerWidth * 2;
+    const h = isDesktop()
+      ? (gamePanel?.clientHeight ?? innerHeight)
+      : innerHeight;
+    p5.resizeCanvas(w, h);
   };
 
   function downloadFinalMix() {

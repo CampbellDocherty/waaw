@@ -61,8 +61,9 @@ export class Star {
     if (!this.p5) {
       return;
     }
-    const minX = -this.p5.width / 4 + shapeWidth;
-    const maxX = this.p5.width / 4 - shapeWidth;
+    const xDivisor = window.innerWidth >= 1024 ? 2 : 4;
+    const minX = -this.p5.width / xDivisor + shapeWidth;
+    const maxX = this.p5.width / xDivisor - shapeWidth;
     const minY = -this.p5.height / 2 + shapeWidth;
     const maxY = this.p5.height / 2 - shapeWidth;
     this.xPos = this.p5.constrain(this.xPos, minX, maxX);
