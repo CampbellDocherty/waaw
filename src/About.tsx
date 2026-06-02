@@ -5,9 +5,7 @@ export const About = () => (
     </button>
     <div className="about-content">
       <p>
-        WAAW are a twin DJ duo, based in London, bringing you global club sounds
-        from the electronic diaspora. Playing blends and remixes with a
-        futuristic sound, designed for the dance. Expect the unexpected.
+        WAAW are a twin DJ duo, based in London.
       </p>
       <p>
         WAAW means yes in Wolof - a nod to their Gambian roots and their open
