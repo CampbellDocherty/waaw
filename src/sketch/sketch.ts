@@ -519,7 +519,7 @@ export const sketch = (
 
     // update star position
     if (screen === Screen.GAME || (screen === Screen.INITIAL && !diedInGame)) {
-      star.updatePosition();
+      star.updatePosition(p5.deltaTime);
     }
   };
 

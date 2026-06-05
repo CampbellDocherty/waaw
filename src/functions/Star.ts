@@ -51,18 +51,22 @@ export class Star {
     this.targetYVel = newY;
   }
 
-  updatePosition(): void {
-    this.xVel += (this.targetXVel - this.xVel) * this.acceleration;
-    this.yVel += (this.targetYVel - this.yVel) * this.acceleration;
+  updatePosition(deltaMs = 16.67): void {
+    const dt = deltaMs / 16.67;
 
-    if (this.targetXVel === 0) this.xVel *= this.friction;
-    if (this.targetYVel === 0) this.yVel *= this.friction;
+    const accel = 1 - Math.pow(1 - this.acceleration, dt);
+    this.xVel += (this.targetXVel - this.xVel) * accel;
+    this.yVel += (this.targetYVel - this.yVel) * accel;
+
+    const fric = Math.pow(this.friction, dt);
+    if (this.targetXVel === 0) this.xVel *= fric;
+    if (this.targetYVel === 0) this.yVel *= fric;
 
     if (Math.abs(this.xVel) < 0.1) this.xVel = 0;
     if (Math.abs(this.yVel) < 0.1) this.yVel = 0;
 
-    this.xPos = this.xPos + this.xVel * this.speed;
-    this.yPos = this.yPos + this.yVel * this.speed;
+    this.xPos = this.xPos + this.xVel * this.speed * dt;
+    this.yPos = this.yPos + this.yVel * this.speed * dt;
     this.constrain(this.farRadius);
 
     const moving = Math.abs(this.xVel) > 0.5 || Math.abs(this.yVel) > 0.5;
