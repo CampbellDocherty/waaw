@@ -427,6 +427,8 @@ export const sketch = (
       aboutButton?.addClass('hide');
 
       p5.push();
+      p5.noStroke();
+      p5.fill('white');
       p5.textAlign(p5.RIGHT);
       p5.textSize(14);
       const scoreX = isDesktop() ? p5.width / 2 - 30 : innerWidth / 2 - 30;

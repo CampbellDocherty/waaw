@@ -87,6 +87,7 @@ export class Star {
   }
 
   private drawTrail(p5: p5Type): void {
+    p5.push();
     p5.noStroke();
     for (let i = this.trail.length - 1; i >= 0; i--) {
       const particle = this.trail[i];
@@ -103,6 +104,7 @@ export class Star {
       p5.fill(col);
       p5.ellipse(particle.x, particle.y, particle.size, particle.size);
     }
+    p5.pop();
   }
 
   updateSpeed(newSpeed: number): void {
