@@ -6,7 +6,6 @@ import { Star } from '../functions/Star';
 import cdImage from '../images/cd.png';
 import folder from '../images/folder.png';
 import theTwins from '../images/the-twins.jpg';
-import { createColourPowerUps } from './createColourPowerUps';
 import { createEvilPowerUps } from './createEvilPowerUps';
 import { createFallingRectangles } from './createFallingRectangles';
 import { createTrackPowerUps } from './createTrackPowerUps';
@@ -42,6 +41,7 @@ export const sketch = (
   let score = 0;
   let diedInGame = false;
   let hasCompleted = false;
+  let imageOpacity = 255;
 
   const pressedKeys: { [key: string]: boolean } = {};
 
@@ -59,14 +59,12 @@ export const sketch = (
 
   const hasReachedCheckpoint = Boolean(localStorage.getItem('checkpoint'));
 
-  const colourPowerUps = createColourPowerUps(p5, hasReachedCheckpoint);
   const rectangles = createFallingRectangles(p5);
   const evilPowerUps = createEvilPowerUps(p5);
   const evilStar = new EvilStar(0, -innerHeight / 2 - 100, p5, evilPowerUps);
 
   const instructionsButton = p5.select('.instructions');
   const gameScreen = p5.select('.game-screen');
-  const socialScreen = p5.select('.social-screen');
   const gameOverScreen = p5.select('.game-over-screen');
   const tracksText = p5.select('.tracks');
   const socialsButton = p5.select('.bottom-left');
@@ -83,6 +81,15 @@ export const sketch = (
 
   let selectedTrack: TrackPowerUp | null = null;
   let screen: Screen = Screen.INITIAL;
+  let building = false;
+
+  const savedPrefs = localStorage.getItem('starPrefs');
+  if (savedPrefs) {
+    const prefs = JSON.parse(savedPrefs);
+    star.updateSpikeCount(prefs.spikes);
+    star.updateSpikeLength(prefs.spikeLength);
+    star.updateColour(prefs.colour);
+  }
 
   p5.setup = () => {
     const gamePanel = document.querySelector('.panel-game');
@@ -96,7 +103,7 @@ export const sketch = (
     p5.textFont(font);
 
     socialsButton?.mousePressed(() => {
-      screen = Screen.SOCIALS;
+      screen = Screen.ABOUT;
     });
 
     gameButton?.mousePressed(() => {
@@ -189,36 +196,6 @@ export const sketch = (
       }
     }
 
-    const buttons = p5.selectAll('.hide-button');
-    for (const [index, powerUp] of colourPowerUps.entries()) {
-      const button = buttons[index];
-      const height = 40;
-      button.style('width', `${height}px`);
-      button.style('height', `${height}px`);
-      const buttonY = p5.map(
-        index,
-        0,
-        colourPowerUps.length,
-        innerHeight / 2 - height * 2.5,
-        innerHeight / 2 + height * 2.5
-      );
-      const colourBtnX = isDesktop()
-        ? (document.querySelector('.panel-game')?.clientWidth ?? innerWidth) - height
-        : innerWidth - height;
-      button.position(colourBtnX, buttonY);
-      button.style('background-color', powerUp.color);
-      button.style('z-index', '9999');
-      button.style('visibility', 'hidden');
-      button.mousePressed(() => {
-        star.updateColour(powerUp.color);
-      });
-      powerUp.bindToButton(button);
-
-      if (hasReachedCheckpoint) {
-        powerUp.remove();
-      }
-    }
-
     const button = p5.createButton(
       isProbablyWeb ? 'Click to start!' : 'Press to start!'
     );
@@ -231,21 +208,76 @@ export const sketch = (
       ? p5.width / 2 - buttonWidth / 2
       : p5.width / 4 - buttonWidth / 2;
     button.position(startBtnX, p5.height / 2 - button.height / 2);
-    button.mousePressed(async () => {
+    const handleStart = async () => {
       await onStart();
-      start = true;
       button.hide();
 
-      const colourButtons = p5.selectAll('.hide-button');
-      for (const btn of colourButtons) {
-        btn.style('visibility', 'visible');
+      if (savedPrefs) {
+        start = true;
+        star.xPos = 0;
+        star.yPos = -120;
+        setTimeout(() => {
+          instructionsButton?.removeClass('show');
+          instructionsButton?.addClass('hide');
+        }, 4000);
+      } else {
+        building = true;
+        const starBuilderEl = document.querySelector('.star-builder') as HTMLElement;
+        if (starBuilderEl) {
+          starBuilderEl.style.display = 'flex';
+        }
       }
+    };
+    button.mousePressed(handleStart);
+    button.touchEnded(handleStart);
 
-      setTimeout(() => {
-        instructionsButton?.removeClass('show');
-        instructionsButton?.addClass('hide');
-      }, 4000);
-    });
+    const starBuilder = document.querySelector('.star-builder');
+    if (starBuilder) {
+      const optionButtons = starBuilder.querySelectorAll('.star-builder-options button');
+      optionButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const group = btn.parentElement?.getAttribute('data-group');
+          btn.parentElement?.querySelectorAll('button').forEach((b) => b.classList.remove('selected'));
+          btn.classList.add('selected');
+
+          const value = btn.getAttribute('data-value');
+          if (!value) return;
+
+          if (group === 'spikes') {
+            star.updateSpikeCount(parseInt(value));
+          } else if (group === 'length') {
+            star.updateSpikeLength(parseInt(value));
+          } else if (group === 'colour') {
+            star.updateColour(value);
+          }
+        });
+      });
+
+      const startGameBtn = starBuilder.querySelector('.star-builder-start');
+      startGameBtn?.addEventListener('click', () => {
+        building = false;
+        start = true;
+        (starBuilder as HTMLElement).style.display = 'none';
+
+        star.xPos = 0;
+        star.yPos = -120;
+
+        const nameInput = starBuilder.querySelector('.star-builder-name') as HTMLInputElement;
+        const prefs = {
+          id: crypto.randomUUID(),
+          name: nameInput?.value || '',
+          spikes: star.npoints,
+          spikeLength: star.closeRadius,
+          colour: star.colour,
+        };
+        localStorage.setItem('starPrefs', JSON.stringify(prefs));
+
+        setTimeout(() => {
+          instructionsButton?.removeClass('show');
+          instructionsButton?.addClass('hide');
+        }, 4000);
+      });
+    }
 
     p5.imageMode(p5.CENTER);
   };
@@ -257,8 +289,21 @@ export const sketch = (
       _drawByKeyPress(pressedKeys, star);
     }
 
-    if (!isDesktop()) {
-      p5.image(mainImage, 0, -120, 140, 170);
+    if (!isDesktop() && !start) {
+      if (building) {
+        imageOpacity = Math.max(0, imageOpacity - 8);
+      }
+      if (imageOpacity > 0) {
+        p5.push();
+        p5.tint(255, imageOpacity);
+        p5.image(mainImage, 0, -120, 140, 170);
+        p5.pop();
+      }
+    }
+
+    if (building) {
+      star.draw(p5, true);
+      return;
     }
 
     if (!start) {
@@ -283,28 +328,7 @@ export const sketch = (
     }
 
     if (!isDesktop()) {
-      if (screen === Screen.SOCIALS) {
-        let x = (startingX += 50);
-        if (x >= p5.width / 2) {
-          startingX = p5.width / 2;
-          x = p5.width / 2;
-        }
-        p5.translate(x, 0);
-
-        if (!socialScreen?.elt.classList.contains('show-menu')) {
-          socialScreen?.removeClass('hide-menu');
-          socialScreen?.addClass('show-menu');
-        }
-
-        if (!gameScreen?.elt.classList.contains('slide-out-right')) {
-          gameScreen?.removeClass('slide-in-left');
-          gameScreen?.removeClass('slide-out-left');
-          gameScreen?.removeClass('slide-in-from-left');
-          gameScreen?.addClass('slide-out-right');
-        }
-      }
-
-      if (screen === Screen.ABOUT) {
+      if (screen === Screen.ABOUT || screen === Screen.SOCIALS) {
         let x = (startingX -= 50);
         if (x <= -p5.width / 2) {
           startingX = -p5.width / 2;
@@ -326,26 +350,7 @@ export const sketch = (
       }
 
       if (screen === Screen.GAME) {
-        if (startingX > 0) {
-          let x = (startingX -= 50);
-          if (x <= 0) {
-            startingX = 0;
-            x = 0;
-          }
-          p5.translate(x, 0);
-
-          if (!socialScreen?.elt.classList.contains('hide-menu')) {
-            socialScreen?.removeClass('show-menu');
-            socialScreen?.addClass('hide-menu');
-          }
-
-          if (!gameScreen?.elt.classList.contains('slide-in-left')) {
-            gameScreen?.removeClass('slide-out-right');
-            gameScreen?.removeClass('slide-out-left');
-            gameScreen?.removeClass('slide-in-from-left');
-            gameScreen?.addClass('slide-in-left');
-          }
-        } else if (startingX < 0) {
+        if (startingX < 0) {
           let x = (startingX += 50);
           if (x >= 0) {
             startingX = 0;
@@ -368,7 +373,7 @@ export const sketch = (
       }
     }
 
-    const starVertices = star.draw(p5, false);
+    const starVertices = star.draw(p5, true);
 
     for (const track of trackPowerUps) {
       track.draw();
@@ -394,20 +399,6 @@ export const sketch = (
       p5.height / 2 - (folderButton?.height ?? 0) / 2 + 170
     );
     tracksText?.html(`Tracks (${collectedTracks.length})`);
-
-    for (const colourPowerUp of colourPowerUps) {
-      colourPowerUp.draw();
-      const isColliding = starVertices.some((vertex) => {
-        const { x, y } = vertex;
-        return colourPowerUp.checkIfColliding(x, y);
-      });
-
-      if (isColliding) {
-        const powerUpColour = colourPowerUp.color;
-        star.updateColour(powerUpColour);
-        colourPowerUp.remove();
-      }
-    }
 
     if (isPlayingTheGame) {
       folderButton?.removeClass('show');
@@ -447,7 +438,7 @@ export const sketch = (
         });
 
         if (isColliding) {
-          if (star.colour !== rectangle.colour) diedInGame = true;
+          diedInGame = true;
         }
       }
 
@@ -499,12 +490,8 @@ export const sketch = (
       evilStar.shouldAnimate = false;
     }
 
-    const collectedColours = colourPowerUps.filter(
-      (powerUp) => powerUp.hasBeenCollected
-    );
-
-    const allPowerUps = [...trackPowerUps, ...colourPowerUps];
-    const allCollectedPowerUps = [...collectedColours, ...collectedTracks];
+    const allPowerUps = [...trackPowerUps];
+    const allCollectedPowerUps = [...collectedTracks];
     if (
       allCollectedPowerUps.length === allPowerUps.length &&
       !allPowerUpsCollected
@@ -577,6 +564,8 @@ export const sketch = (
       ? (gamePanel?.clientHeight ?? innerHeight)
       : innerHeight;
     p5.resizeCanvas(w, h);
+    startingX = 0;
+    star.reset();
   };
 
   function downloadFinalMix() {

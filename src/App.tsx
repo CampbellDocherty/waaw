@@ -6,7 +6,6 @@ import {
 } from './functions/requestDeviceMotionPermission';
 import { sketch } from './sketch/sketch';
 import { Star } from './functions/Star';
-import { Socials } from './Socials';
 import { Game } from './Game';
 import { GameOver } from './GameOver';
 import { About } from './About';
@@ -36,9 +35,6 @@ const App = () => {
           </div>
           <img src={logoBlack} alt="WAAW logo" className="desktop-title-logo" />
         </div>
-      </div>
-      <div className="panel panel-socials">
-        <Socials />
       </div>
       <div className="panel panel-game">
         <Game isProbablyWeb={isProbablyWeb} />
