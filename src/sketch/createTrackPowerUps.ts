@@ -1,21 +1,22 @@
-import { audioFiles } from '../audio/audio';
 import { TrackPowerUp } from '../functions/PowerUp';
+import { PortfolioSong } from '../portfolio';
 import cdImage from '../images/cd.png';
 import p5Type from 'p5';
 
 export const createTrackPowerUps = (
   p5: p5Type,
-  hasReachedCheckpoint: boolean
+  hasReachedCheckpoint: boolean,
+  songs: PortfolioSong[]
 ): TrackPowerUp[] => {
   const timeBetweenPowerUps = 500;
 
-  const trackPowerUps = audioFiles.map(({ title, artist, audioSrc }, index) => {
+  const trackPowerUps = songs.map(({ title, artist, audio }, index) => {
     const powerUp = new TrackPowerUp({
       p5,
       src: cdImage,
       title,
       artist,
-      audioSrc,
+      audioSrc: audio,
     });
     if (!hasReachedCheckpoint) {
       setTimeout(() => {

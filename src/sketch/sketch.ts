@@ -5,17 +5,15 @@ import { TrackPowerUp } from '../functions/PowerUp';
 import { Star } from '../functions/Star';
 import cdImage from '../images/cd.png';
 import folder from '../images/folder.png';
-import theTwins from '../images/the-twins.jpg';
 import { createEvilPowerUps } from './createEvilPowerUps';
 import { createFallingRectangles } from './createFallingRectangles';
 import { createTrackPowerUps } from './createTrackPowerUps';
 import { FinalMix } from '../functions/FinalMix';
-import secretMix from '../audio/waaw-secret-mix.mp3';
+import { Portfolio } from '../portfolio';
 
 enum Screen {
   INITIAL = 'initial',
   GAME = 'game',
-  SOCIALS = 'socials',
   ABOUT = 'about',
 }
 
@@ -29,7 +27,8 @@ export const sketch = (
   p5: p5Type,
   star: Star,
   onStart: () => Promise<void>,
-  isProbablyWeb: boolean
+  isProbablyWeb: boolean,
+  portfolio: Portfolio
 ): void => {
   let start = false;
   let allPowerUpsCollected = false;
@@ -52,9 +51,13 @@ export const sketch = (
     font = p5.loadFont(monoRegular);
     star.bindToP5Instance(p5);
     cd = p5.loadImage(cdImage);
-    finalMix = new FinalMix(cdImage, secretMix, p5);
-    mainImage = p5.loadImage(theTwins);
-    trackPowerUps = createTrackPowerUps(p5, hasReachedCheckpoint);
+    finalMix = new FinalMix(cdImage, portfolio.secretMix, p5);
+    mainImage = p5.loadImage(portfolio.image);
+    trackPowerUps = createTrackPowerUps(
+      p5,
+      hasReachedCheckpoint,
+      portfolio.songs
+    );
   };
 
   const hasReachedCheckpoint = Boolean(localStorage.getItem('checkpoint'));
@@ -340,7 +343,7 @@ export const sketch = (
     }
 
     if (!isDesktop()) {
-      if (screen === Screen.ABOUT || screen === Screen.SOCIALS) {
+      if (screen === Screen.ABOUT) {
         let x = (startingX -= 50);
         if (x <= -p5.width / 2) {
           startingX = -p5.width / 2;
@@ -423,6 +426,8 @@ export const sketch = (
       aboutButton?.addClass('hide');
 
       p5.push();
+      p5.noStroke();
+      p5.fill('white');
       p5.textAlign(p5.RIGHT);
       p5.textSize(14);
       const scoreX = isDesktop() ? p5.width / 2 - 30 : innerWidth / 2 - 30;

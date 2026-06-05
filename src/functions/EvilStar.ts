@@ -1,6 +1,12 @@
 import { getRandomNumber } from './getRandomNumber';
 import p5Type from 'p5';
 
+const DESKTOP_BREAKPOINT = 1024;
+
+function getHorizontalBoundary(p5: p5Type): number {
+  return window.innerWidth >= DESKTOP_BREAKPOINT ? p5.width / 2 : p5.width / 4;
+}
+
 export class EvilStar {
   xPos: number;
   initialX: number;
@@ -178,9 +184,10 @@ export class EvilPowerUp {
       this.opacity -= 10;
     }
 
+    const horizontalBoundary = getHorizontalBoundary(this.p5);
     if (
-      this.xPosition + this.width / 2 >= this.p5.width / 4 ||
-      this.xPosition - this.width / 2 <= -this.p5.width / 4
+      this.xPosition + this.width / 2 >= horizontalBoundary ||
+      this.xPosition - this.width / 2 <= -horizontalBoundary
     ) {
       this.xSpeed = this.xSpeed * -1;
     }
