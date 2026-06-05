@@ -14,7 +14,6 @@ import { Portfolio } from '../portfolio';
 enum Screen {
   INITIAL = 'initial',
   GAME = 'game',
-  SOCIALS = 'socials',
   ABOUT = 'about',
 }
 
@@ -344,7 +343,7 @@ export const sketch = (
     }
 
     if (!isDesktop()) {
-      if (screen === Screen.ABOUT || screen === Screen.SOCIALS) {
+      if (screen === Screen.ABOUT) {
         let x = (startingX -= 50);
         if (x <= -p5.width / 2) {
           startingX = -p5.width / 2;

@@ -63,31 +63,6 @@ a::selection {
   color: black;
 }
 
-.social-screen {
-  width: 100vw;
-  height: 100dvh;
-  transform: translateX(-100%);
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  z-index: 2;
-}
-
-.socials-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 32px;
-}
-
-.socials-image {
-  display: none;
-}
-
 .about-screen {
   width: 100vw;
   height: 100dvh;
@@ -878,13 +853,6 @@ a {
     top: 0;
     left: 0;
     z-index: 10;
-  }
-
-  .socials-image {
-    display: block;
-    width: 180px;
-    height: 220px;
-    object-fit: cover;
   }
 
   ul {
