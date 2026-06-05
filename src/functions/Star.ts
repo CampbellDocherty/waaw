@@ -2,6 +2,14 @@ import p5Type from 'p5';
 
 export const STAR_WIDTH = 60;
 
+interface TrailParticle {
+  x: number;
+  y: number;
+  size: number;
+  maxSize: number;
+  alpha: number;
+}
+
 export class Star {
   xVel: number;
   yVel: number;
@@ -10,8 +18,14 @@ export class Star {
   p5: p5Type | null = null;
   closeRadius = STAR_WIDTH / 4;
   farRadius = STAR_WIDTH / 2;
+  npoints = 5;
   colour = 'white';
   speed = 0.5;
+  private acceleration = 0.08;
+  private friction = 0.92;
+  private targetXVel = 0;
+  private targetYVel = 0;
+  private trail: TrailParticle[] = [];
 
   constructor(xPos: number, yPos: number, xVel: number, yVel: number) {
     this.xPos = xPos;
@@ -20,19 +34,75 @@ export class Star {
     this.yVel = yVel;
   }
 
+  updateSpikeLength(closeRadius: number): void {
+    this.closeRadius = closeRadius;
+  }
+
+  updateSpikeCount(npoints: number): void {
+    this.npoints = npoints;
+  }
+
   bindToP5Instance(p5: p5Type): void {
     this.p5 = p5;
   }
 
   updateVelocity(newX: number, newY: number): void {
-    this.xVel = newX;
-    this.yVel = newY;
+    this.targetXVel = newX;
+    this.targetYVel = newY;
   }
 
-  updatePosition(): void {
-    this.xPos = this.xPos + this.xVel * this.speed;
-    this.yPos = this.yPos + this.yVel * this.speed;
+  updatePosition(deltaMs = 16.67): void {
+    const dt = deltaMs / 16.67;
+
+    const accel = 1 - Math.pow(1 - this.acceleration, dt);
+    this.xVel += (this.targetXVel - this.xVel) * accel;
+    this.yVel += (this.targetYVel - this.yVel) * accel;
+
+    const fric = Math.pow(this.friction, dt);
+    if (this.targetXVel === 0) this.xVel *= fric;
+    if (this.targetYVel === 0) this.yVel *= fric;
+
+    if (Math.abs(this.xVel) < 0.1) this.xVel = 0;
+    if (Math.abs(this.yVel) < 0.1) this.yVel = 0;
+
+    this.xPos = this.xPos + this.xVel * this.speed * dt;
+    this.yPos = this.yPos + this.yVel * this.speed * dt;
     this.constrain(this.farRadius);
+
+    const moving = Math.abs(this.xVel) > 0.5 || Math.abs(this.yVel) > 0.5;
+    if (moving) {
+      const offsetX = (Math.random() - 0.5) * 20;
+      const offsetY = (Math.random() - 0.5) * 20;
+      this.trail.push({
+        x: this.xPos + offsetX,
+        y: this.yPos + offsetY,
+        size: 2,
+        maxSize: 18 + Math.random() * 10,
+        alpha: 150,
+      });
+      if (this.trail.length > 20) {
+        this.trail.shift();
+      }
+    }
+  }
+
+  private drawTrail(p5: p5Type): void {
+    p5.noStroke();
+    for (let i = this.trail.length - 1; i >= 0; i--) {
+      const particle = this.trail[i];
+      particle.size += (particle.maxSize - particle.size) * 0.15;
+      particle.alpha -= 8;
+
+      if (particle.alpha <= 0) {
+        this.trail.splice(i, 1);
+        continue;
+      }
+
+      const col = p5.color(this.colour);
+      col.setAlpha(particle.alpha);
+      p5.fill(col);
+      p5.ellipse(particle.x, particle.y, particle.size, particle.size);
+    }
   }
 
   updateSpeed(newSpeed: number): void {
@@ -61,8 +131,9 @@ export class Star {
     if (!this.p5) {
       return;
     }
-    const minX = -this.p5.width / 4 + shapeWidth;
-    const maxX = this.p5.width / 4 - shapeWidth;
+    const xDivisor = window.innerWidth >= 1024 ? 2 : 4;
+    const minX = -this.p5.width / xDivisor + shapeWidth;
+    const maxX = this.p5.width / xDivisor - shapeWidth;
     const minY = -this.p5.height / 2 + shapeWidth;
     const maxY = this.p5.height / 2 - shapeWidth;
     this.xPos = this.p5.constrain(this.xPos, minX, maxX);
@@ -76,6 +147,8 @@ export class Star {
     x: number;
     y: number;
   }[] => {
+    this.drawTrail(p5);
+
     p5.push();
     if (shouldRotate) {
       p5.translate(this.xPos, this.yPos);
@@ -84,11 +157,15 @@ export class Star {
     }
 
     p5.fill(this.colour);
+    const strokeCol = p5.color(this.colour);
+    strokeCol.setAlpha(180);
+    p5.stroke(p5.lerpColor(strokeCol, p5.color(0), 0.4));
+    p5.strokeWeight(2);
     const x = this.xPos;
     const y = this.yPos;
     const radius1 = this.closeRadius;
     const radius2 = this.farRadius;
-    const npoints = 5;
+    const npoints = this.npoints;
     const TWO_PI = 2 * Math.PI;
     const angle = TWO_PI / npoints;
     const halfAngle = angle / 2.0;

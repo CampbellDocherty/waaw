@@ -97,13 +97,25 @@ export class FallingRectangle {
     };
   }
 
+  private get gameWidth() {
+    if (window.innerWidth >= 1024) {
+      return document.querySelector('.panel-game')?.clientWidth ?? innerWidth;
+    }
+    return innerWidth;
+  }
+
   private get randomX() {
-    if (this.width === innerWidth) {
+    const gw = this.gameWidth;
+    if (this.width >= gw) {
       return 0;
     }
-    if (this.width >= innerWidth - STAR_WIDTH) {
-      return getRandomNumber(-innerWidth / 2, -STAR_WIDTH);
+    const halfGame = gw / 2;
+    if (this.width >= gw - STAR_WIDTH * 2) {
+      return getRandomNumber(-halfGame, -STAR_WIDTH);
     }
-    return getRandomNumber(-innerWidth / 2, innerWidth / 2);
+    return getRandomNumber(
+      -halfGame + this.width / 2,
+      halfGame - this.width / 2
+    );
   }
 }

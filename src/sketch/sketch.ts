@@ -6,7 +6,6 @@ import { Star } from '../functions/Star';
 import cdImage from '../images/cd.png';
 import folder from '../images/folder.png';
 import theTwins from '../images/the-twins.jpg';
-import { createColourPowerUps } from './createColourPowerUps';
 import { createEvilPowerUps } from './createEvilPowerUps';
 import { createFallingRectangles } from './createFallingRectangles';
 import { createTrackPowerUps } from './createTrackPowerUps';
@@ -18,6 +17,12 @@ enum Screen {
   GAME = 'game',
   SOCIALS = 'socials',
   ABOUT = 'about',
+}
+
+const DESKTOP_BREAKPOINT = 1024;
+
+function isDesktop(): boolean {
+  return window.innerWidth >= DESKTOP_BREAKPOINT;
 }
 
 export const sketch = (
@@ -36,6 +41,7 @@ export const sketch = (
   let score = 0;
   let diedInGame = false;
   let hasCompleted = false;
+  let imageOpacity = 255;
 
   const pressedKeys: { [key: string]: boolean } = {};
 
@@ -53,14 +59,12 @@ export const sketch = (
 
   const hasReachedCheckpoint = Boolean(localStorage.getItem('checkpoint'));
 
-  const colourPowerUps = createColourPowerUps(p5, hasReachedCheckpoint);
   const rectangles = createFallingRectangles(p5);
   const evilPowerUps = createEvilPowerUps(p5);
   const evilStar = new EvilStar(0, -innerHeight / 2 - 100, p5, evilPowerUps);
 
   const instructionsButton = p5.select('.instructions');
   const gameScreen = p5.select('.game-screen');
-  const socialScreen = p5.select('.social-screen');
   const gameOverScreen = p5.select('.game-over-screen');
   const tracksText = p5.select('.tracks');
   const socialsButton = p5.select('.bottom-left');
@@ -77,13 +81,29 @@ export const sketch = (
 
   let selectedTrack: TrackPowerUp | null = null;
   let screen: Screen = Screen.INITIAL;
+  let building = false;
+
+  const savedPrefs = localStorage.getItem('starPrefs');
+  if (savedPrefs) {
+    const prefs = JSON.parse(savedPrefs);
+    star.updateSpikeCount(prefs.spikes);
+    star.updateSpikeLength(prefs.spikeLength);
+    star.updateColour(prefs.colour);
+  }
 
   p5.setup = () => {
-    p5.createCanvas(innerWidth * 2, innerHeight, p5.WEBGL);
+    const gamePanel = document.querySelector('.panel-game');
+    const canvasWidth = isDesktop()
+      ? gamePanel?.clientWidth ?? innerWidth
+      : innerWidth * 2;
+    const canvasHeight = isDesktop()
+      ? gamePanel?.clientHeight ?? innerHeight
+      : innerHeight;
+    p5.createCanvas(canvasWidth, canvasHeight, p5.WEBGL);
     p5.textFont(font);
 
     socialsButton?.mousePressed(() => {
-      screen = Screen.SOCIALS;
+      screen = Screen.ABOUT;
     });
 
     gameButton?.mousePressed(() => {
@@ -158,37 +178,25 @@ export const sketch = (
         instructionsButton?.addClass('hide');
       };
       track.button?.mousePressed(onTrackSelect);
-      track.button?.touchEnded(onTrackSelect);
+
+      let touchStartY = 0;
+      track.button?.elt.addEventListener(
+        'touchstart',
+        (e: TouchEvent) => {
+          touchStartY = e.touches[0].clientY;
+        },
+        { passive: true }
+      );
+      track.button?.elt.addEventListener('touchend', (e: TouchEvent) => {
+        const touchEndY = e.changedTouches[0].clientY;
+        if (Math.abs(touchEndY - touchStartY) < 10) {
+          onTrackSelect();
+        }
+      });
 
       if (hasReachedCheckpoint) {
         track.remove();
         track.showButton();
-      }
-    }
-
-    const buttons = p5.selectAll('.hide-button');
-    for (const [index, powerUp] of colourPowerUps.entries()) {
-      const button = buttons[index];
-      const height = 40;
-      button.style('width', `${height}px`);
-      button.style('height', `${height}px`);
-      const buttonY = p5.map(
-        index,
-        0,
-        colourPowerUps.length,
-        innerHeight / 2 - height * 2.5,
-        innerHeight / 2 + height * 2.5
-      );
-      button.position(innerWidth - height, buttonY);
-      button.style('background-color', powerUp.color);
-      button.style('z-index', '9999');
-      button.mousePressed(() => {
-        star.updateColour(powerUp.color);
-      });
-      powerUp.bindToButton(button);
-
-      if (hasReachedCheckpoint) {
-        powerUp.remove();
       }
     }
 
@@ -200,20 +208,88 @@ export const sketch = (
     button.style('width', `${buttonWidth}px`);
     button.style('height', `${buttonHeight}px`);
     button.addClass('start-button');
-    button.position(
-      p5.width / 4 - buttonWidth / 2,
-      p5.height / 2 - button.height / 2
-    );
-    button.mousePressed(async () => {
+    const startBtnX = isDesktop()
+      ? p5.width / 2 - buttonWidth / 2
+      : p5.width / 4 - buttonWidth / 2;
+    button.position(startBtnX, p5.height / 2 - button.height / 2);
+    const handleStart = async () => {
       await onStart();
-      start = true;
       button.hide();
 
-      setTimeout(() => {
-        instructionsButton?.removeClass('show');
-        instructionsButton?.addClass('hide');
-      }, 4000);
-    });
+      if (savedPrefs) {
+        start = true;
+        star.xPos = 0;
+        star.yPos = -120;
+        setTimeout(() => {
+          instructionsButton?.removeClass('show');
+          instructionsButton?.addClass('hide');
+        }, 4000);
+      } else {
+        building = true;
+        const starBuilderEl = document.querySelector(
+          '.star-builder'
+        ) as HTMLElement;
+        if (starBuilderEl) {
+          starBuilderEl.style.display = 'flex';
+        }
+      }
+    };
+    button.mousePressed(handleStart);
+    button.touchEnded(handleStart);
+
+    const starBuilder = document.querySelector('.star-builder');
+    if (starBuilder) {
+      const optionButtons = starBuilder.querySelectorAll(
+        '.star-builder-options button'
+      );
+      optionButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const group = btn.parentElement?.getAttribute('data-group');
+          btn.parentElement
+            ?.querySelectorAll('button')
+            .forEach((b) => b.classList.remove('selected'));
+          btn.classList.add('selected');
+
+          const value = btn.getAttribute('data-value');
+          if (!value) return;
+
+          if (group === 'spikes') {
+            star.updateSpikeCount(parseInt(value));
+          } else if (group === 'length') {
+            star.updateSpikeLength(parseInt(value));
+          } else if (group === 'colour') {
+            star.updateColour(value);
+          }
+        });
+      });
+
+      const startGameBtn = starBuilder.querySelector('.star-builder-start');
+      startGameBtn?.addEventListener('click', () => {
+        building = false;
+        start = true;
+        (starBuilder as HTMLElement).style.display = 'none';
+
+        star.xPos = 0;
+        star.yPos = -120;
+
+        const nameInput = starBuilder.querySelector(
+          '.star-builder-name'
+        ) as HTMLInputElement;
+        const prefs = {
+          id: crypto.randomUUID(),
+          name: nameInput?.value || '',
+          spikes: star.npoints,
+          spikeLength: star.closeRadius,
+          colour: star.colour,
+        };
+        localStorage.setItem('starPrefs', JSON.stringify(prefs));
+
+        setTimeout(() => {
+          instructionsButton?.removeClass('show');
+          instructionsButton?.addClass('hide');
+        }, 4000);
+      });
+    }
 
     p5.imageMode(p5.CENTER);
   };
@@ -225,7 +301,22 @@ export const sketch = (
       _drawByKeyPress(pressedKeys, star);
     }
 
-    p5.image(mainImage, 0, -120, 140, 170);
+    if (!isDesktop() && !start) {
+      if (building) {
+        imageOpacity = Math.max(0, imageOpacity - 8);
+      }
+      if (imageOpacity > 0) {
+        p5.push();
+        p5.tint(255, imageOpacity);
+        p5.image(mainImage, 0, -120, 140, 170);
+        p5.pop();
+      }
+    }
+
+    if (building) {
+      star.draw(p5, true);
+      return;
+    }
 
     if (!start) {
       star.draw(p5, true);
@@ -238,97 +329,63 @@ export const sketch = (
       hidden.addClass('show');
     }
 
-    folderButton?.position(
-      p5.width / 4 - folderButton.width / 2,
-      p5.height / 2 - folderButton.height / 2 + 100
-    );
-
-    if (screen === Screen.SOCIALS) {
-      let x = (startingX += 50);
-      if (x >= p5.width / 2) {
-        startingX = p5.width / 2;
-        x = p5.width / 2;
-      }
-      p5.translate(x, 0);
-
-      if (!socialScreen?.elt.classList.contains('show-menu')) {
-        socialScreen?.removeClass('hide-menu');
-        socialScreen?.addClass('show-menu');
-      }
-
-      if (!gameScreen?.elt.classList.contains('slide-out-right')) {
-        gameScreen?.removeClass('slide-in-left');
-        gameScreen?.removeClass('slide-out-left');
-        gameScreen?.removeClass('slide-in-from-left');
-        gameScreen?.addClass('slide-out-right');
-      }
-    }
-    console.log(screen);
-
-    if (screen === Screen.ABOUT) {
-      let x = (startingX -= 50);
-      if (x <= -p5.width / 2) {
-        startingX = -p5.width / 2;
-        x = -p5.width / 2;
-      }
-      p5.translate(x, 0);
-
-      if (!aboutScreen?.elt.classList.contains('show-about')) {
-        aboutScreen?.removeClass('hide-about');
-        aboutScreen?.addClass('show-about');
-      }
-
-      if (!gameScreen?.elt.classList.contains('slide-out-left')) {
-        gameScreen?.removeClass('slide-in-left');
-        gameScreen?.removeClass('slide-out-right');
-        gameScreen?.removeClass('slide-in-from-left');
-        gameScreen?.addClass('slide-out-left');
-      }
+    if (folderButton) {
+      const folderX = isDesktop()
+        ? p5.width / 2 - folderButton.width / 2
+        : p5.width / 4 - folderButton.width / 2;
+      folderButton.position(
+        folderX,
+        p5.height / 2 - folderButton.height / 2 + 100
+      );
     }
 
-    if (screen === Screen.GAME) {
-      if (startingX > 0) {
+    if (!isDesktop()) {
+      if (screen === Screen.ABOUT || screen === Screen.SOCIALS) {
         let x = (startingX -= 50);
-        if (x <= 0) {
-          startingX = 0;
-          x = 0;
+        if (x <= -p5.width / 2) {
+          startingX = -p5.width / 2;
+          x = -p5.width / 2;
         }
         p5.translate(x, 0);
 
-        if (!socialScreen?.elt.classList.contains('hide-menu')) {
-          socialScreen?.removeClass('show-menu');
-          socialScreen?.addClass('hide-menu');
+        if (!aboutScreen?.elt.classList.contains('show-about')) {
+          aboutScreen?.removeClass('hide-about');
+          aboutScreen?.addClass('show-about');
         }
 
-        if (!gameScreen?.elt.classList.contains('slide-in-left')) {
-          gameScreen?.removeClass('slide-out-right');
-          gameScreen?.removeClass('slide-out-left');
-          gameScreen?.removeClass('slide-in-from-left');
-          gameScreen?.addClass('slide-in-left');
-        }
-      } else if (startingX < 0) {
-        let x = (startingX += 50);
-        if (x >= 0) {
-          startingX = 0;
-          x = 0;
-        }
-        p5.translate(x, 0);
-
-        if (!aboutScreen?.elt.classList.contains('hide-about')) {
-          aboutScreen?.removeClass('show-about');
-          aboutScreen?.addClass('hide-about');
-        }
-
-        if (!gameScreen?.elt.classList.contains('slide-in-from-left')) {
-          gameScreen?.removeClass('slide-out-left');
-          gameScreen?.removeClass('slide-out-right');
+        if (!gameScreen?.elt.classList.contains('slide-out-left')) {
           gameScreen?.removeClass('slide-in-left');
-          gameScreen?.addClass('slide-in-from-left');
+          gameScreen?.removeClass('slide-out-right');
+          gameScreen?.removeClass('slide-in-from-left');
+          gameScreen?.addClass('slide-out-left');
+        }
+      }
+
+      if (screen === Screen.GAME) {
+        if (startingX < 0) {
+          let x = (startingX += 50);
+          if (x >= 0) {
+            startingX = 0;
+            x = 0;
+          }
+          p5.translate(x, 0);
+
+          if (!aboutScreen?.elt.classList.contains('hide-about')) {
+            aboutScreen?.removeClass('show-about');
+            aboutScreen?.addClass('hide-about');
+          }
+
+          if (!gameScreen?.elt.classList.contains('slide-in-from-left')) {
+            gameScreen?.removeClass('slide-out-left');
+            gameScreen?.removeClass('slide-out-right');
+            gameScreen?.removeClass('slide-in-left');
+            gameScreen?.addClass('slide-in-from-left');
+          }
         }
       }
     }
 
-    const starVertices = star.draw(p5, false);
+    const starVertices = star.draw(p5, true);
 
     for (const track of trackPowerUps) {
       track.draw();
@@ -346,25 +403,14 @@ export const sketch = (
       (track) => track.hasBeenCollected
     );
 
+    const tracksX = isDesktop()
+      ? p5.width / 2 - (folderButton?.width ?? 0) / 2
+      : p5.width / 4 - (folderButton?.width ?? 0) / 2;
     tracksText?.position(
-      p5.width / 4 - folderButton?.width / 2,
-      p5.height / 2 - folderButton?.height / 2 + 170
+      tracksX,
+      p5.height / 2 - (folderButton?.height ?? 0) / 2 + 170
     );
     tracksText?.html(`Tracks (${collectedTracks.length})`);
-
-    for (const colourPowerUp of colourPowerUps) {
-      colourPowerUp.draw();
-      const isColliding = starVertices.some((vertex) => {
-        const { x, y } = vertex;
-        return colourPowerUp.checkIfColliding(x, y);
-      });
-
-      if (isColliding) {
-        const powerUpColour = colourPowerUp.color;
-        star.updateColour(powerUpColour);
-        colourPowerUp.remove();
-      }
-    }
 
     if (isPlayingTheGame) {
       folderButton?.removeClass('show');
@@ -379,13 +425,11 @@ export const sketch = (
       p5.push();
       p5.textAlign(p5.RIGHT);
       p5.textSize(14);
-      p5.text('Score', innerWidth / 2 - 30, -innerHeight / 2 + 30);
+      const scoreX = isDesktop() ? p5.width / 2 - 30 : innerWidth / 2 - 30;
+      const scoreY = -p5.height / 2 + 30;
+      p5.text('Score', scoreX, scoreY);
       p5.textSize(18);
-      p5.text(
-        !diedInGame ? (score += 10) : score,
-        innerWidth / 2 - 30,
-        -innerHeight / 2 + 50
-      );
+      p5.text(!diedInGame ? (score += 10) : score, scoreX, scoreY + 20);
       p5.pop();
 
       for (const rectangle of rectangles) {
@@ -402,7 +446,7 @@ export const sketch = (
         });
 
         if (isColliding) {
-          if (star.colour !== rectangle.colour) diedInGame = true;
+          diedInGame = true;
         }
       }
 
@@ -454,12 +498,8 @@ export const sketch = (
       evilStar.shouldAnimate = false;
     }
 
-    const collectedColours = colourPowerUps.filter(
-      (powerUp) => powerUp.hasBeenCollected
-    );
-
-    const allPowerUps = [...trackPowerUps, ...colourPowerUps];
-    const allCollectedPowerUps = [...collectedColours, ...collectedTracks];
+    const allPowerUps = [...trackPowerUps];
+    const allCollectedPowerUps = [...collectedTracks];
     if (
       allCollectedPowerUps.length === allPowerUps.length &&
       !allPowerUpsCollected
@@ -479,7 +519,7 @@ export const sketch = (
 
     // update star position
     if (screen === Screen.GAME || (screen === Screen.INITIAL && !diedInGame)) {
-      star.updatePosition();
+      star.updatePosition(p5.deltaTime);
     }
   };
 
@@ -487,7 +527,7 @@ export const sketch = (
     p5.push();
 
     p5.imageMode(p5.CENTER);
-    const xCenterOfDisk = -p5.width / 4 + 30;
+    const xCenterOfDisk = isDesktop() ? -p5.width / 2 + 30 : -p5.width / 4 + 30;
     const yCenterOfDisk = -p5.height / 2 + 30;
     const dimension = 40;
     p5.image(cd, xCenterOfDisk, yCenterOfDisk, dimension, dimension);
@@ -524,7 +564,16 @@ export const sketch = (
   };
 
   p5.windowResized = () => {
-    p5.resizeCanvas(innerWidth * 2, innerHeight);
+    const gamePanel = document.querySelector('.panel-game');
+    const w = isDesktop()
+      ? gamePanel?.clientWidth ?? innerWidth
+      : innerWidth * 2;
+    const h = isDesktop()
+      ? gamePanel?.clientHeight ?? innerHeight
+      : innerHeight;
+    p5.resizeCanvas(w, h);
+    startingX = 0;
+    star.reset();
   };
 
   function downloadFinalMix() {
