@@ -9,7 +9,8 @@ import { createEvilPowerUps } from './createEvilPowerUps';
 import { createFallingRectangles } from './createFallingRectangles';
 import { createTrackPowerUps } from './createTrackPowerUps';
 import { FinalMix } from '../functions/FinalMix';
-import { Portfolio } from '../portfolio';
+import { LEADERBOARD_REFRESH_EVENT } from '../leaderboard';
+import { createUser, Portfolio, UserInput } from '../portfolio';
 
 enum Screen {
   INITIAL = 'initial',
@@ -18,6 +19,14 @@ enum Screen {
 }
 
 const DESKTOP_BREAKPOINT = 1024;
+
+type StarPrefs = {
+  id: string;
+  name: string;
+  spikes: number;
+  spikeLength: number;
+  colour: string;
+};
 
 function isDesktop(): boolean {
   return window.innerWidth >= DESKTOP_BREAKPOINT;
@@ -40,6 +49,7 @@ export const sketch = (
   let score = 0;
   let diedInGame = false;
   let hasCompleted = false;
+  let hasSubmittedUserResult = false;
   let imageOpacity = 255;
 
   const pressedKeys: { [key: string]: boolean } = {};
@@ -128,6 +138,7 @@ export const sketch = (
       gameOverScreen?.addClass('hide');
       gameOverScreen?.style('display', 'none');
       diedInGame = false;
+      hasSubmittedUserResult = false;
       evilStar.reset();
       score = 0;
       instructionsButton?.removeClass('hide');
@@ -278,7 +289,7 @@ export const sketch = (
         const nameInput = starBuilder.querySelector(
           '.star-builder-name'
         ) as HTMLInputElement;
-        const prefs = {
+        const prefs: StarPrefs = {
           id: crypto.randomUUID(),
           name: nameInput?.value || '',
           spikes: star.npoints,
@@ -286,6 +297,7 @@ export const sketch = (
           colour: star.colour,
         };
         localStorage.setItem('starPrefs', JSON.stringify(prefs));
+        void createUser(getUserInputFromPrefs(prefs, 0)).catch(() => undefined);
 
         setTimeout(() => {
           instructionsButton?.removeClass('show');
@@ -486,6 +498,7 @@ export const sketch = (
         }
         if (finalMix.hasBeenCollected && !finalMix.downloadTriggered) {
           localStorage.setItem('hasCompleted', 'true');
+          submitUserResult(score);
           downloadFinalMix();
           finalMix.downloadTriggered = true;
         }
@@ -493,6 +506,7 @@ export const sketch = (
     }
 
     if (diedInGame) {
+      submitUserResult(score);
       rectangles.forEach((rectangle) => (rectangle.shouldAnimate = false));
       finalScore?.html(score.toString());
       gameOverScreen?.removeClass('hide');
@@ -588,6 +602,50 @@ export const sketch = (
       finalMix.remove();
     });
     downloadLink.elt.click();
+  }
+
+  function getUserInput(finalScore: number): UserInput | null {
+    const starPrefs = localStorage.getItem('starPrefs');
+    if (!starPrefs) {
+      return null;
+    }
+
+    try {
+      const prefs = JSON.parse(starPrefs) as StarPrefs;
+      return getUserInputFromPrefs(prefs, finalScore);
+    } catch {
+      return null;
+    }
+  }
+
+  function getUserInputFromPrefs(
+    prefs: StarPrefs,
+    finalScore: number
+  ): UserInput {
+    return {
+      id: prefs.id,
+      name: prefs.name,
+      length: prefs.spikeLength,
+      colour: prefs.colour,
+      score: finalScore,
+      points: prefs.spikes,
+    };
+  }
+
+  function submitUserResult(finalScore: number): void {
+    if (hasSubmittedUserResult) {
+      return;
+    }
+
+    const user = getUserInput(finalScore);
+    if (!user) {
+      return;
+    }
+
+    hasSubmittedUserResult = true;
+    void createUser(user)
+      .then(() => window.dispatchEvent(new Event(LEADERBOARD_REFRESH_EVENT)))
+      .catch(() => undefined);
   }
 };
 

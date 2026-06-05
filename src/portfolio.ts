@@ -3,7 +3,7 @@ const dataset = 'production';
 const apiVersion = '2025-06-01';
 
 export const SANITY_READ_URL = `https://${projectId}.apicdn.sanity.io/v${apiVersion}`;
-export const SANITY_WRITE_URL = `https://${projectId}.api.sanity.io/v${apiVersion}`;
+export const CREATE_USER_URL = 'https://waaw-user-create.vercel.app/api/user';
 
 export const getApiUrl = (query: string) =>
   `${SANITY_READ_URL}/data/query/${dataset}?query=${encodeURIComponent(query)}`;
@@ -101,33 +101,15 @@ export const getUsers = async (): Promise<User[]> => {
   return result;
 };
 
-export const uploadUser = async (user: UserInput, token: string) => {
-  const response = await fetch(`${SANITY_WRITE_URL}/data/mutate/${dataset}`, {
+export const createUser = async (user: UserInput) => {
+  const response = await fetch(CREATE_USER_URL, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      mutations: [
-        {
-          createOrReplace: {
-            _id: `user-${user.id}`,
-            _type: 'user',
-            id: user.id,
-            name: user.name,
-            length: user.length,
-            colour: user.colour,
-            score: user.score ?? 0,
-            points: user.points,
-          },
-        },
-      ],
-    }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(user),
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to upload user: ${response.status}`);
+    throw new Error(`Failed to create user: ${response.status}`);
   }
 
   return response.json();
