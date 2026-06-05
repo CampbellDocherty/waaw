@@ -569,13 +569,13 @@ a {
   background-color: rgba(255, 255, 255, 0.15);
 }
 
-.star-builder-options[data-group="colour"] button {
+.star-builder-options[data-group='colour'] button {
   border-radius: 50%;
   width: 28px;
   height: 28px;
 }
 
-.star-builder-options[data-group="colour"] button.selected {
+.star-builder-options[data-group='colour'] button.selected {
   outline: 2px solid white;
   outline-offset: 2px;
   background-color: unset;
@@ -689,10 +689,18 @@ a {
   animation: contentFadeIn 0.6s ease-out forwards;
 }
 
-.desktop-title-letters span:nth-child(1) { animation-delay: 0.1s; }
-.desktop-title-letters span:nth-child(2) { animation-delay: 0.25s; }
-.desktop-title-letters span:nth-child(3) { animation-delay: 0.4s; }
-.desktop-title-letters span:nth-child(4) { animation-delay: 0.55s; }
+.desktop-title-letters span:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.desktop-title-letters span:nth-child(2) {
+  animation-delay: 0.25s;
+}
+.desktop-title-letters span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+.desktop-title-letters span:nth-child(4) {
+  animation-delay: 0.55s;
+}
 
 .desktop-title-logo {
   width: clamp(100px, 14vh, 200px);
@@ -715,14 +723,13 @@ a {
   }
 }
 
-
 /* --- Desktop: three-column layout --- */
 
 @media (min-width: 1024px) {
   .app-layout {
     display: grid;
     grid-template-columns: 1.5fr 2fr 1.5fr;
-    grid-template-areas: "title game right";
+    grid-template-areas: 'title game right';
     overflow: hidden;
   }
 
@@ -794,9 +801,15 @@ a {
     animation: contentFadeIn 0.5s ease-out forwards;
   }
 
-  .panel-right .about-content p:nth-child(1) { animation-delay: 0.5s; }
-  .panel-right .about-content p:nth-child(2) { animation-delay: 0.7s; }
-  .panel-right .about-content p:nth-child(3) { animation-delay: 0.9s; }
+  .panel-right .about-content p:nth-child(1) {
+    animation-delay: 0.5s;
+  }
+  .panel-right .about-content p:nth-child(2) {
+    animation-delay: 0.7s;
+  }
+  .panel-right .about-content p:nth-child(3) {
+    animation-delay: 0.9s;
+  }
 
   .panel-right .right-links {
     list-style: none;
@@ -813,8 +826,12 @@ a {
     animation: contentFadeIn 0.5s ease-out forwards;
   }
 
-  .panel-right .right-links li:nth-child(1) { animation-delay: 1.1s; }
-  .panel-right .right-links li:nth-child(2) { animation-delay: 1.25s; }
+  .panel-right .right-links li:nth-child(1) {
+    animation-delay: 1.1s;
+  }
+  .panel-right .right-links li:nth-child(2) {
+    animation-delay: 1.25s;
+  }
 
   .panel-right .right-links li a {
     font-size: 13px;

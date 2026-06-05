@@ -94,10 +94,10 @@ export const sketch = (
   p5.setup = () => {
     const gamePanel = document.querySelector('.panel-game');
     const canvasWidth = isDesktop()
-      ? (gamePanel?.clientWidth ?? innerWidth)
+      ? gamePanel?.clientWidth ?? innerWidth
       : innerWidth * 2;
     const canvasHeight = isDesktop()
-      ? (gamePanel?.clientHeight ?? innerHeight)
+      ? gamePanel?.clientHeight ?? innerHeight
       : innerHeight;
     p5.createCanvas(canvasWidth, canvasHeight, p5.WEBGL);
     p5.textFont(font);
@@ -180,9 +180,13 @@ export const sketch = (
       track.button?.mousePressed(onTrackSelect);
 
       let touchStartY = 0;
-      track.button?.elt.addEventListener('touchstart', (e: TouchEvent) => {
-        touchStartY = e.touches[0].clientY;
-      }, { passive: true });
+      track.button?.elt.addEventListener(
+        'touchstart',
+        (e: TouchEvent) => {
+          touchStartY = e.touches[0].clientY;
+        },
+        { passive: true }
+      );
       track.button?.elt.addEventListener('touchend', (e: TouchEvent) => {
         const touchEndY = e.changedTouches[0].clientY;
         if (Math.abs(touchEndY - touchStartY) < 10) {
@@ -222,7 +226,9 @@ export const sketch = (
         }, 4000);
       } else {
         building = true;
-        const starBuilderEl = document.querySelector('.star-builder') as HTMLElement;
+        const starBuilderEl = document.querySelector(
+          '.star-builder'
+        ) as HTMLElement;
         if (starBuilderEl) {
           starBuilderEl.style.display = 'flex';
         }
@@ -233,11 +239,15 @@ export const sketch = (
 
     const starBuilder = document.querySelector('.star-builder');
     if (starBuilder) {
-      const optionButtons = starBuilder.querySelectorAll('.star-builder-options button');
+      const optionButtons = starBuilder.querySelectorAll(
+        '.star-builder-options button'
+      );
       optionButtons.forEach((btn) => {
         btn.addEventListener('click', () => {
           const group = btn.parentElement?.getAttribute('data-group');
-          btn.parentElement?.querySelectorAll('button').forEach((b) => b.classList.remove('selected'));
+          btn.parentElement
+            ?.querySelectorAll('button')
+            .forEach((b) => b.classList.remove('selected'));
           btn.classList.add('selected');
 
           const value = btn.getAttribute('data-value');
@@ -262,7 +272,9 @@ export const sketch = (
         star.xPos = 0;
         star.yPos = -120;
 
-        const nameInput = starBuilder.querySelector('.star-builder-name') as HTMLInputElement;
+        const nameInput = starBuilder.querySelector(
+          '.star-builder-name'
+        ) as HTMLInputElement;
         const prefs = {
           id: crypto.randomUUID(),
           name: nameInput?.value || '',
@@ -417,11 +429,7 @@ export const sketch = (
       const scoreY = -p5.height / 2 + 30;
       p5.text('Score', scoreX, scoreY);
       p5.textSize(18);
-      p5.text(
-        !diedInGame ? (score += 10) : score,
-        scoreX,
-        scoreY + 20
-      );
+      p5.text(!diedInGame ? (score += 10) : score, scoreX, scoreY + 20);
       p5.pop();
 
       for (const rectangle of rectangles) {
@@ -558,10 +566,10 @@ export const sketch = (
   p5.windowResized = () => {
     const gamePanel = document.querySelector('.panel-game');
     const w = isDesktop()
-      ? (gamePanel?.clientWidth ?? innerWidth)
+      ? gamePanel?.clientWidth ?? innerWidth
       : innerWidth * 2;
     const h = isDesktop()
-      ? (gamePanel?.clientHeight ?? innerHeight)
+      ? gamePanel?.clientHeight ?? innerHeight
       : innerHeight;
     p5.resizeCanvas(w, h);
     startingX = 0;

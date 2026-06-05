@@ -7,9 +7,7 @@ export const About = () => (
     </button>
     <img src={theTwins} alt="WAAW" className="about-image" />
     <div className="about-content">
-      <p>
-        WAAW are a twin DJ duo, based in London.
-      </p>
+      <p>WAAW are a twin DJ duo, based in London.</p>
       <p>
         WAAW means yes in Wolof - a nod to their Gambian roots and their open
         and energetic approach to sound. Drawing influence from across the world
@@ -24,7 +22,11 @@ export const About = () => (
     </div>
     <ul className="about-links">
       <li>
-        <a href="https://www.instagram.com/waawdj/" target="_blank" rel="noreferrer">
+        <a
+          href="https://www.instagram.com/waawdj/"
+          target="_blank"
+          rel="noreferrer"
+        >
           Instagram
         </a>
       </li>
