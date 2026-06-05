@@ -24,7 +24,7 @@ export type Portfolio = {
   secretMix: string;
 };
 
-export type User = {
+export type GameUser = {
   _id: string;
   id: string;
   name: string;
@@ -34,7 +34,7 @@ export type User = {
   points: number;
 };
 
-export type UserInput = {
+export type GameUserInput = {
   id: string;
   name: string;
   length: number;
@@ -59,8 +59,8 @@ export const PORTFOLIO_QUERY = `
   }
 `;
 
-export const USERS_QUERY = `
-  *[_type == "user"] | order(score desc, _createdAt desc){
+export const GAME_USERS_QUERY = `
+  *[_type == "gameUser"] | order(score desc, _createdAt desc){
     _id,
     id,
     name,
@@ -75,8 +75,8 @@ type PortfolioResponse = {
   result: Portfolio | null;
 };
 
-type UsersResponse = {
-  result: User[];
+type GameUsersResponse = {
+  result: GameUser[];
 };
 
 export const fetchPortfolio = async (): Promise<Portfolio | null> => {
@@ -90,18 +90,18 @@ export const fetchPortfolio = async (): Promise<Portfolio | null> => {
   return result;
 };
 
-export const getUsers = async (): Promise<User[]> => {
-  const response = await fetch(getApiUrl(USERS_QUERY));
+export const getGameUsers = async (): Promise<GameUser[]> => {
+  const response = await fetch(getApiUrl(GAME_USERS_QUERY));
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch users: ${response.status}`);
+    throw new Error(`Failed to fetch game users: ${response.status}`);
   }
 
-  const { result } = (await response.json()) as UsersResponse;
+  const { result } = (await response.json()) as GameUsersResponse;
   return result;
 };
 
-export const createUser = async (user: UserInput) => {
+export const createGameUser = async (user: GameUserInput) => {
   const response = await fetch(CREATE_USER_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -109,7 +109,7 @@ export const createUser = async (user: UserInput) => {
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to create user: ${response.status}`);
+    throw new Error(`Failed to create game user: ${response.status}`);
   }
 
   return response.json();

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { LEADERBOARD_REFRESH_EVENT } from './leaderboard';
-import { getUsers, User } from './portfolio';
+import { GameUser, getGameUsers } from './portfolio';
 
 const STAR_SIZE = 26;
 
@@ -23,7 +23,7 @@ const getStarPoints = (points: number, length: number): string => {
   }).join(' ');
 };
 
-const LeaderboardStar = ({ user }: { user: User }) => {
+const LeaderboardStar = ({ user }: { user: GameUser }) => {
   const starPoints = useMemo(
     () => getStarPoints(user.points, user.length),
     [user.length, user.points]
@@ -43,12 +43,12 @@ const LeaderboardStar = ({ user }: { user: User }) => {
 };
 
 export const GameOver = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<GameUser[]>([]);
   const [leaderboardError, setLeaderboardError] = useState(false);
 
   const refreshLeaderboard = useCallback(() => {
     setLeaderboardError(false);
-    void getUsers()
+    void getGameUsers()
       .then(setUsers)
       .catch(() => setLeaderboardError(true));
   }, []);

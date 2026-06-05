@@ -10,7 +10,7 @@ import { createFallingRectangles } from './createFallingRectangles';
 import { createTrackPowerUps } from './createTrackPowerUps';
 import { FinalMix } from '../functions/FinalMix';
 import { LEADERBOARD_REFRESH_EVENT } from '../leaderboard';
-import { createUser, Portfolio, UserInput } from '../portfolio';
+import { createGameUser, GameUserInput, Portfolio } from '../portfolio';
 
 enum Screen {
   INITIAL = 'initial',
@@ -297,7 +297,9 @@ export const sketch = (
           colour: star.colour,
         };
         localStorage.setItem('starPrefs', JSON.stringify(prefs));
-        void createUser(getUserInputFromPrefs(prefs, 0)).catch(() => undefined);
+        void createGameUser(getUserInputFromPrefs(prefs, 0)).catch(
+          () => undefined
+        );
 
         setTimeout(() => {
           instructionsButton?.removeClass('show');
@@ -604,7 +606,7 @@ export const sketch = (
     downloadLink.elt.click();
   }
 
-  function getUserInput(finalScore: number): UserInput | null {
+  function getUserInput(finalScore: number): GameUserInput | null {
     const starPrefs = localStorage.getItem('starPrefs');
     if (!starPrefs) {
       return null;
@@ -621,7 +623,7 @@ export const sketch = (
   function getUserInputFromPrefs(
     prefs: StarPrefs,
     finalScore: number
-  ): UserInput {
+  ): GameUserInput {
     return {
       id: prefs.id,
       name: prefs.name,
@@ -643,7 +645,7 @@ export const sketch = (
     }
 
     hasSubmittedUserResult = true;
-    void createUser(user)
+    void createGameUser(user)
       .then(() => window.dispatchEvent(new Event(LEADERBOARD_REFRESH_EVENT)))
       .catch(() => undefined);
   }
