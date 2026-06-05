@@ -1,5 +1,5 @@
 import { ReactP5Wrapper } from '@p5-wrapper/react';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   DeviceMotionEventiOS,
   requestDeviceMotionPermission,
@@ -9,19 +9,53 @@ import { Star } from './functions/Star';
 import { Game } from './Game';
 import { GameOver } from './GameOver';
 import { About } from './About';
-import logoBlack from './images/logo-black.png';
-import theTwins from './images/the-twins.jpg';
+import { fetchPortfolio, Portfolio } from './portfolio';
 
 const App = () => {
+  const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
+  const [portfolioError, setPortfolioError] = useState(false);
+
   const isProbablyWeb =
     (DeviceMotionEvent as unknown as DeviceMotionEventiOS).requestPermission ===
     undefined;
 
-  const star = new Star(0, -120, 0, 0);
+  const star = useMemo(() => new Star(0, -120, 0, 0), []);
 
   const onStart = useCallback(async () => {
     await requestDeviceMotionPermission(star);
+  }, [star]);
+
+  useEffect(() => {
+    fetchPortfolio()
+      .then((portfolio) => {
+        if (!portfolio) {
+          setPortfolioError(true);
+          return;
+        }
+
+        setPortfolio(portfolio);
+      })
+      .catch(() => {
+        setPortfolioError(true);
+      });
   }, []);
+
+  const sketchWithPortfolio = useCallback(
+    (p5: Parameters<typeof sketch>[0]) => {
+      if (!portfolio) return;
+
+      sketch(p5, star, onStart, isProbablyWeb, portfolio);
+    },
+    [isProbablyWeb, onStart, portfolio, star]
+  );
+
+  if (portfolioError) {
+    return <div className="portfolio-status">Unable to load portfolio.</div>;
+  }
+
+  if (!portfolio) {
+    return <div className="portfolio-status">Loading portfolio...</div>;
+  }
 
   return (
     <div className="app-layout">
@@ -33,20 +67,22 @@ const App = () => {
             <span>A</span>
             <span>W</span>
           </div>
-          <img src={logoBlack} alt="WAAW logo" className="desktop-title-logo" />
+          <img
+            src={portfolio.logo}
+            alt="WAAW logo"
+            className="desktop-title-logo"
+          />
         </div>
       </div>
       <div className="panel panel-game">
         <Game isProbablyWeb={isProbablyWeb} />
-        <About />
+        <About image={portfolio.image} aboutText={portfolio.aboutText} />
         <GameOver />
-        <ReactP5Wrapper
-          sketch={(p5) => sketch(p5, star, onStart, isProbablyWeb)}
-        />
+        <ReactP5Wrapper sketch={sketchWithPortfolio} />
       </div>
       <div className="panel panel-right">
-        <img src={theTwins} alt="WAAW" className="right-image" />
-        <About />
+        <img src={portfolio.image} alt="WAAW" className="right-image" />
+        <About image={portfolio.image} aboutText={portfolio.aboutText} />
         <ul className="right-links">
           <li>
             <a

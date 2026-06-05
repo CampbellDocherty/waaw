@@ -5,12 +5,11 @@ import { TrackPowerUp } from '../functions/PowerUp';
 import { Star } from '../functions/Star';
 import cdImage from '../images/cd.png';
 import folder from '../images/folder.png';
-import theTwins from '../images/the-twins.jpg';
 import { createEvilPowerUps } from './createEvilPowerUps';
 import { createFallingRectangles } from './createFallingRectangles';
 import { createTrackPowerUps } from './createTrackPowerUps';
 import { FinalMix } from '../functions/FinalMix';
-import secretMix from '../audio/waaw-secret-mix.mp3';
+import { Portfolio } from '../portfolio';
 
 enum Screen {
   INITIAL = 'initial',
@@ -29,7 +28,8 @@ export const sketch = (
   p5: p5Type,
   star: Star,
   onStart: () => Promise<void>,
-  isProbablyWeb: boolean
+  isProbablyWeb: boolean,
+  portfolio: Portfolio
 ): void => {
   let start = false;
   let allPowerUpsCollected = false;
@@ -52,9 +52,13 @@ export const sketch = (
     font = p5.loadFont(monoRegular);
     star.bindToP5Instance(p5);
     cd = p5.loadImage(cdImage);
-    finalMix = new FinalMix(cdImage, secretMix, p5);
-    mainImage = p5.loadImage(theTwins);
-    trackPowerUps = createTrackPowerUps(p5, hasReachedCheckpoint);
+    finalMix = new FinalMix(cdImage, portfolio.secretMix, p5);
+    mainImage = p5.loadImage(portfolio.image);
+    trackPowerUps = createTrackPowerUps(
+      p5,
+      hasReachedCheckpoint,
+      portfolio.songs
+    );
   };
 
   const hasReachedCheckpoint = Boolean(localStorage.getItem('checkpoint'));
