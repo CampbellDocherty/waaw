@@ -54,7 +54,14 @@ const App = () => {
   }
 
   if (!portfolio) {
-    return <div className="portfolio-status">Loading portfolio...</div>;
+    return (
+      <div className="portfolio-status loading-screen">
+        <p className="loading-text">
+          Loading
+          <span className="loading-dots" aria-hidden="true" />
+        </p>
+      </div>
+    );
   }
 
   return (

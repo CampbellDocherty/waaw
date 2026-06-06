@@ -9,8 +9,9 @@ import { createEvilPowerUps } from './createEvilPowerUps';
 import { createFallingRectangles } from './createFallingRectangles';
 import { createTrackPowerUps } from './createTrackPowerUps';
 import { FinalMix } from '../functions/FinalMix';
+import { GameUser, saveUser } from '../gameUsers';
 import { LEADERBOARD_REFRESH_EVENT } from '../leaderboard';
-import { createGameUser, GameUserInput, Portfolio } from '../portfolio';
+import { Portfolio } from '../portfolio';
 
 enum Screen {
   INITIAL = 'initial',
@@ -49,6 +50,7 @@ export const sketch = (
   let score = 0;
   let diedInGame = false;
   let hasCompleted = false;
+  let hasWonGame = false;
   let hasSubmittedUserResult = false;
   let imageOpacity = 255;
 
@@ -138,6 +140,11 @@ export const sketch = (
       gameOverScreen?.addClass('hide');
       gameOverScreen?.style('display', 'none');
       diedInGame = false;
+      hasWonGame = false;
+      hasCompleted = false;
+      finalMix.hasBeenCollected = false;
+      finalMix.downloadTriggered = false;
+      finalMix.shouldDraw = true;
       hasSubmittedUserResult = false;
       evilStar.reset();
       score = 0;
@@ -297,9 +304,7 @@ export const sketch = (
           colour: star.colour,
         };
         localStorage.setItem('starPrefs', JSON.stringify(prefs));
-        void createGameUser(getUserInputFromPrefs(prefs, 0)).catch(
-          () => undefined
-        );
+        void saveUser(getUserInputFromPrefs(prefs, 0)).catch(() => undefined);
 
         setTimeout(() => {
           instructionsButton?.removeClass('show');
@@ -439,6 +444,8 @@ export const sketch = (
       aboutButton?.removeClass('show');
       aboutButton?.addClass('hide');
 
+      const hasEndedGame = diedInGame || hasWonGame;
+
       p5.push();
       p5.noStroke();
       p5.fill('white');
@@ -448,11 +455,11 @@ export const sketch = (
       const scoreY = -p5.height / 2 + 30;
       p5.text('Score', scoreX, scoreY);
       p5.textSize(18);
-      p5.text(!diedInGame ? (score += 10) : score, scoreX, scoreY + 20);
+      p5.text(!hasEndedGame ? (score += 10) : score, scoreX, scoreY + 20);
       p5.pop();
 
       for (const rectangle of rectangles) {
-        if (!diedInGame) {
+        if (!hasEndedGame) {
           rectangle.shouldDraw = true;
           rectangle.shouldAnimate = true;
         }
@@ -500,6 +507,7 @@ export const sketch = (
         }
         if (finalMix.hasBeenCollected && !finalMix.downloadTriggered) {
           localStorage.setItem('hasCompleted', 'true');
+          hasWonGame = true;
           submitUserResult(score);
           downloadFinalMix();
           finalMix.downloadTriggered = true;
@@ -507,16 +515,8 @@ export const sketch = (
       }
     }
 
-    if (diedInGame) {
-      submitUserResult(score);
-      rectangles.forEach((rectangle) => (rectangle.shouldAnimate = false));
-      finalScore?.html(score.toString());
-      gameOverScreen?.removeClass('hide');
-      gameOverScreen?.style('display', 'flex');
-      gameOverScreen?.addClass('show');
-      selectedTrack?.audio?.stop();
-      evilPowerUps.forEach((powerUp) => (powerUp.shouldAnimate = false));
-      evilStar.shouldAnimate = false;
+    if (diedInGame || hasWonGame) {
+      showEndScreen();
     }
 
     const allPowerUps = [...trackPowerUps];
@@ -539,7 +539,11 @@ export const sketch = (
     }
 
     // update star position
-    if (screen === Screen.GAME || (screen === Screen.INITIAL && !diedInGame)) {
+    if (
+      !diedInGame &&
+      !hasWonGame &&
+      (screen === Screen.GAME || screen === Screen.INITIAL)
+    ) {
       star.updatePosition(p5.deltaTime);
     }
   };
@@ -554,21 +558,28 @@ export const sketch = (
     p5.image(cd, xCenterOfDisk, yCenterOfDisk, dimension, dimension);
 
     p5.fill('white');
+    p5.textAlign(p5.LEFT);
     p5.textSize(16);
-    p5.text(
-      track.title,
-      xCenterOfDisk + dimension * 0.75,
-      yCenterOfDisk - dimension / 8
-    );
+    const trackTextX = xCenterOfDisk + dimension * 0.75;
+    const scoreY = -p5.height / 2 + 30;
+    p5.text(track.title, trackTextX, scoreY);
 
     p5.textSize(12);
-    p5.text(
-      track.artist,
-      xCenterOfDisk + dimension * 0.75,
-      yCenterOfDisk + dimension / 4
-    );
+    p5.text(track.artist, trackTextX, scoreY + 20);
 
     p5.pop();
+  }
+
+  function showEndScreen() {
+    submitUserResult(score);
+    rectangles.forEach((rectangle) => (rectangle.shouldAnimate = false));
+    finalScore?.html(score.toString());
+    gameOverScreen?.removeClass('hide');
+    gameOverScreen?.style('display', 'flex');
+    gameOverScreen?.addClass('show');
+    selectedTrack?.audio?.stop();
+    evilPowerUps.forEach((powerUp) => (powerUp.shouldAnimate = false));
+    evilStar.shouldAnimate = false;
   }
 
   p5.keyPressed = (event: { key: string }) => {
@@ -606,7 +617,7 @@ export const sketch = (
     downloadLink.elt.click();
   }
 
-  function getUserInput(finalScore: number): GameUserInput | null {
+  function getUserInput(finalScore: number): GameUser | null {
     const starPrefs = localStorage.getItem('starPrefs');
     if (!starPrefs) {
       return null;
@@ -623,7 +634,7 @@ export const sketch = (
   function getUserInputFromPrefs(
     prefs: StarPrefs,
     finalScore: number
-  ): GameUserInput {
+  ): GameUser {
     return {
       id: prefs.id,
       name: prefs.name,
@@ -645,7 +656,7 @@ export const sketch = (
     }
 
     hasSubmittedUserResult = true;
-    void createGameUser(user)
+    void saveUser(user)
       .then(() => window.dispatchEvent(new Event(LEADERBOARD_REFRESH_EVENT)))
       .catch(() => undefined);
   }
