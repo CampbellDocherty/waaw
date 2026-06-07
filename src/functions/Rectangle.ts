@@ -83,6 +83,14 @@ export class FallingRectangle {
     this.xPosition = this.getNextXPosition();
   }
 
+  get isVisible() {
+    return this.shouldDraw;
+  }
+
+  get hasEnteredPlayfield() {
+    return this.yPosition + this.height / 2 >= -this.p5.height / 2;
+  }
+
   checkIfColliding = (x: number, y: number): boolean => {
     if (!this.shouldDraw) {
       return false;

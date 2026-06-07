@@ -23,6 +23,8 @@ enum Screen {
 
 const DESKTOP_BREAKPOINT = 1024;
 const MAX_SCORE = 35000;
+const EVIL_STAR_START_SCORE = 23000;
+const RECTANGLE_END_SCORE = EVIL_STAR_START_SCORE - 1500;
 const DEFAULT_PLAYER_COLOUR = '#F875FC';
 const HUD_X_INSET = 16;
 const HUD_Y_INSET = 30;
@@ -538,10 +540,18 @@ export const sketch = (
       p5.text(score, scoreX, scoreY + 17);
       p5.pop();
 
+      const shouldShowRectangles = score < RECTANGLE_END_SCORE;
       for (const rectangle of rectangles) {
         if (!hasEndedGame) {
-          rectangle.shouldDraw = true;
-          rectangle.shouldAnimate = true;
+          if (shouldShowRectangles) {
+            rectangle.shouldDraw = true;
+            rectangle.shouldAnimate = true;
+          } else if (rectangle.hasEnteredPlayfield) {
+            rectangle.shouldAnimate = rectangle.isVisible;
+          } else {
+            rectangle.shouldDraw = false;
+            rectangle.shouldAnimate = false;
+          }
         }
 
         rectangle.draw();
@@ -556,7 +566,7 @@ export const sketch = (
         }
       }
 
-      if (score > 23000) {
+      if (score > EVIL_STAR_START_SCORE) {
         evilPowerUps.forEach((powerUp) => {
           powerUp.draw();
           const isColliding = starVertices.some((vertex) => {
