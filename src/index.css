@@ -3,14 +3,19 @@
   --desktop-breakpoint: 1024px;
 }
 
+::selection {
+  background-color: #f875fc;
+  color: black;
+}
+
 @font-face {
   font-family: 'MonoRegular';
   src: local('MonoRegular'), url(./fonts/Mono-Regular.ttf) format('truetype');
 }
 
 @font-face {
-  font-family: 'DollyDots';
-  src: local('DollyDots'), url(./fonts/dollydots.ttf) format('truetype');
+  font-family: 'Bickham';
+  src: local('Bickham'), url(./fonts/bickham.ttf) format('truetype');
 }
 
 body {
@@ -56,11 +61,6 @@ a:hover {
   color: black;
   background-color: #f8ff6e;
   text-decoration: underline;
-}
-
-a::selection {
-  background-color: #f875fc;
-  color: black;
 }
 
 .portfolio-status {
@@ -119,8 +119,9 @@ a::selection {
 }
 
 .about-image {
-  width: 120px;
-  height: 150px;
+  width: clamp(96px, 32vw, 120px);
+  aspect-ratio: 4 / 5;
+  height: auto;
   object-fit: cover;
   flex-shrink: 0;
 }
@@ -312,16 +313,6 @@ a::selection {
 
 button {
   font-family: 'MonoRegular';
-}
-
-button::selection {
-  background-color: #4200aa;
-  color: white;
-}
-
-p::selection {
-  background-color: #f875fc;
-  color: black;
 }
 
 .start-button {
@@ -820,16 +811,16 @@ a {
 .desktop-title-letters {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  line-height: 0.82;
-  width: 100%;
-  padding: 0 16px;
+  align-items: center;
+  line-height: 0.58;
+  width: clamp(100px, 18vh, 220px);
+  max-width: 100%;
   box-sizing: border-box;
 }
 
 .desktop-title-letters span {
-  font-family: 'DollyDots';
-  font-size: clamp(120px, 20vh, 260px);
+  font-family: 'Bickham';
+  font-size: clamp(100px, 18vh, 220px);
   color: white;
   display: block;
   user-select: none;
@@ -854,11 +845,24 @@ a {
 }
 
 .desktop-title-logo {
-  width: clamp(100px, 14vh, 200px);
+  width: clamp(100px, 18vh, 220px);
   height: auto;
+  display: block;
+  align-self: center;
   filter: brightness(0) invert(1);
   opacity: 0;
-  animation: contentFadeIn 0.6s ease-out 0.7s forwards;
+  animation: logoFadeIn 0.6s ease-out 0.7s forwards;
+}
+
+@keyframes logoFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(14px, 12px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(14px, 0);
+  }
 }
 
 /* --- Fade-in animation --- */
@@ -872,6 +876,77 @@ a {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.next-party-popup {
+  display: none;
+}
+
+.next-party-popup.is-visible {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: fixed;
+  bottom: 12px;
+  left: 12px;
+  z-index: 10;
+  gap: 14px;
+  animation: contentFadeIn 0.5s ease-out both;
+}
+
+.next-party-popup-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.next-party-popup-poster-link {
+  display: block;
+  line-height: 0;
+}
+
+.next-party-popup-poster {
+  display: block;
+  width: clamp(160px, 48vw, 260px);
+  height: auto;
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.22);
+}
+
+.next-party-popup-close {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  background-color: transparent;
+  color: white;
+  font-family: 'MonoRegular';
+  font-size: 16px;
+  line-height: 34px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.next-party-popup-close:hover {
+  border-color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.next-party-popup-cta {
+  font-family: 'MonoRegular';
+  font-size: 16px;
+  color: white;
+  text-align: left;
+  align-self: flex-start;
+}
+
+.next-party-popup-cta:hover {
+  color: black;
+  background-color: #f8ff6e;
+  text-decoration: underline;
 }
 
 /* --- Desktop: three-column layout --- */
@@ -916,16 +991,21 @@ a {
     border-left: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    justify-content: center;
-    padding: 48px 40px;
-    gap: 32px;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: clamp(16px, 3vh, 32px) clamp(16px, 3vw, 40px);
+    gap: clamp(16px, 3vh, 32px);
+    min-height: 0;
+    box-sizing: border-box;
   }
 
   .panel-right .right-image {
-    width: 200px;
-    height: 240px;
+    width: clamp(96px, 14vw, 200px);
+    max-height: clamp(120px, 28vh, 240px);
+    height: auto;
     object-fit: cover;
+    align-self: flex-end;
+    flex-shrink: 0;
     opacity: 0;
     animation: contentFadeIn 0.6s ease-out 0.3s forwards;
   }
@@ -933,6 +1013,8 @@ a {
   .panel-right .about-screen {
     position: relative;
     width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
     height: auto;
     transform: none !important;
     animation: none !important;
@@ -940,15 +1022,19 @@ a {
     flex-direction: column;
     align-items: flex-end;
     padding: 0;
+    overflow: hidden;
   }
 
   .panel-right .about-content {
     margin-top: 0;
     max-width: 100%;
     width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
     padding: 0;
     text-align: right;
     align-items: flex-end;
+    overflow-y: auto;
   }
 
   .panel-right .about-content p {
@@ -972,11 +1058,14 @@ a {
     list-style: none;
     padding: 0;
     display: flex;
+    flex-wrap: wrap;
     gap: 16px;
     justify-content: flex-end;
     text-align: right;
     align-self: flex-end;
-    margin-top: 48px;
+    max-width: 100%;
+    flex-shrink: 0;
+    margin-top: 0;
   }
 
   .panel-right .right-links li {
@@ -992,6 +1081,9 @@ a {
   .panel-right .right-links li:nth-child(2) {
     animation-delay: 1.25s;
   }
+  .panel-right .right-links li:nth-child(3) {
+    animation-delay: 1.4s;
+  }
 
   .panel-right .right-links li a {
     font-size: 13px;
@@ -1006,6 +1098,10 @@ a {
     transform: none !important;
     animation: none !important;
     z-index: 1;
+  }
+
+  .next-party-popup-poster {
+    width: clamp(160px, 22vw, 280px);
   }
 
   /* Hide navigation buttons on desktop since all panels are visible */

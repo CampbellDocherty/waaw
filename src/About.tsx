@@ -3,6 +3,9 @@ import type { ReactNode } from 'react';
 type AboutProps = {
   image: string;
   aboutText: string;
+  instagramLink: string;
+  mixesLink: string;
+  upcomingLink: string;
   showBackButton?: boolean;
   className?: string;
   children?: ReactNode;
@@ -11,6 +14,9 @@ type AboutProps = {
 export const About = ({
   image,
   aboutText,
+  instagramLink,
+  mixesLink,
+  upcomingLink,
   showBackButton = true,
   className = '',
   children,
@@ -33,17 +39,18 @@ export const About = ({
     {children}
     <ul className="about-links">
       <li>
-        <a
-          href="https://www.instagram.com/waawdj/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Instagram
+        <a href={instagramLink} target="_blank" rel="noreferrer">
+          instagram
         </a>
       </li>
       <li>
-        <a href="https://linktr.ee/waaw" target="_blank" rel="noreferrer">
-          Linktree
+        <a href={upcomingLink} target="_blank" rel="noreferrer">
+          upcoming
+        </a>
+      </li>
+      <li>
+        <a href={mixesLink} target="_blank" rel="noreferrer">
+          mixes
         </a>
       </li>
     </ul>
