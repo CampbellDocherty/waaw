@@ -244,15 +244,8 @@ export const sketch = (
     const button = p5.createButton(
       isProbablyWeb ? 'Click to start!' : 'Press to start!'
     );
-    const buttonWidth = p5.width;
-    const buttonHeight = p5.height * 2;
-    button.style('width', `${buttonWidth}px`);
-    button.style('height', `${buttonHeight}px`);
     button.addClass('start-button');
-    const startBtnX = isDesktop()
-      ? p5.width / 2 - buttonWidth / 2
-      : p5.width / 4 - buttonWidth / 2;
-    button.position(startBtnX, p5.height / 2 - button.height / 2);
+    positionStartButton(button);
     const handleStart = async () => {
       await onStart();
       button.hide();
@@ -649,7 +642,22 @@ export const sketch = (
     p5.resizeCanvas(w, h);
     startingX = 0;
     star.reset();
+    const startButton = p5.select('.start-button');
+    if (startButton) {
+      positionStartButton(startButton);
+    }
   };
+
+  function positionStartButton(button: p5Type.Element) {
+    const buttonWidth = p5.width;
+    const buttonHeight = p5.height * 2;
+    button.style('width', `${buttonWidth}px`);
+    button.style('height', `${buttonHeight}px`);
+    const startBtnX = isDesktop()
+      ? p5.width / 2 - buttonWidth / 2
+      : p5.width / 4 - buttonWidth / 2;
+    button.position(startBtnX, p5.height / 2 - buttonHeight / 2);
+  }
 
   function downloadFinalMix() {
     const downloadLink = p5.createA(finalMix.finalMixSrc, '');
