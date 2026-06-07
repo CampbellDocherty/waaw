@@ -162,6 +162,29 @@ a::selection {
   margin-bottom: 0;
 }
 
+.motion-denied-screen {
+  z-index: 3;
+}
+
+.motion-denied-retry {
+  position: absolute;
+  bottom: 10px;
+  left: 20px;
+  z-index: 4;
+  border: none;
+  background-color: transparent;
+  color: white;
+  cursor: pointer;
+  font-family: 'MonoRegular';
+  font-size: 13px;
+  padding: 0 0 10px;
+}
+
+.motion-denied-retry:hover {
+  color: black;
+  background-color: #f8ff6e;
+}
+
 .show-about {
   transform: translateX(0%);
   animation: slideInLeft 0.3s linear;
@@ -206,7 +229,7 @@ a::selection {
   cursor: pointer;
   padding: 0;
   color: white;
-  font-size: 15px;
+  font-size: 13px;
   padding-bottom: 10px;
 }
 
@@ -220,7 +243,7 @@ a::selection {
   cursor: pointer;
   padding: 0;
   color: white;
-  font-size: 15px;
+  font-size: 13px;
   padding-bottom: 10px;
 }
 

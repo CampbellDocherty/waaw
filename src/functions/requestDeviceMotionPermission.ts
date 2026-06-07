@@ -4,6 +4,11 @@ export interface DeviceMotionEventiOS extends DeviceMotionEvent {
   requestPermission?: () => Promise<'granted' | 'denied'>;
 }
 
+export type DeviceMotionPermissionResult =
+  | 'granted'
+  | 'denied'
+  | 'not-required';
+
 const requestPermission = (DeviceMotionEvent as unknown as DeviceMotionEventiOS)
   .requestPermission;
 
@@ -18,26 +23,29 @@ const handleMotion = (data: DeviceMotionEventiOS): { x: number; y: number } => {
   };
 };
 
-export const requestDeviceMotionPermission = async (star: Star) => {
+export const requestDeviceMotionPermission = async (
+  star: Star
+): Promise<DeviceMotionPermissionResult> => {
   if (iOS) {
-    const response = await requestPermission();
+    const response = await requestPermission().catch(() => 'denied' as const);
     if (response === 'granted') {
       window.addEventListener('devicemotion', (event) => {
         const motion = handleMotion(event);
         star.updateVelocity(motion.x * 8, -motion.y * 12);
       });
+      return 'granted';
     }
-    return false;
+    return 'denied';
   }
   const isProbablyWeb = requestPermission === undefined;
 
   if (isProbablyWeb) {
-    return isProbablyWeb;
+    return 'not-required';
   }
 
   window.addEventListener('devicemotion', (event) => {
     const motion = handleMotion(event);
     star.updateVelocity(motion.x * 8, motion.y * 12);
   });
-  return false;
+  return 'granted';
 };

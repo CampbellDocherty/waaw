@@ -12,6 +12,7 @@ import { FinalMix } from '../functions/FinalMix';
 import { GameUser, saveUser } from '../gameUsers';
 import { LEADERBOARD_REFRESH_EVENT } from '../leaderboard';
 import { Portfolio } from '../portfolio';
+import type { DeviceMotionPermissionResult } from '../functions/requestDeviceMotionPermission';
 
 enum Screen {
   INITIAL = 'initial',
@@ -58,7 +59,7 @@ function getSavedStarColour(): string {
 export const sketch = (
   p5: p5Type,
   star: Star,
-  onStart: () => Promise<void>,
+  onStart: () => Promise<DeviceMotionPermissionResult>,
   isProbablyWeb: boolean,
   portfolio: Portfolio
 ): void => {
@@ -112,11 +113,16 @@ export const sketch = (
   const trackContainerClose = p5.select('.track-container-close');
   const playAgainButton = p5.select('.play-again-button');
   const finalScore = p5.select('.final-score');
-  const aboutScreen = p5.select('.about-screen');
+  const aboutScreen = p5.select(
+    '.panel-game > .about-screen:not(.motion-denied-screen)'
+  );
+  const motionDeniedScreen = p5.select('.motion-denied-screen');
+  const motionDeniedRetryButton = p5.select('.motion-denied-retry');
 
   let selectedTrack: TrackPowerUp | null = null;
   let screen: Screen = Screen.INITIAL;
   let building = false;
+  let showingMotionDeniedScreen = false;
 
   const savedPrefs = localStorage.getItem('starPrefs');
   if (savedPrefs) {
@@ -246,11 +252,27 @@ export const sketch = (
     );
     button.addClass('start-button');
     positionStartButton(button);
-    const handleStart = async () => {
-      await onStart();
-      button.hide();
+    const starBuilder = document.querySelector(
+      '.star-builder'
+    ) as HTMLElement | null;
+    const showMotionDeniedScreen = () => {
+      showingMotionDeniedScreen = true;
+      motionDeniedScreen?.removeClass('hide-about');
+      motionDeniedScreen?.addClass('show-about');
+    };
+    const hideMotionDeniedScreen = () => {
+      if (!motionDeniedScreen?.elt.classList.contains('show-about')) {
+        return;
+      }
 
-      if (savedPrefs) {
+      showingMotionDeniedScreen = false;
+      motionDeniedScreen?.removeClass('show-about');
+      motionDeniedScreen?.addClass('hide-about');
+    };
+    const continueStartFlow = (forceBuilder = false) => {
+      hideMotionDeniedScreen();
+
+      if (savedPrefs && !forceBuilder) {
         start = true;
         star.xPos = 0;
         star.yPos = -120;
@@ -260,18 +282,38 @@ export const sketch = (
         }, 4000);
       } else {
         building = true;
-        const starBuilderEl = document.querySelector(
-          '.star-builder'
-        ) as HTMLElement;
-        if (starBuilderEl) {
-          starBuilderEl.style.display = 'flex';
+        if (starBuilder) {
+          starBuilder.style.display = 'flex';
         }
       }
     };
+    const handleStart = async () => {
+      const permissionResult = await onStart();
+      button.hide();
+
+      if (permissionResult === 'denied') {
+        showMotionDeniedScreen();
+        return;
+      }
+
+      continueStartFlow();
+    };
+    const handleMotionDeniedRetry = async () => {
+      const permissionResult = await onStart();
+
+      if (permissionResult === 'denied') {
+        return;
+      }
+
+      continueStartFlow(true);
+    };
     button.mousePressed(handleStart);
     button.touchEnded(handleStart);
+    motionDeniedRetryButton?.elt.addEventListener(
+      'click',
+      handleMotionDeniedRetry
+    );
 
-    const starBuilder = document.querySelector('.star-builder');
     if (starBuilder) {
       const optionButtons = starBuilder.querySelectorAll(
         '.star-builder-options button'
@@ -298,7 +340,21 @@ export const sketch = (
       });
 
       const startGameBtn = starBuilder.querySelector('.star-builder-start');
+      const nameInput = starBuilder.querySelector(
+        '.star-builder-name'
+      ) as HTMLInputElement | null;
+      nameInput?.addEventListener('input', () => {
+        nameInput.setCustomValidity('');
+      });
       startGameBtn?.addEventListener('click', () => {
+        const playerName = nameInput?.value.trim() ?? '';
+        if (!playerName) {
+          nameInput?.setCustomValidity('Enter a name to start');
+          nameInput?.reportValidity();
+          nameInput?.focus();
+          return;
+        }
+
         building = false;
         start = true;
         (starBuilder as HTMLElement).style.display = 'none';
@@ -306,12 +362,9 @@ export const sketch = (
         star.xPos = 0;
         star.yPos = -120;
 
-        const nameInput = starBuilder.querySelector(
-          '.star-builder-name'
-        ) as HTMLInputElement;
         const prefs: StarPrefs = {
           id: crypto.randomUUID(),
-          name: nameInput?.value || '',
+          name: playerName,
           spikes: star.npoints,
           spikeLength: star.closeRadius,
           colour: star.colour,
@@ -334,6 +387,10 @@ export const sketch = (
     p5.background('#90908e');
     if (isProbablyWeb) {
       _drawByKeyPress(pressedKeys, star);
+    }
+
+    if (showingMotionDeniedScreen) {
+      return;
     }
 
     if (!isDesktop() && !start) {
