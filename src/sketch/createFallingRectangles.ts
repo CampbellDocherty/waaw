@@ -23,9 +23,10 @@ function getWidthRatio(lane: number, gameWidth: number): number {
     return Math.abs(lane) > 0.6 ? getRandomNumber(0.65, 0.9) : width;
   }
 
-  const maxWidth = Math.abs(lane) < 0.2
-    ? gameWidth - MOBILE_PASSAGE_WIDTH * 2
-    : gameWidth - MOBILE_PASSAGE_WIDTH;
+  const maxWidth =
+    Math.abs(lane) < 0.2
+      ? gameWidth - MOBILE_PASSAGE_WIDTH * 2
+      : gameWidth - MOBILE_PASSAGE_WIDTH;
   const maxRatio = Math.max(0.18, maxWidth / gameWidth);
   const minRatio = Math.min(0.5, Math.max(0.12, maxRatio - 0.1));
 
