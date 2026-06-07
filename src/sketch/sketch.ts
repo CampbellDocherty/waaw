@@ -20,6 +20,10 @@ enum Screen {
 }
 
 const DESKTOP_BREAKPOINT = 1024;
+const MAX_SCORE = 35000;
+const DEFAULT_PLAYER_COLOUR = '#F875FC';
+const HUD_X_INSET = 16;
+const HUD_Y_INSET = 30;
 
 type StarPrefs = {
   id: string;
@@ -33,6 +37,24 @@ function isDesktop(): boolean {
   return window.innerWidth >= DESKTOP_BREAKPOINT;
 }
 
+function getTextSize(desktopSize: number, mobileSize: number): number {
+  return isDesktop() ? desktopSize : mobileSize;
+}
+
+function getSavedStarColour(): string {
+  const starPrefs = localStorage.getItem('starPrefs');
+  if (!starPrefs) {
+    return DEFAULT_PLAYER_COLOUR;
+  }
+
+  try {
+    const prefs = JSON.parse(starPrefs) as Partial<StarPrefs>;
+    return prefs.colour ?? DEFAULT_PLAYER_COLOUR;
+  } catch {
+    return DEFAULT_PLAYER_COLOUR;
+  }
+}
+
 export const sketch = (
   p5: p5Type,
   star: Star,
@@ -43,7 +65,6 @@ export const sketch = (
   let start = false;
   let allPowerUpsCollected = false;
   let mainImage: p5Type.Image;
-  let cd: p5Type.Image;
   let finalMix: FinalMix;
 
   let startingX = 0;
@@ -62,7 +83,6 @@ export const sketch = (
   p5.preload = () => {
     font = p5.loadFont(monoRegular);
     star.bindToP5Instance(p5);
-    cd = p5.loadImage(cdImage);
     finalMix = new FinalMix(cdImage, portfolio.secretMix, p5);
     mainImage = p5.loadImage(portfolio.image);
     trackPowerUps = createTrackPowerUps(
@@ -450,12 +470,17 @@ export const sketch = (
       p5.noStroke();
       p5.fill('white');
       p5.textAlign(p5.RIGHT);
-      p5.textSize(14);
-      const scoreX = isDesktop() ? p5.width / 2 - 30 : innerWidth / 2 - 30;
-      const scoreY = -p5.height / 2 + 30;
+      p5.textSize(getTextSize(14, 12));
+      const scoreX = isDesktop()
+        ? p5.width / 2 - HUD_X_INSET
+        : innerWidth / 2 - HUD_X_INSET;
+      const scoreY = -p5.height / 2 + HUD_Y_INSET;
       p5.text('Score', scoreX, scoreY);
-      p5.textSize(18);
-      p5.text(!hasEndedGame ? (score += 10) : score, scoreX, scoreY + 20);
+      p5.textSize(getTextSize(18, 15));
+      if (!hasEndedGame) {
+        score = Math.min(score + 10, MAX_SCORE);
+      }
+      p5.text(score, scoreX, scoreY + 17);
       p5.pop();
 
       for (const rectangle of rectangles) {
@@ -489,8 +514,8 @@ export const sketch = (
           }
         });
         evilStar.draw();
-        if (score >= 35000) {
-          score = 35000;
+        if (score >= MAX_SCORE) {
+          score = MAX_SCORE;
           hasCompleted = true;
           evilStar.retreat();
         }
@@ -551,22 +576,40 @@ export const sketch = (
   function drawTrackDetails(track: TrackPowerUp) {
     p5.push();
 
-    p5.imageMode(p5.CENTER);
-    const xCenterOfDisk = isDesktop() ? -p5.width / 2 + 30 : -p5.width / 4 + 30;
-    const yCenterOfDisk = -p5.height / 2 + 30;
-    const dimension = 40;
-    p5.image(cd, xCenterOfDisk, yCenterOfDisk, dimension, dimension);
-
     p5.fill('white');
     p5.textAlign(p5.LEFT);
-    p5.textSize(16);
-    const trackTextX = xCenterOfDisk + dimension * 0.75;
-    const scoreY = -p5.height / 2 + 30;
+    p5.textSize(getTextSize(16, 13));
+    const trackTextX = isDesktop()
+      ? -p5.width / 2 + HUD_X_INSET
+      : -p5.width / 4 + HUD_X_INSET;
+    const scoreY = -p5.height / 2 + HUD_Y_INSET;
     p5.text(track.title, trackTextX, scoreY);
 
-    p5.textSize(12);
-    p5.text(track.artist, trackTextX, scoreY + 20);
+    p5.textSize(getTextSize(12, 10));
+    p5.text(track.artist, trackTextX, scoreY + 15);
 
+    drawTrackProgress(track, trackTextX, scoreY + 24);
+
+    p5.pop();
+  }
+
+  function drawTrackProgress(track: TrackPowerUp, x: number, y: number) {
+    const duration = track.audio.duration();
+    const currentTime = track.audio.time();
+    const progress =
+      duration > 0 && Number.isFinite(duration)
+        ? p5.constrain(currentTime / duration, 0, 1)
+        : 0;
+    const width = isDesktop() ? 180 : Math.min(140, innerWidth * 0.34);
+    const height = 3;
+
+    p5.push();
+    p5.rectMode(p5.CORNER);
+    p5.noStroke();
+    p5.fill(255, 255, 255, 55);
+    p5.rect(x, y, width, height);
+    p5.fill(getSavedStarColour());
+    p5.rect(x, y, width * progress, height);
     p5.pop();
   }
 

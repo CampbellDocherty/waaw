@@ -59,7 +59,7 @@ export class FallingRectangle {
       this.p5.strokeWeight(2);
       this.p5.stroke('black');
       this.p5.fill('black');
-      this.p5.textSize(16);
+      this.p5.textSize(window.innerWidth >= 1024 ? 16 : 13);
       this.p5.textAlign(this.p5.CENTER);
       this.p5.text(this.instructions, 0, this.yPosition + 8);
     }
