@@ -30,10 +30,9 @@ function getPlannedLanes(): number[] {
     getRandomNumber(-1, 1) > 0 ? 'left' : 'right';
   const secondGapSide = firstGapSide === 'left' ? 'right' : 'left';
   const pattern: Array<'left' | 'right' | 'middle'> = [
-    firstGapSide,
+    'middle',
     firstGapSide,
     'middle',
-    secondGapSide,
     secondGapSide,
     'middle',
   ];
