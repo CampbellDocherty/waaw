@@ -15,6 +15,11 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v2
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Install dependencies
         run: yarn install --production=false --frozen-lockfile
 
@@ -31,7 +36,7 @@ jobs:
     env:
       NODE_ENV: production
     container:
-      image: node:16.12
+      image: node:20
 
     steps:
       - name: Check out Git repository
@@ -53,6 +58,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
       - name: Install and Build
         run: |
