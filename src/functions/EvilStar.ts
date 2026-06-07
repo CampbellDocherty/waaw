@@ -2,6 +2,7 @@ import { getRandomNumber } from './getRandomNumber';
 import p5Type from 'p5';
 
 const DESKTOP_BREAKPOINT = 1024;
+const FRAME_MS_AT_60_FPS = 16.67;
 
 function getHorizontalBoundary(p5: p5Type): number {
   return window.innerWidth >= DESKTOP_BREAKPOINT ? p5.width / 2 : p5.width / 4;
@@ -43,6 +44,8 @@ export class EvilStar {
     x: number;
     y: number;
   }[] => {
+    const deltaFrames = this.p5.deltaTime / FRAME_MS_AT_60_FPS;
+
     this.p5.push();
 
     if (this.shouldAnimate) {
@@ -86,9 +89,9 @@ export class EvilStar {
 
     if (this.shouldAnimate) {
       if (this.yPos < -innerHeight / 2 + 100) {
-        this.yPos += this.ySpeed;
+        this.yPos += this.ySpeed * deltaFrames;
       } else {
-        this.xPos += this.xSpeed;
+        this.xPos += this.xSpeed * deltaFrames;
         this.powerUps.forEach((powerUp) => {
           powerUp.updatePosition(this.xPos, this.yPos);
           powerUp.activate();
@@ -100,7 +103,7 @@ export class EvilStar {
   };
 
   retreat = () => {
-    this.yPos -= this.ySpeed;
+    this.yPos -= this.ySpeed * (this.p5.deltaTime / FRAME_MS_AT_60_FPS);
     this.xSpeed = 0;
     this.shouldAnimate = false;
     this.powerUps.forEach((pu) => {
@@ -152,7 +155,7 @@ export class EvilPowerUp {
   }
 
   activate() {
-    this.delay -= 1;
+    this.delay -= this.p5.deltaTime / FRAME_MS_AT_60_FPS;
     if (this.delay <= 0) {
       this.shouldDraw = true;
     }
@@ -170,18 +173,20 @@ export class EvilPowerUp {
     if (!this.shouldDraw) {
       return;
     }
+    const deltaFrames = this.p5.deltaTime / FRAME_MS_AT_60_FPS;
+
     this.p5.push();
     this.p5.stroke(255, 255, 255, this.opacity);
     this.p5.fill(0, 0, 0, this.opacity);
     this.p5.circle(this.xPosition, this.yPosition, this.width);
 
     if (this.shouldAnimate) {
-      this.yPosition += this.ySpeed;
-      this.xPosition += this.xSpeed;
+      this.yPosition += this.ySpeed * deltaFrames;
+      this.xPosition += this.xSpeed * deltaFrames;
     }
 
     if (this.shouldDie) {
-      this.opacity -= 10;
+      this.opacity -= 10 * deltaFrames;
     }
 
     const horizontalBoundary = getHorizontalBoundary(this.p5);
