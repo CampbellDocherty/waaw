@@ -2,6 +2,9 @@ import p5Type from 'p5';
 import { getRandomNumber } from './getRandomNumber';
 import { STAR_WIDTH } from './Star';
 
+const FALL_SPEED_PER_FRAME = 2;
+const FRAME_MS_AT_60_FPS = 16.67;
+
 export class FallingRectangle {
   p5: p5Type;
   width: number;
@@ -63,9 +66,10 @@ export class FallingRectangle {
       this.p5.textAlign(this.p5.CENTER);
       this.p5.text(this.instructions, 0, this.yPosition + 8);
     }
-    this.yPosition = this.shouldAnimate
-      ? (this.yPosition += 2)
-      : this.yPosition;
+    if (this.shouldAnimate) {
+      this.yPosition +=
+        FALL_SPEED_PER_FRAME * (this.p5.deltaTime / FRAME_MS_AT_60_FPS);
+    }
     if (this.yPosition - this.height / 2 > this.p5.height) {
       this.shouldDraw = false;
     }
