@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { CSSProperties } from 'react';
+import { GameUser, getUsers, StoredGameUser } from './gameUsers';
 import { LEADERBOARD_REFRESH_EVENT } from './leaderboard';
-import { GameUser, getGameUsers } from './portfolio';
 
 const STAR_SIZE = 26;
 
@@ -23,6 +24,42 @@ const getStarPoints = (points: number, length: number): string => {
   }).join(' ');
 };
 
+const getCurrentUserId = (): string | null => {
+  const starPrefs = localStorage.getItem('starPrefs');
+  if (!starPrefs) {
+    return null;
+  }
+
+  try {
+    const prefs = JSON.parse(starPrefs) as { id?: string };
+    return prefs.id ?? null;
+  } catch {
+    return null;
+  }
+};
+
+const getTransparentColour = (colour: string, alpha: number): string => {
+  if (colour.toLowerCase() === 'white') {
+    return `rgba(255, 255, 255, ${alpha})`;
+  }
+
+  const hex = colour.replace('#', '');
+  if (!/^[0-9a-f]{6}$/i.test(hex)) {
+    return `rgba(255, 255, 255, ${alpha})`;
+  }
+
+  const red = parseInt(hex.slice(0, 2), 16);
+  const green = parseInt(hex.slice(2, 4), 16);
+  const blue = parseInt(hex.slice(4, 6), 16);
+
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+};
+
+const getCurrentUserRowStyle = (colour: string): CSSProperties => ({
+  backgroundColor: getTransparentColour(colour, 0.1),
+  boxShadow: `inset 2px 0 0 ${getTransparentColour(colour, 0.5)}`,
+});
+
 const LeaderboardStar = ({ user }: { user: GameUser }) => {
   const starPoints = useMemo(
     () => getStarPoints(user.points, user.length),
@@ -43,12 +80,14 @@ const LeaderboardStar = ({ user }: { user: GameUser }) => {
 };
 
 export const GameOver = () => {
-  const [users, setUsers] = useState<GameUser[]>([]);
+  const [users, setUsers] = useState<StoredGameUser[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [leaderboardError, setLeaderboardError] = useState(false);
 
   const refreshLeaderboard = useCallback(() => {
+    setCurrentUserId(getCurrentUserId());
     setLeaderboardError(false);
-    void getGameUsers()
+    void getUsers()
       .then(setUsers)
       .catch(() => setLeaderboardError(true));
   }, []);
@@ -73,13 +112,28 @@ export const GameOver = () => {
           <p className="leaderboard-status">Unable to load leaderboard.</p>
         ) : (
           <ol className="leaderboard-list">
-            {users.map((user) => (
-              <li className="leaderboard-row" key={user._id}>
-                <LeaderboardStar user={user} />
-                <span className="leaderboard-name">{user.name || '???'}</span>
-                <span className="leaderboard-score">{user.score}</span>
-              </li>
-            ))}
+            {users.map((user, index) => {
+              const isCurrentUser = user.id === currentUserId;
+
+              return (
+                <li
+                  className={`leaderboard-row${
+                    isCurrentUser ? ' leaderboard-row-current' : ''
+                  }`}
+                  key={user.firebaseId}
+                  style={
+                    isCurrentUser
+                      ? getCurrentUserRowStyle(user.colour)
+                      : undefined
+                  }
+                >
+                  <span className="leaderboard-rank">#{index + 1}</span>
+                  <LeaderboardStar user={user} />
+                  <span className="leaderboard-name">{user.name || '???'}</span>
+                  <span className="leaderboard-score">{user.score}</span>
+                </li>
+              );
+            })}
           </ol>
         )}
       </section>

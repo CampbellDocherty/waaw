@@ -14,6 +14,7 @@ export class FallingRectangle {
   shouldDraw = false;
   shouldAnimate = true;
   instructions: string | null = null;
+  private getNextXPosition: () => number;
 
   constructor({
     p5,
@@ -23,6 +24,7 @@ export class FallingRectangle {
     yOffset,
     stroke = 'white',
     instructions = null,
+    getXPosition,
   }: {
     p5: p5Type;
     width: number;
@@ -31,13 +33,15 @@ export class FallingRectangle {
     yOffset: number;
     stroke?: string | null;
     instructions?: string | null;
+    getXPosition?: () => number;
   }) {
     this.p5 = p5;
     this.width = width;
     this.height = height;
     this.colour = colour;
     this.stroke = stroke;
-    this.xPosition = this.randomX;
+    this.getNextXPosition = getXPosition ?? (() => this.randomX);
+    this.xPosition = this.getNextXPosition();
     const y = -innerHeight / 2 - height / 2 - yOffset;
     this.yPosition = y;
     this.initialY = y;
@@ -72,7 +76,7 @@ export class FallingRectangle {
     this.shouldAnimate = false;
     this.shouldDraw = false;
     this.yPosition = this.initialY;
-    this.xPosition = this.randomX;
+    this.xPosition = this.getNextXPosition();
   }
 
   checkIfColliding = (x: number, y: number): boolean => {
