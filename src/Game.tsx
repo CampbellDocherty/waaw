@@ -88,6 +88,7 @@ export const Game = ({ isProbablyWeb }: { isProbablyWeb: boolean }) => (
           className="star-builder-name"
           placeholder="Enter name"
           maxLength={12}
+          required
         />
       </div>
       <button className="star-builder-start">Start</button>

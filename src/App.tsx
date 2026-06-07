@@ -22,7 +22,7 @@ const App = () => {
   const star = useMemo(() => new Star(0, -120, 0, 0), []);
 
   const onStart = useCallback(async () => {
-    await requestDeviceMotionPermission(star);
+    return requestDeviceMotionPermission(star);
   }, [star]);
 
   useEffect(() => {
@@ -84,6 +84,14 @@ const App = () => {
       <div className="panel panel-game">
         <Game isProbablyWeb={isProbablyWeb} />
         <About image={portfolio.image} aboutText={portfolio.aboutText} />
+        <About
+          image={portfolio.image}
+          aboutText={portfolio.aboutText}
+          showBackButton={false}
+          className="motion-denied-screen"
+        >
+          <button className="motion-denied-retry">Click to play!</button>
+        </About>
         <GameOver />
         <ReactP5Wrapper sketch={sketchWithPortfolio} />
       </div>
