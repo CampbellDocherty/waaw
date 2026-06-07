@@ -23,7 +23,6 @@ enum Screen {
 
 const DESKTOP_BREAKPOINT = 1024;
 const MAX_SCORE = 35000;
-const EVIL_STAR_START_SCORE = 19000;
 const DEFAULT_PLAYER_COLOUR = '#F875FC';
 const HUD_X_INSET = 16;
 const HUD_Y_INSET = 30;
@@ -557,7 +556,7 @@ export const sketch = (
         }
       }
 
-      if (score > EVIL_STAR_START_SCORE) {
+      if (score > 23000) {
         evilPowerUps.forEach((powerUp) => {
           powerUp.draw();
           const isColliding = starVertices.some((vertex) => {

@@ -4,14 +4,7 @@ import { getRandomNumber } from '../functions/getRandomNumber';
 import { STAR_WIDTH } from '../functions/Star';
 
 const DESKTOP_BREAKPOINT = 1024;
-const MIN_PASSAGE_WIDTH = STAR_WIDTH + 96;
-
-function getPassageWidth(gameWidth: number): number {
-  return Math.min(
-    Math.max(MIN_PASSAGE_WIDTH, gameWidth * 0.34),
-    gameWidth * 0.5
-  );
-}
+const MOBILE_PASSAGE_WIDTH = STAR_WIDTH + 24;
 
 function getGameWidth(): number {
   if (window.innerWidth >= DESKTOP_BREAKPOINT) {
@@ -20,72 +13,68 @@ function getGameWidth(): number {
   return innerWidth;
 }
 
-function getSideLane(gapSide: 'left' | 'right'): number {
-  const laneMagnitude = getRandomNumber(0.35, 0.75);
-  return gapSide === 'left' ? laneMagnitude : -laneMagnitude;
+function isDesktop(): boolean {
+  return window.innerWidth >= DESKTOP_BREAKPOINT;
 }
 
-function getPlannedLanes(): number[] {
-  const firstGapSide: 'left' | 'right' =
-    getRandomNumber(-1, 1) > 0 ? 'left' : 'right';
-  const secondGapSide = firstGapSide === 'left' ? 'right' : 'left';
-  const pattern: Array<'left' | 'right' | 'middle'> = [
-    'middle',
-    firstGapSide,
-    'middle',
-    secondGapSide,
-    'middle',
-  ];
+function getWidthRatio(lane: number, gameWidth: number): number {
+  if (isDesktop()) {
+    const width = getRandomNumber(0.5, 0.82);
+    return Math.abs(lane) > 0.6 ? getRandomNumber(0.65, 0.9) : width;
+  }
 
-  return Array.from({ length: 20 }, (_, index) => {
-    const gap = pattern[index % pattern.length];
-    if (gap === 'middle') {
-      return 0;
-    }
+  const maxWidth =
+    Math.abs(lane) < 0.2
+      ? gameWidth - MOBILE_PASSAGE_WIDTH * 2
+      : gameWidth - MOBILE_PASSAGE_WIDTH;
+  const maxRatio = Math.max(0.18, maxWidth / gameWidth);
+  const minRatio = Math.min(0.5, Math.max(0.12, maxRatio - 0.1));
 
-    return getSideLane(gap);
-  });
+  return getRandomNumber(minRatio, maxRatio);
 }
 
 export const createFallingRectangles = (p5: p5Type): FallingRectangle[] => {
-  const distanceBetweenRectangles = 240;
+  const distanceBetweenRectangles = 200;
   const gameWidth = getGameWidth();
-  const plannedLanes = getPlannedLanes();
+  const lanes = [-0.75, -0.35, 0, 0.35, 0.75];
+  const plannedLanes = Array.from({ length: 4 }, () =>
+    [...lanes].sort(() => getRandomNumber(-1, 1))
+  ).flat();
+  const widths = plannedLanes.map((lane) => getWidthRatio(lane, gameWidth));
 
-  const rectangles = plannedLanes.flatMap((lane, index) => {
-    const yOffset = distanceBetweenRectangles * index;
-    const passageWidth = getPassageWidth(gameWidth);
-
-    if (Math.abs(lane) < 0.2) {
-      const gapWidth = passageWidth;
-      const width = (gameWidth - gapWidth) / 2;
-
-      return [
-        new FallingRectangle({
-          width,
-          height: 20,
-          colour: 'black',
-          p5: p5,
-          yOffset,
-          getXPosition: () => -gameWidth / 2 + width / 2,
-        }),
-        new FallingRectangle({
-          width,
-          height: 20,
-          colour: 'black',
-          p5: p5,
-          yOffset,
-          getXPosition: () => gameWidth / 2 - width / 2,
-        }),
-      ];
-    }
-
-    const width = gameWidth - passageWidth;
-    const isBlockingLeftSide = lane < 0;
+  const rectangles = widths.map((widthRatio, index) => {
+    const width = gameWidth * widthRatio;
+    const lane = plannedLanes[index];
     const getXPosition = () => {
-      return isBlockingLeftSide
-        ? -gameWidth / 2 + width / 2
-        : gameWidth / 2 - width / 2;
+      const maxCenter = Math.max(0, gameWidth / 2 - width / 2);
+      if (!isDesktop()) {
+        let minX = -maxCenter;
+        let maxX = maxCenter;
+
+        if (lane > 0.2) {
+          minX = Math.max(minX, MOBILE_PASSAGE_WIDTH - maxCenter);
+        } else if (lane < -0.2) {
+          maxX = Math.min(maxX, maxCenter - MOBILE_PASSAGE_WIDTH);
+        } else {
+          minX = Math.max(minX, MOBILE_PASSAGE_WIDTH - maxCenter);
+          maxX = Math.min(maxX, maxCenter - MOBILE_PASSAGE_WIDTH);
+        }
+
+        if (minX > maxX) {
+          return 0;
+        }
+
+        return getRandomNumber(minX, maxX);
+      }
+
+      const safeMaxCenter = Math.max(0, maxCenter - STAR_WIDTH / 2);
+      const jitter = getRandomNumber(-0.12, 0.12) * gameWidth;
+
+      return p5.constrain(
+        lane * safeMaxCenter + jitter,
+        -safeMaxCenter,
+        safeMaxCenter
+      );
     };
 
     return new FallingRectangle({
@@ -93,7 +82,7 @@ export const createFallingRectangles = (p5: p5Type): FallingRectangle[] => {
       height: 20,
       colour: 'black',
       p5: p5,
-      yOffset,
+      yOffset: distanceBetweenRectangles * index,
       getXPosition,
     });
   });
