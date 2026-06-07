@@ -122,11 +122,7 @@ const App = () => {
         />
         <ul className="right-links">
           <li>
-            <a
-              href={portfolio.instagramLink}
-              target="_blank"
-              rel="noreferrer"
-            >
+            <a href={portfolio.instagramLink} target="_blank" rel="noreferrer">
               instagram
             </a>
           </li>

@@ -59,7 +59,10 @@ export const NextPartyPopup = ({ poster, link }: NextPartyPopupProps) => {
         window.clearTimeout(timer);
       }
 
-      window.removeEventListener(SHOW_NEXT_PARTY_EVENT, handleMobileShowRequest);
+      window.removeEventListener(
+        SHOW_NEXT_PARTY_EVENT,
+        handleMobileShowRequest
+      );
     };
   }, []);
 
