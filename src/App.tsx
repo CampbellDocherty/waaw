@@ -9,6 +9,7 @@ import { Star } from './functions/Star';
 import { Game } from './Game';
 import { GameOver } from './GameOver';
 import { About } from './About';
+import { NextPartyPopup } from './NextPartyPopup';
 import { fetchPortfolio, Portfolio } from './portfolio';
 
 const App = () => {
@@ -66,6 +67,12 @@ const App = () => {
 
   return (
     <div className="app-layout">
+      {portfolio.nextParty?.poster && portfolio.nextParty.link && (
+        <NextPartyPopup
+          poster={portfolio.nextParty.poster}
+          link={portfolio.nextParty.link}
+        />
+      )}
       <div className="panel panel-title">
         <div className="desktop-title">
           <div className="desktop-title-letters">
@@ -83,10 +90,19 @@ const App = () => {
       </div>
       <div className="panel panel-game">
         <Game isProbablyWeb={isProbablyWeb} />
-        <About image={portfolio.image} aboutText={portfolio.aboutText} />
         <About
           image={portfolio.image}
           aboutText={portfolio.aboutText}
+          instagramLink={portfolio.instagramLink}
+          mixesLink={portfolio.mixesLink}
+          upcomingLink={portfolio.upcomingLink}
+        />
+        <About
+          image={portfolio.image}
+          aboutText={portfolio.aboutText}
+          instagramLink={portfolio.instagramLink}
+          mixesLink={portfolio.mixesLink}
+          upcomingLink={portfolio.upcomingLink}
           showBackButton={false}
           className="motion-denied-screen"
         >
@@ -97,20 +113,31 @@ const App = () => {
       </div>
       <div className="panel panel-right">
         <img src={portfolio.image} alt="WAAW" className="right-image" />
-        <About image={portfolio.image} aboutText={portfolio.aboutText} />
+        <About
+          image={portfolio.image}
+          aboutText={portfolio.aboutText}
+          instagramLink={portfolio.instagramLink}
+          mixesLink={portfolio.mixesLink}
+          upcomingLink={portfolio.upcomingLink}
+        />
         <ul className="right-links">
           <li>
             <a
-              href="https://www.instagram.com/waawdj/"
+              href={portfolio.instagramLink}
               target="_blank"
               rel="noreferrer"
             >
-              Instagram
+              instagram
             </a>
           </li>
           <li>
-            <a href="https://linktr.ee/waaw" target="_blank" rel="noreferrer">
-              Linktree
+            <a href={portfolio.upcomingLink} target="_blank" rel="noreferrer">
+              upcoming
+            </a>
+          </li>
+          <li>
+            <a href={portfolio.mixesLink} target="_blank" rel="noreferrer">
+              mixes
             </a>
           </li>
         </ul>

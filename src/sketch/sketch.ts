@@ -11,6 +11,7 @@ import { createTrackPowerUps } from './createTrackPowerUps';
 import { FinalMix } from '../functions/FinalMix';
 import { GameUser, saveUser } from '../gameUsers';
 import { LEADERBOARD_REFRESH_EVENT } from '../leaderboard';
+import { SHOW_NEXT_PARTY_EVENT } from '../NextPartyPopup';
 import { Portfolio } from '../portfolio';
 import type { DeviceMotionPermissionResult } from '../functions/requestDeviceMotionPermission';
 
@@ -186,6 +187,10 @@ export const sketch = (
       aboutButton?.removeClass('hide');
       aboutButton?.addClass('show');
       localStorage.setItem('checkpoint', 'true');
+
+      if (!isDesktop()) {
+        window.dispatchEvent(new Event(SHOW_NEXT_PARTY_EVENT));
+      }
     });
 
     folderButton?.style('background-image', `url(${folder})`);

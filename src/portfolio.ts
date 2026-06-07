@@ -14,6 +14,11 @@ export type PortfolioSong = {
   audio: string;
 };
 
+export type PortfolioNextParty = {
+  poster: string;
+  link: string;
+};
+
 export type Portfolio = {
   _id: string;
   aboutText: string;
@@ -21,6 +26,10 @@ export type Portfolio = {
   image: string;
   logo: string;
   secretMix: string;
+  instagramLink: string;
+  mixesLink: string;
+  upcomingLink: string;
+  nextParty: PortfolioNextParty | null;
 };
 
 export const PORTFOLIO_QUERY = `
@@ -35,7 +44,14 @@ export const PORTFOLIO_QUERY = `
     },
     "image": image.asset->url,
     "logo": logo.asset->url,
-    "secretMix": secretMix.asset->url
+    "secretMix": secretMix.asset->url,
+    instagramLink,
+    mixesLink,
+    upcomingLink,
+    nextParty{
+      "poster": poster.asset->url,
+      link
+    }
   }
 `;
 
