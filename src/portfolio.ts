@@ -19,13 +19,18 @@ export type PortfolioNextParty = {
   link: string;
 };
 
+export type PortfolioSecretMix = {
+  name: string;
+  audio: string;
+};
+
 export type Portfolio = {
   _id: string;
   aboutText: string;
   songs: PortfolioSong[];
   image: string;
   logo: string;
-  secretMix: string;
+  secretMix: PortfolioSecretMix | null;
   instagramLink: string;
   mixesLink: string;
   upcomingLink: string;
@@ -44,7 +49,10 @@ export const PORTFOLIO_QUERY = `
     },
     "image": image.asset->url,
     "logo": logo.asset->url,
-    "secretMix": secretMix.asset->url,
+    secretMix{
+      name,
+      "audio": audio.asset->url
+    },
     instagramLink,
     mixesLink,
     upcomingLink,

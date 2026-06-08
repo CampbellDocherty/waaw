@@ -87,7 +87,7 @@ export const sketch = (
   p5.preload = () => {
     font = p5.loadFont(monoRegular);
     star.bindToP5Instance(p5);
-    finalMix = new FinalMix(cdImage, portfolio.secretMix, p5);
+    finalMix = new FinalMix(cdImage, portfolio.secretMix?.audio ?? '', p5);
     mainImage = p5.loadImage(portfolio.image);
     trackPowerUps = createTrackPowerUps(
       p5,
@@ -733,7 +733,10 @@ export const sketch = (
 
   function downloadFinalMix() {
     const downloadLink = p5.createA(finalMix.finalMixSrc, '');
-    downloadLink.attribute('download', 'waaw-secret-mix.mp3');
+    downloadLink.attribute(
+      'download',
+      portfolio.secretMix?.name ?? 'waaw-secret-mix.mp3'
+    );
     downloadLink.elt.addEventListener('click', function () {
       finalMix.remove();
     });
