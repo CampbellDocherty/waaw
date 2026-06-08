@@ -40,6 +40,7 @@ const App = () => {
         setPortfolioError(true);
       });
   }, []);
+  console.log(portfolio);
 
   const sketchWithPortfolio = useCallback(
     (p5: Parameters<typeof sketch>[0]) => {
