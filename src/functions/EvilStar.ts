@@ -8,6 +8,12 @@ function getHorizontalBoundary(p5: p5Type): number {
   return window.innerWidth >= DESKTOP_BREAKPOINT ? p5.width / 2 : p5.width / 4;
 }
 
+function getEvilStarHorizontalBound(p5: p5Type, starRadius: number): number {
+  const columnHalfWidth = getHorizontalBoundary(p5);
+  const travelHalfWidth = Math.min(p5.width / 4, columnHalfWidth);
+  return travelHalfWidth - starRadius;
+}
+
 export class EvilStar {
   xPos: number;
   initialX: number;
@@ -33,6 +39,7 @@ export class EvilStar {
   reset() {
     this.xPos = this.initialX;
     this.yPos = this.initialY;
+    this.xSpeed = 4;
     this.shouldAnimate = true;
     this.powerUps.forEach((powerUp) => {
       powerUp.shouldAnimate = true;
@@ -80,18 +87,26 @@ export class EvilStar {
     this.p5.endShape(this.p5.CLOSE);
     this.p5.pop();
 
-    if (this.xPos <= 0 - this.p5.width / 6) {
-      this.xSpeed = this.xSpeed * -1;
-    }
-    if (this.xPos >= 0 + this.p5.width / 6) {
-      this.xSpeed = this.xSpeed * -1;
-    }
-
     if (this.shouldAnimate) {
       if (this.yPos < -innerHeight / 2 + 100) {
         this.yPos += this.ySpeed * deltaFrames;
       } else {
         this.xPos += this.xSpeed * deltaFrames;
+
+        const horizontalBound = getEvilStarHorizontalBound(
+          this.p5,
+          this.farRadius
+        );
+        const leftBound = -horizontalBound;
+        const rightBound = horizontalBound;
+        if (this.xPos < leftBound) {
+          this.xPos = leftBound;
+          this.xSpeed = Math.abs(this.xSpeed);
+        } else if (this.xPos > rightBound) {
+          this.xPos = rightBound;
+          this.xSpeed = -Math.abs(this.xSpeed);
+        }
+
         this.powerUps.forEach((powerUp) => {
           powerUp.updatePosition(this.xPos, this.yPos);
           powerUp.activate();
