@@ -22,6 +22,8 @@ enum Screen {
 }
 
 const DESKTOP_BREAKPOINT = 1024;
+const FRAME_MS_AT_60_FPS = 16.67;
+const SCORE_PER_FRAME_AT_60_FPS = 10;
 const MAX_SCORE = 35000;
 const EVIL_STAR_START_SCORE = 23000;
 const RECTANGLE_END_SCORE = EVIL_STAR_START_SCORE - 1500;
@@ -535,7 +537,11 @@ export const sketch = (
       p5.text('Score', scoreX, scoreY);
       p5.textSize(getTextSize(18, 15));
       if (!hasEndedGame) {
-        score = Math.min(score + 10, MAX_SCORE);
+        const deltaFrames = p5.deltaTime / FRAME_MS_AT_60_FPS;
+        score = Math.min(
+          score + SCORE_PER_FRAME_AT_60_FPS * deltaFrames,
+          MAX_SCORE
+        );
       }
       p5.text(score, scoreX, scoreY + 17);
       p5.pop();
