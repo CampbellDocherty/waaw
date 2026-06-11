@@ -14,6 +14,7 @@ import { LEADERBOARD_REFRESH_EVENT } from '../leaderboard';
 import { SHOW_NEXT_PARTY_EVENT } from '../NextPartyPopup';
 import { Portfolio } from '../portfolio';
 import type { DeviceMotionPermissionResult } from '../functions/requestDeviceMotionPermission';
+import { getNextScore, MAX_SCORE } from '../functions/score';
 
 enum Screen {
   INITIAL = 'initial',
@@ -22,9 +23,6 @@ enum Screen {
 }
 
 const DESKTOP_BREAKPOINT = 1024;
-const FRAME_MS_AT_60_FPS = 16.67;
-const SCORE_PER_FRAME_AT_60_FPS = 10;
-const MAX_SCORE = 35000;
 const EVIL_STAR_START_SCORE = 23000;
 const RECTANGLE_END_SCORE = EVIL_STAR_START_SCORE - 1500;
 const DEFAULT_PLAYER_COLOUR = '#F875FC';
@@ -537,11 +535,7 @@ export const sketch = (
       p5.text('Score', scoreX, scoreY);
       p5.textSize(getTextSize(18, 15));
       if (!hasEndedGame) {
-        const deltaFrames = p5.deltaTime / FRAME_MS_AT_60_FPS;
-        score = Math.min(
-          score + SCORE_PER_FRAME_AT_60_FPS * deltaFrames,
-          MAX_SCORE
-        );
+        score = getNextScore(score, p5.deltaTime);
       }
       p5.text(score, scoreX, scoreY + 17);
       p5.pop();
